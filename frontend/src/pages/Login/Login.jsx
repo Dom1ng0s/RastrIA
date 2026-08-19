@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import { Logo } from "../../components/Logo";
+import { AuthBrandPanel } from "../../components/AuthBrandPanel";
 import { ROLES } from "../../features/auth/roles";
 
 export default function Login() {
@@ -15,39 +15,18 @@ export default function Login() {
 
   return (
     <div className="grid min-h-screen md:grid-cols-2">
-      <div className="relative hidden flex-col justify-between overflow-hidden bg-primary p-10 md:flex">
-        <svg
-          className="pulse-motif absolute inset-0 h-full w-full"
-          viewBox="0 0 500 560"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <path
-            d="M -20 300 C 40 300 60 260 100 260 C 130 260 140 300 160 300 C 180 300 190 80 220 80 C 250 80 260 460 290 460 C 310 460 320 300 350 300 C 380 300 400 260 520 260"
-            fill="none"
-            stroke="white"
-            strokeWidth="6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-
-        <Logo reverse className="relative z-10" />
-
-        <div className="relative z-10">
-          <h1 className="mb-3 text-3xl font-semibold leading-tight text-white">
+      <AuthBrandPanel
+        heading={
+          <>
             Seu histórico de
             <br />
             saúde, sempre com
             <br />
             você.
-          </h1>
-          <p className="max-w-[280px] text-sm text-[#CFEAE3]">
-            Cadastre exames, acompanhe seus índices e conecte-se a profissionais quando precisar.
-          </p>
-        </div>
-
-        <p className="relative z-10 text-xs text-[#9FCFC4]">Programa Centelha 3 · Alagoas</p>
-      </div>
+          </>
+        }
+        subtitle="Cadastre exames, acompanhe seus índices e conecte-se a profissionais quando precisar."
+      />
 
       <div className="flex flex-col justify-center p-10 md:p-14">
         <div className="mx-auto w-full max-w-[360px]">
@@ -85,10 +64,9 @@ export default function Login() {
 
           <p className="mt-6 text-center text-sm text-text-muted">
             Não tem conta?{" "}
-            {/* TODO: vira rota /cadastro quando essa tela existir */}
-            <a href="#" className="font-semibold text-primary">
-              Cadastre-se
-            </a>
+            <Link to="/cadastro" className="font-semibold text-primary">
+              Criar conta
+            </Link>
           </p>
         </div>
       </div>

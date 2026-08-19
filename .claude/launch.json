@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "rastria-frontend",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--prefix", "frontend"],
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": ["/c", "C:\\Users\\david\\dev\\rastrIA\\.claude\\dev-frontend.cmd"],
       "port": 5173
     }
   ]

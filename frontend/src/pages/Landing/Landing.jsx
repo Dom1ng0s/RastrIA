@@ -204,10 +204,9 @@ function CtaFinal() {
           Escolha o caminho que faz sentido pra você.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
-          {/* TODO: vira rota /cadastro quando essa tela existir */}
-          <a href="#" className="btn-primary rounded-lg px-7 py-3.5 text-sm font-semibold">
+          <Link to="/cadastro" className="btn-primary rounded-lg px-7 py-3.5 text-sm font-semibold">
             Sou uma pessoa
-          </a>
+          </Link>
           <a href="#contato" className="btn-outline rounded-lg px-7 py-3.5 text-sm font-semibold">
             Represento uma instituição
           </a>

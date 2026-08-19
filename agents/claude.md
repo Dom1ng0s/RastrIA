@@ -16,6 +16,8 @@ O backend (`backend/`, Django+DRF) e o frontend (`frontend/`, React+Vite) já es
 
 **Login ainda não é autenticação real.** `pages/Login/Login.jsx` é hoje um seletor de papel (`features/auth/roles.js`) que só navega para a tela inicial do papel escolhido (`/gerente`, `/medico`, `/educador-fisico`, `/usuario`) — não há chamada de API, token JWT ou verificação de credencial. Isso é intencional para permitir revisar as 4 telas iniciais sem o backend de auth pronto; ao implementar login real, isso precisa ser substituído por uma mutation do TanStack Query contra `POST /api/auth/token/`, com o papel vindo do usuário autenticado (não de uma escolha manual).
 
+**Fluxo de cadastro (também sem backend ainda):** `/cadastro` (e-mail, senha, código de 6 dígitos da corporação) → `/onboarding` (peso, altura, idade) → `/usuario`. Toda conta nova nasce com papel `usuario` (`Papel.INDIVIDUAL`, já o default no model `Usuario` do backend) — quem atribui o cargo real (médico, educador físico, integrante, médico-do-trabalho, gerente) depois é o Comando/gestor da instituição vinculada pelo código, não o próprio cadastro. Isso está explicitado na tela para o usuário. **Decisão em aberto:** hoje o código da corporação é obrigatório no formulário; se o produto quiser permitir cadastro 100% individual (B2C) sem vínculo institucional, esse campo precisa virar opcional — confirmar antes de implementar o endpoint real.
+
 ## Stack Técnica (alvo)
 | Camada | Escolha | Por quê |
 |---|---|---|
@@ -86,6 +88,8 @@ RastrIA/
 │       ├── pages/
 │       │   ├── Landing/
 │       │   ├── Login/
+│       │   ├── Cadastro/                  # e-mail + senha + código da corporação
+│       │   ├── Onboarding/                # peso/altura/idade, logo após o cadastro
 │       │   ├── DashboardGerente/          # Resp. Comando
 │       │   ├── DashboardMedico/           # Resp. Médico
 │       │   ├── DashboardEducadorFisico/   # Resp. Educador Físico
@@ -249,7 +253,9 @@ No frontend web, `pt`/`px` viram a base para uma escala responsiva equivalente e
 
 **Fontes no app web:** Cambria/Calibri são a escolha do manual para materiais impressos/Office (compatibilidade sem embutir fonte), mas não são boas fontes web. As telas do produto (a partir do design de Login/Cadastro) usam **Lora** (títulos, via Google Fonts) e **Inter** (corpo) — carregadas em `frontend/index.html` e mapeadas em `tailwind.config.js` como `font-heading`/`font-body`. `h1`/`h2`/`h3` já puxam `font-heading` automaticamente via `@layer base` em `src/styles/index.css`.
 
-**Sistema de componentes visuais do app:** `src/styles/index.css` (`@layer components`) já tem classes reutilizáveis extraídas do design das telas — `.btn-primary`, `.badge-normal`/`.badge-atencao`/`.badge-alterado` (indicador normal/atenção/alterado da verificação automática), `.nav-item`/`.nav-item.active`, `.card-registro`/`.card-registro.atencao`. Reaproveitar essas classes ao portar novas telas do mesmo design system, em vez de recriá-las inline. Cores extras usadas pelo design: `primary-dark` (`#083430`, hover do botão primário) e `line` (`#E4E4E4`, bordas de input/card).
+**Sistema de componentes visuais do app:** `src/styles/index.css` (`@layer components`) já tem classes reutilizáveis extraídas do design das telas — `.btn-primary`/`.btn-outline`, `.badge-normal`/`.badge-atencao`/`.badge-alterado` (indicador normal/atenção/alterado da verificação automática), `.nav-item`/`.nav-item.active`, `.card-registro`/`.card-registro.atencao`. Reaproveitar essas classes ao portar novas telas do mesmo design system, em vez de recriá-las inline. Cores extras usadas pelo design: `primary-dark` (`#083430`, hover do botão primário) e `line` (`#E4E4E4`, bordas de input/card).
+
+Componentes React reutilizáveis já existentes em `src/components/`: `Logo` (ícone+wordmark, prop `reverse`), `AuthBrandPanel` (painel teal com watermark usado por `Login`/`Cadastro` — recebe `heading`/`subtitle`), `DashboardLayout` (shell com sidebar + header usado pelas 4 telas de painel). Reaproveitar antes de duplicar markup.
 
 **Regras de aplicação:**
 - Faça: versão primária sobre fundo claro; versão reversa sobre Primary Teal/preto; respeitar o espaço de proteção; manter Primary Teal dominante; usar Coral com moderação.
