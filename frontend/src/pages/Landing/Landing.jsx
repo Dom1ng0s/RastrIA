@@ -52,9 +52,6 @@ function Hero() {
       </svg>
 
       <div>
-        <span className="mb-5 inline-block rounded-full bg-bg-tint px-3 py-1.5 text-xs font-semibold text-primary">
-          Aprovado na Fase 1 do Programa Centelha 3 · Alagoas
-        </span>
         <h1 className="mb-5 text-4xl font-semibold leading-[1.15] text-primary md:text-5xl">
           Centralize, verifique
           <br />e conecte-se.

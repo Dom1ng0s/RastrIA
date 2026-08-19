@@ -14,6 +14,8 @@ Rastria é uma plataforma digital que centraliza o histórico de saúde e desemp
 ## Estado Atual do Repositório
 O backend (`backend/`, Django+DRF) e o frontend (`frontend/`, React+Vite) já estão scaffolded — ver "Estrutura do Repositório" abaixo. O serviço Railway na raiz builda e serve o `frontend/` (ver "Deploy"). O backend **ainda não está deployado** como serviço — hoje só roda localmente; colocá-lo no ar exige configurar um segundo serviço no dashboard do Railway apontando para `backend/`, o que ainda não foi feito.
 
+**Login ainda não é autenticação real.** `pages/Login/Login.jsx` é hoje um seletor de papel (`features/auth/roles.js`) que só navega para a tela inicial do papel escolhido (`/gerente`, `/medico`, `/educador-fisico`, `/usuario`) — não há chamada de API, token JWT ou verificação de credencial. Isso é intencional para permitir revisar as 4 telas iniciais sem o backend de auth pronto; ao implementar login real, isso precisa ser substituído por uma mutation do TanStack Query contra `POST /api/auth/token/`, com o papel vindo do usuário autenticado (não de uma escolha manual).
+
 ## Stack Técnica (alvo)
 | Camada | Escolha | Por quê |
 |---|---|---|
@@ -84,9 +86,10 @@ RastrIA/
 │       ├── pages/
 │       │   ├── Landing/
 │       │   ├── Login/
-│       │   ├── DashboardGerente/
-│       │   ├── DashboardMedico/
-│       │   └── DashboardIntegrante/
+│       │   ├── DashboardGerente/          # Resp. Comando
+│       │   ├── DashboardMedico/           # Resp. Médico
+│       │   ├── DashboardEducadorFisico/   # Resp. Educador Físico
+│       │   └── DashboardUsuario/          # Usuário individual
 │       ├── features/             # feature-sliced: hooks de TanStack Query, stores Zustand, forms
 │       │   ├── auth/
 │       │   ├── saude/

@@ -1,25 +1,16 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Logo } from "../../components/Logo";
-
-const loginSchema = z.object({
-  email: z.string().min(1, "Informe seu e-mail").email("E-mail inválido"),
-  senha: z.string().min(1, "Informe sua senha"),
-});
+import { ROLES } from "../../features/auth/roles";
 
 export default function Login() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm({ resolver: zodResolver(loginSchema) });
+  const [papelSelecionado, setPapelSelecionado] = useState(null);
+  const navigate = useNavigate();
 
-  const onSubmit = async (dados) => {
-    // TODO: substituir por mutation do TanStack Query chamando POST
-    // /api/auth/token/ (ver src/lib/api.js) e guardando o par de tokens.
-    console.log("login", dados);
+  const entrar = () => {
+    const papel = ROLES.find((r) => r.id === papelSelecionado);
+    if (papel) navigate(papel.path);
   };
 
   return (
@@ -59,52 +50,40 @@ export default function Login() {
       </div>
 
       <div className="flex flex-col justify-center p-10 md:p-14">
-        <div className="mx-auto w-full max-w-[320px]">
+        <div className="mx-auto w-full max-w-[360px]">
           <h2 className="mb-1 text-2xl font-semibold text-primary">Entrar</h2>
-          <p className="mb-8 text-sm text-text-muted">Acesse seu histórico de saúde.</p>
+          {/* TODO: autenticação real (JWT contra POST /api/auth/token/) ainda não
+              existe — a seleção de papel abaixo só redireciona para a tela inicial
+              correspondente. Ver "Estado Atual do Repositório" em agents/claude.md. */}
+          <p className="mb-8 text-sm text-text-muted">Escolha como você quer entrar.</p>
 
-          <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="email">
-              E-mail
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              placeholder="voce@email.com"
-              className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
-              {...register("email")}
-            />
-            {errors.email && <p className="mb-3 text-xs text-coral">{errors.email.message}</p>}
+          <div className="mb-6 space-y-2">
+            {ROLES.map((papel) => (
+              <button
+                key={papel.id}
+                type="button"
+                onClick={() => setPapelSelecionado(papel.id)}
+                className={`w-full rounded-lg border px-4 py-3 text-left text-sm font-medium transition-colors ${
+                  papelSelecionado === papel.id
+                    ? "border-primary bg-bg-tint text-primary"
+                    : "border-line text-text-dark hover:bg-bg-tint"
+                }`}
+              >
+                {papel.label}
+              </button>
+            ))}
+          </div>
 
-            <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="senha">
-              Senha
-            </label>
-            <input
-              id="senha"
-              type="password"
-              autoComplete="current-password"
-              placeholder="••••••••"
-              className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
-              {...register("senha")}
-            />
-            {errors.senha && <p className="mb-2 text-xs text-coral">{errors.senha.message}</p>}
+          <button
+            type="button"
+            disabled={!papelSelecionado}
+            onClick={entrar}
+            className="btn-primary w-full rounded-lg py-2.5 text-sm font-semibold disabled:opacity-40"
+          >
+            Entrar
+          </button>
 
-            {/* TODO: vira rota /esqueci-senha quando essa tela existir */}
-            <a href="#" className="mb-6 block text-right text-xs font-medium text-seafoam">
-              Esqueci minha senha
-            </a>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="btn-primary mb-4 w-full rounded-lg py-2.5 text-sm font-semibold disabled:opacity-60"
-            >
-              {isSubmitting ? "Entrando..." : "Entrar"}
-            </button>
-          </form>
-
-          <p className="text-center text-sm text-text-muted">
+          <p className="mt-6 text-center text-sm text-text-muted">
             Não tem conta?{" "}
             {/* TODO: vira rota /cadastro quando essa tela existir */}
             <a href="#" className="font-semibold text-primary">
