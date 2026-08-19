@@ -12,7 +12,7 @@ Rastria é uma plataforma digital que centraliza o histórico de saúde e desemp
 **Solução, em três pilares:** Cadastro (exames, avaliações, desempenho físico) → Verificação automática (índices comparados a tabelas de referência clínica) → Conexão (solicitação de acompanhamento a profissionais de uma rede pré-qualificada).
 
 ## Estado Atual do Repositório
-**Importante:** hoje este repositório contém apenas uma landing page estática ([index.html](../index.html)) publicada no Railway via `serve` ([package.json](../package.json), [railway.json](../railway.json)). O backend Django e o frontend React descritos abaixo são a arquitetura-alvo — **ainda não foram scaffolded neste repositório**. Antes de assumir que existe um projeto Django ou uma app Vite, confira a árvore de diretórios atual.
+O backend (`backend/`, Django+DRF) e o frontend (`frontend/`, React+Vite) já estão scaffolded — ver "Estrutura do Repositório" abaixo. O serviço Railway na raiz builda e serve o `frontend/` (ver "Deploy"). O backend **ainda não está deployado** como serviço — hoje só roda localmente; colocá-lo no ar exige configurar um segundo serviço no dashboard do Railway apontando para `backend/`, o que ainda não foi feito.
 
 ## Stack Técnica (alvo)
 | Camada | Escolha | Por quê |
@@ -110,7 +110,7 @@ RastrIA/
 └── README.md
 ```
 
-A landing page estática atual na raiz (`index.html` + `package.json` rodando `serve`) é o placeholder pré-scaffold. Um dos primeiros passos ao criar essa estrutura é mover `index.html` para dentro de `frontend/` e configurar `railway.json` de cada serviço separadamente (backend e frontend como serviços distintos no mesmo projeto Railway).
+O `index.html` estático que existia na raiz foi removido — o serviço Railway da raiz agora builda e serve `frontend/` (ver "Deploy"). Quando o backend for deployado, o próximo passo é configurar um serviço Railway separado apontando para `backend/` (dashboard, fora do alcance de um agente).
 
 ## O que Fica de Fora do Repositório
 Documentos de negociação institucional (ex: propostas endereçadas a um contato específico, com nome de pessoa física e estratégia de abordagem institucional) **não devem ser commitados neste repositório, nem em `docs/`**. O repositório é público no GitHub, e qualquer arquivo commitado permanece no histórico do Git mesmo que seja apagado depois. Esse tipo de material deve ficar num Drive/Notion privado do time — `docs/` é reservado a conteúdo já pensado para ser público (manual de marca, pitch deck, diagramas). Se for pedido para adicionar algo do tipo ao repo, sinalizar essa regra antes de commitar.
@@ -202,7 +202,12 @@ Instituicao
 | Institucional (B2B/B2G) | Cadastro em lote de integrantes (import CSV); painel de comando com agregado por unidade | Estrutura de diretor técnico/clínico; atendimento pleno |
 
 ## Deploy
-Railway, builder Nixpacks ([railway.json](../railway.json)), `startCommand: npm start` — hoje serve a landing page estática via `serve -s . -l $PORT`. Porta configurada via variável de ambiente `PORT` ([.env.example](../.env.example)).
+Railway, builder Nixpacks. O serviço na raiz builda e serve o `frontend/`:
+- `buildCommand` ([railway.json](../railway.json)) roda `npm run build` da raiz ([package.json](../package.json)), que instala e builda `frontend/` (`npm install --prefix frontend && npm run build --prefix frontend`).
+- `startCommand` serve o build estático: `serve -s frontend/dist -l $PORT`.
+- `VITE_API_URL` é lida em **build-time** pelo Vite — precisa estar setada como variável de ambiente do serviço no Railway (não só no `.env` local) para o build embutir a URL certa da API.
+
+O backend (`backend/`) ainda não tem serviço próprio no Railway — ver "Estado Atual do Repositório". Cada subpasta já tem seu próprio `railway.json` (`frontend/railway.json`, `backend/railway.json`) prontos para o dia em que forem promovidos a serviços Railway separados (apontando o "root directory" de cada serviço no dashboard); até lá, é o `railway.json`/`package.json` da raiz que valem para o único serviço existente.
 
 ## Modelo de Negócio (contexto, não afeta arquitetura diretamente)
 - Assinatura individual (B2C) — histórico ilimitado, alertas, compartilhamento.
@@ -238,6 +243,10 @@ Fonte: Manual de Marca v1.0 (2026) — arquivo original ainda não versionado em
 | Legendas/notas | Calibri Regular | 9–11pt |
 
 No frontend web, `pt`/`px` viram a base para uma escala responsiva equivalente em `rem`/Tailwind — não usar os tamanhos em pt literalmente no CSS.
+
+**Fontes no app web:** Cambria/Calibri são a escolha do manual para materiais impressos/Office (compatibilidade sem embutir fonte), mas não são boas fontes web. As telas do produto (a partir do design de Login/Cadastro) usam **Lora** (títulos, via Google Fonts) e **Inter** (corpo) — carregadas em `frontend/index.html` e mapeadas em `tailwind.config.js` como `font-heading`/`font-body`. `h1`/`h2`/`h3` já puxam `font-heading` automaticamente via `@layer base` em `src/styles/index.css`.
+
+**Sistema de componentes visuais do app:** `src/styles/index.css` (`@layer components`) já tem classes reutilizáveis extraídas do design das telas — `.btn-primary`, `.badge-normal`/`.badge-atencao`/`.badge-alterado` (indicador normal/atenção/alterado da verificação automática), `.nav-item`/`.nav-item.active`, `.card-registro`/`.card-registro.atencao`. Reaproveitar essas classes ao portar novas telas do mesmo design system, em vez de recriá-las inline. Cores extras usadas pelo design: `primary-dark` (`#083430`, hover do botão primário) e `line` (`#E4E4E4`, bordas de input/card).
 
 **Regras de aplicação:**
 - Faça: versão primária sobre fundo claro; versão reversa sobre Primary Teal/preto; respeitar o espaço de proteção; manter Primary Teal dominante; usar Coral com moderação.

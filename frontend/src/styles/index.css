@@ -1,3 +1,66 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-body text-text-dark;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  /* Sistema de componentes visuais compartilhado entre as telas — ver
+     agents/claude.md > Identidade de Marca. Ao portar uma nova tela do
+     design, reaproveitar estas classes em vez de recriá-las. */
+
+  .btn-primary {
+    @apply bg-primary text-white transition-colors;
+  }
+  .btn-primary:hover {
+    @apply bg-primary-dark;
+  }
+
+  .btn-outline {
+    @apply border-[1.5px] border-primary bg-white text-primary transition-colors;
+  }
+  .btn-outline:hover {
+    @apply bg-bg-tint;
+  }
+
+  .badge-normal {
+    background: #e1f5ee;
+    color: #085041;
+  }
+  .badge-atencao {
+    background: #fff1ec;
+    color: #b8431f;
+  }
+  .badge-alterado {
+    background: #ffe4da;
+    color: #b8431f;
+  }
+
+  .nav-item {
+    color: #cfeae3;
+  }
+  .nav-item.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+  }
+
+  .card-registro {
+    border-left: 4px solid theme("colors.seafoam");
+  }
+  .card-registro.atencao {
+    border-left-color: theme("colors.coral");
+  }
+
+  .pulse-motif {
+    opacity: 0.14;
+  }
+}

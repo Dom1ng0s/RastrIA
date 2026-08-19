@@ -4,7 +4,8 @@
   "private": true,
   "description": "rastrIA",
   "scripts": {
-    "start": "serve -s . -l $PORT"
+    "build": "npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "serve -s frontend/dist -l $PORT"
   },
   "dependencies": {
     "serve": "^14.2.3"
