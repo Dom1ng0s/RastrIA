@@ -8,6 +8,7 @@ import DashboardUsuario from "../pages/DashboardUsuario/DashboardUsuario";
 import Landing from "../pages/Landing/Landing";
 import Login from "../pages/Login/Login";
 import Onboarding from "../pages/Onboarding/Onboarding";
+import SolicitarAcompanhamento from "../pages/SolicitarAcompanhamento/SolicitarAcompanhamento";
 
 export function AppRoutes() {
   return (
@@ -20,6 +21,7 @@ export function AppRoutes() {
       <Route path="/medico" element={<DashboardMedico />} />
       <Route path="/educador-fisico" element={<DashboardEducadorFisico />} />
       <Route path="/usuario" element={<DashboardUsuario />} />
+      <Route path="/usuario/solicitar" element={<SolicitarAcompanhamento />} />
     </Routes>
   );
 }

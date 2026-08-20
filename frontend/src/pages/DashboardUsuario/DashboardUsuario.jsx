@@ -1,8 +1,11 @@
-import { LayoutDashboard, Plus } from "lucide-react";
+import { LayoutDashboard, Plus, Stethoscope } from "lucide-react";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
 
-const navItems = [{ to: "/usuario", label: "Meu Histórico", icon: LayoutDashboard }];
+const navItems = [
+  { to: "/usuario", label: "Meu Histórico", icon: LayoutDashboard },
+  { to: "/usuario/solicitar", label: "Solicitar Acompanhamento", icon: Stethoscope },
+];
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/registros-saude)
 // quando o endpoint estiver pronto.
