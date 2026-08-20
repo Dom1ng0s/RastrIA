@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { LayoutDashboard, Plus, Stethoscope } from "lucide-react";
 
+import { CadastrarExameModal } from "../../components/CadastrarExameModal";
 import { DashboardLayout } from "../../components/DashboardLayout";
 
 const navItems = [
@@ -9,7 +11,7 @@ const navItems = [
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/registros-saude)
 // quando o endpoint estiver pronto.
-const registros = [
+const registrosIniciais = [
   { id: 1, indice: "Pressão arterial", valor: "12/8", data: "10 ago 2026", status: "normal" },
   { id: 2, indice: "Glicemia em jejum", valor: "112 mg/dL", data: "14 ago 2026", status: "atencao" },
   { id: 3, indice: "IMC", valor: "23.4", data: "14 ago 2026", status: "normal" },
@@ -19,12 +21,28 @@ const badgeClasse = { normal: "badge-normal", atencao: "badge-atencao", alterado
 const badgeTexto = { normal: "Normal", atencao: "Atenção", alterado: "Alterado" };
 
 export default function DashboardUsuario() {
+  const [registros, setRegistros] = useState(registrosIniciais);
+  const [modalAberto, setModalAberto] = useState(false);
+
+  function adicionarRegistro(dados) {
+    // TODO: o status (normal/atencao/alterado) deve vir pronto da resposta da
+    // API, já calculado pela verificação automática no backend. Aqui, "normal"
+    // é só um placeholder até o endpoint existir.
+    setRegistros((atual) => [
+      { id: atual.length + 1, indice: dados.tipo, valor: dados.valor, data: dados.data, status: "normal" },
+      ...atual,
+    ]);
+  }
+
   return (
     <DashboardLayout title="Meu Histórico" navItems={navItems}>
       <div className="mb-6 flex items-center justify-between">
         <p className="text-sm text-text-muted">Seus exames e índices mais recentes.</p>
-        {/* TODO: abrir formulário de cadastro (React Hook Form + Zod) quando essa tela existir */}
-        <button className="btn-primary flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold">
+        <button
+          type="button"
+          onClick={() => setModalAberto(true)}
+          className="btn-primary flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold"
+        >
           <Plus size={16} /> Cadastrar exame
         </button>
       </div>
@@ -47,6 +65,10 @@ export default function DashboardUsuario() {
           </div>
         ))}
       </div>
+
+      {modalAberto && (
+        <CadastrarExameModal onClose={() => setModalAberto(false)} onSalvar={adicionarRegistro} />
+      )}
     </DashboardLayout>
   );
 }

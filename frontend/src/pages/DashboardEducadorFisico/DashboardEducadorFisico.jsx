@@ -1,4 +1,5 @@
 import { LayoutDashboard } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
 
@@ -44,10 +45,14 @@ export default function DashboardEducadorFisico() {
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meus alunos</h2>
         <div className="space-y-2">
           {alunos.map((aluno) => (
-            <div key={aluno.id} className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm">
+            <Link
+              key={aluno.id}
+              to={`/educador-fisico/aluno/${aluno.id}`}
+              className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm hover:bg-bg-tint"
+            >
               <span className="text-sm font-medium">{aluno.nome}</span>
               <span className="text-xs text-text-muted">Última avaliação · {aluno.ultimaAvaliacao}</span>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

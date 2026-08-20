@@ -1,4 +1,4 @@
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { Logo } from "./Logo";
@@ -28,15 +28,26 @@ export function DashboardLayout({ title, navItems, children }) {
           </nav>
         </div>
 
-        {/* TODO: limpar sessão real (tokens/store de auth) quando login real existir */}
-        <button
-          type="button"
-          onClick={() => navigate("/login")}
-          className="nav-item flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium"
-        >
-          <LogOut size={18} />
-          Sair
-        </button>
+        <div className="space-y-1">
+          <Link
+            to="/perfil"
+            className={`nav-item flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${
+              location.pathname === "/perfil" ? "active" : ""
+            }`}
+          >
+            <User size={18} />
+            Perfil
+          </Link>
+          {/* TODO: limpar sessão real (tokens/store de auth) quando login real existir */}
+          <button
+            type="button"
+            onClick={() => navigate("/login")}
+            className="nav-item flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium"
+          >
+            <LogOut size={18} />
+            Sair
+          </button>
+        </div>
       </aside>
 
       <div className="flex-1 bg-bg-tint">

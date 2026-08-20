@@ -1,4 +1,5 @@
 import { LayoutDashboard } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
 
@@ -50,10 +51,14 @@ export default function DashboardMedico() {
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meus pacientes</h2>
         <div className="space-y-2">
           {pacientes.map((paciente) => (
-            <div key={paciente.id} className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm">
+            <Link
+              key={paciente.id}
+              to={`/medico/paciente/${paciente.id}`}
+              className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm hover:bg-bg-tint"
+            >
               <span className="text-sm font-medium">{paciente.nome}</span>
               <span className="text-xs text-text-muted">Último exame · {paciente.ultimoExame}</span>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
