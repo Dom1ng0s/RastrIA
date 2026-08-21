@@ -10,6 +10,7 @@ import DetalhePaciente from "../pages/DetalhePaciente/DetalhePaciente";
 import EsqueciSenha from "../pages/EsqueciSenha/EsqueciSenha";
 import Landing from "../pages/Landing/Landing";
 import Login from "../pages/Login/Login";
+import NotFound from "../pages/NotFound/NotFound";
 import Onboarding from "../pages/Onboarding/Onboarding";
 import Perfil from "../pages/Perfil/Perfil";
 import SolicitarAcompanhamento from "../pages/SolicitarAcompanhamento/SolicitarAcompanhamento";
@@ -30,6 +31,7 @@ export function AppRoutes() {
       <Route path="/educador-fisico/aluno/:id" element={<DetalheAluno />} />
       <Route path="/usuario" element={<DashboardUsuario />} />
       <Route path="/usuario/solicitar" element={<SolicitarAcompanhamento />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

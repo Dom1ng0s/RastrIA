@@ -1,0 +1,40 @@
+<svg width="680" height="460" viewBox="0 0 680 460" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+<rect width="680" height="460" fill="#ffffff"/>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="#5f5e5a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+
+<rect x="170" y="40" width="340" height="400" rx="12" fill="none" stroke="#c9c7bd" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="185" y="62" font-size="13" font-weight="bold" fill="#2C2C2A">Sistema Rastria</text>
+
+<ellipse cx="335" cy="110" rx="150" ry="32" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="335" y="114" text-anchor="middle" font-size="13" fill="#04342C">Cadastrar dados de saúde</text>
+
+<ellipse cx="335" cy="200" rx="150" ry="32" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="335" y="196" text-anchor="middle" font-size="13" fill="#04342C">Verificar índices</text>
+<text x="335" y="212" text-anchor="middle" font-size="11" fill="#0F6E56">Contra tabela de referência</text>
+
+<ellipse cx="335" cy="290" rx="150" ry="32" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="335" y="294" text-anchor="middle" font-size="13" fill="#04342C">Solicitar acompanhamento</text>
+
+<ellipse cx="335" cy="380" rx="150" ry="32" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="335" y="376" text-anchor="middle" font-size="13" fill="#04342C">Confirmar atendimento</text>
+<text x="335" y="392" text-anchor="middle" font-size="11" fill="#0F6E56">Registra no prontuário</text>
+
+<line x1="335" y1="142" x2="335" y2="168" stroke="#8a887d" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+
+<rect x="40" y="190" width="110" height="44" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="95" y="216" text-anchor="middle" font-size="13" fill="#2C2C2A">Usuário</text>
+<path d="M150 212 L158 212 L158 110 L195 110" fill="none" stroke="#8a887d" stroke-width="1" marker-end="url(#arrow)"/>
+<path d="M150 212 L166 212 L166 290 L195 290" fill="none" stroke="#8a887d" stroke-width="1" marker-end="url(#arrow)"/>
+
+<rect x="530" y="90" width="130" height="44" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="595" y="116" text-anchor="middle" font-size="13" fill="#2C2C2A">Médico</text>
+<path d="M530 112 L505 112 L505 380 L485 380" fill="none" stroke="#8a887d" stroke-width="1" marker-end="url(#arrow)"/>
+
+<rect x="530" y="290" width="130" height="44" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="595" y="316" text-anchor="middle" font-size="13" fill="#2C2C2A">Educador físico</text>
+<path d="M530 312 L512 312 L512 395 L485 395" fill="none" stroke="#8a887d" stroke-width="1" marker-end="url(#arrow)"/>
+</svg>

@@ -222,7 +222,7 @@ O backend (`backend/`) ainda não tem serviço próprio no Railway — ver "Esta
 - Comissão por atendimento (marketplace) — % sobre consultas realizadas pela rede.
 
 ## Identidade de Marca
-Fonte: Manual de Marca v1.0 (2026) — arquivo original ainda não versionado em `docs/brand/`, ver seção "Documentação adicional".
+Fonte: Manual de Marca v1.0 (2026), versionado em `docs/brand/Rastria_Manual_de_Marca.pdf`.
 
 **Tagline:** "O rastro dos seus dados, o caminho até o cuidado certo."
 
@@ -264,4 +264,4 @@ Componentes React reutilizáveis já existentes em `src/components/`: `Logo` (í
 `frontend/tailwind.config.js` já mapeia `primary`/`seafoam`/`coral` e `font-heading`/`font-body` para esses tokens — ao adicionar UI nova, usar essas classes em vez de hardcodar hex ou fontes.
 
 ## Documentação adicional
-A proposta original do projeto referencia `docs/diagrams/` (diagramas UML) e `docs/brand/Rastria_Manual_de_Marca.pdf` — **esses caminhos ainda não existem neste repositório** (as pastas `docs/brand/`, `docs/pitch/` e `docs/diagrams/` já foram criadas como placeholders, mas os arquivos em si — manual de marca, diagramas UML, pitch deck — ainda não foram commitados). Se forem adicionados futuramente, atualizar este arquivo com os links corretos. A estratégia de estrutura/branches acima já foi incorporada neste arquivo, não é necessário um `docs/ESTRUTURA_REPOSITORIO.md` separado.
+Manual de marca (`docs/brand/Rastria_Manual_de_Marca.pdf`), pitch deck (`docs/pitch/Rastria_Pitch_Deck.pdf`/`.pptx`) e diagramas UML (`docs/diagrams/casos_de_uso.svg`, `classes.svg`, `sequencia.svg`, `fluxo_institucional_corrigido.svg`) já estão versionados no repositório. A estratégia de estrutura/branches acima já foi incorporada neste arquivo, não é necessário um `docs/ESTRUTURA_REPOSITORIO.md` separado.

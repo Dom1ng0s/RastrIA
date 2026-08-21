@@ -1,32 +1,91 @@
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { Logo } from "../../components/Logo";
 
+const LINKS_NAV = [
+  { href: "#como-funciona", label: "Como funciona" },
+  { href: "#instituicoes", label: "Para instituições" },
+  { href: "#contato", label: "Contato" },
+];
+
 function Header() {
+  const [menuAberto, setMenuAberto] = useState(false);
+
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-[1180px] items-center justify-between px-6 py-4">
         <Logo />
         <nav className="hidden items-center text-sm font-medium text-text-dark md:flex">
-          <a href="#como-funciona" className="mr-8 hover:opacity-70">
-            Como funciona
-          </a>
-          <a href="#instituicoes" className="mr-8 hover:opacity-70">
-            Para instituições
-          </a>
-          <a href="#contato" className="hover:opacity-70">
-            Contato
-          </a>
+          {LINKS_NAV.map((link) => (
+            <a key={link.href} href={link.href} className="mr-8 hover:opacity-70 last:mr-0">
+              {link.label}
+            </a>
+          ))}
         </nav>
-        <div className="flex items-center">
-          <Link to="/login" className="mr-4 hidden text-sm font-medium text-text-dark sm:block">
+        <div className="hidden items-center md:flex">
+          <Link to="/login" className="mr-4 text-sm font-medium text-text-dark">
             Entrar
           </Link>
           <a href="#comecar" className="btn-primary rounded-lg px-4 py-2 text-sm font-semibold">
             Criar conta
           </a>
         </div>
+        <button
+          type="button"
+          aria-label="Abrir menu"
+          onClick={() => setMenuAberto(true)}
+          className="text-primary md:hidden"
+        >
+          <Menu size={24} />
+        </button>
       </div>
+
+      {menuAberto && (
+        <div className="fixed inset-0 z-30 md:hidden">
+          <button
+            type="button"
+            aria-label="Fechar menu"
+            onClick={() => setMenuAberto(false)}
+            className="absolute inset-0 bg-primary/40"
+          />
+          <div className="absolute right-0 top-0 flex h-full w-72 flex-col gap-1 bg-white p-6 shadow-xl">
+            <div className="mb-6 flex items-center justify-between">
+              <Logo />
+              <button type="button" aria-label="Fechar menu" onClick={() => setMenuAberto(false)}>
+                <X size={22} className="text-text-dark" />
+              </button>
+            </div>
+            {LINKS_NAV.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuAberto(false)}
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-text-dark hover:bg-bg-tint"
+              >
+                {link.label}
+              </a>
+            ))}
+            <div className="mt-4 space-y-2 border-t border-line pt-4">
+              <Link
+                to="/login"
+                onClick={() => setMenuAberto(false)}
+                className="block rounded-lg px-3 py-2.5 text-sm font-medium text-text-dark hover:bg-bg-tint"
+              >
+                Entrar
+              </Link>
+              <a
+                href="#comecar"
+                onClick={() => setMenuAberto(false)}
+                className="btn-primary block rounded-lg px-3 py-2.5 text-center text-sm font-semibold"
+              >
+                Criar conta
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
