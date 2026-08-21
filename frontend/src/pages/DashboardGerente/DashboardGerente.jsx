@@ -1,16 +1,46 @@
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, UserCheck } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
 
-const navItems = [{ to: "/gerente", label: "Painel Agregado", icon: LayoutDashboard }];
+export const navItems = [
+  { to: "/gerente", label: "Painel Agregado", icon: LayoutDashboard },
+  { to: "/gerente/autorizacao", label: "Autorizar Usuários", icon: UserCheck },
+];
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/instituicoes/:id/agregado)
 // quando o endpoint existir. Hierarquia multinível (Batalhão/Companhia/Pelotão) ainda
 // depende de confirmação do piloto institucional — ver agents/claude.md.
-const unidades = [
-  { nome: "1º Batalhão", percentual: 94 },
-  { nome: "2º Batalhão", percentual: 88 },
-  { nome: "3º Batalhão", percentual: 95 },
+export const unidades = [
+  {
+    id: 1,
+    nome: "1º Batalhão",
+    percentual: 94,
+    subunidades: [
+      { nome: "1ª Companhia", percentual: 96 },
+      { nome: "2ª Companhia", percentual: 91 },
+      { nome: "3ª Companhia", percentual: 95 },
+    ],
+  },
+  {
+    id: 2,
+    nome: "2º Batalhão",
+    percentual: 88,
+    subunidades: [
+      { nome: "1ª Companhia", percentual: 85 },
+      { nome: "2ª Companhia", percentual: 90 },
+    ],
+  },
+  {
+    id: 3,
+    nome: "3º Batalhão",
+    percentual: 95,
+    subunidades: [
+      { nome: "1ª Companhia", percentual: 97 },
+      { nome: "2ª Companhia", percentual: 94 },
+      { nome: "3ª Companhia", percentual: 95 },
+    ],
+  },
 ];
 
 export default function DashboardGerente() {
@@ -31,12 +61,16 @@ export default function DashboardGerente() {
       <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Por unidade</h2>
       <div className="space-y-2">
         {unidades.map((unidade) => (
-          <div key={unidade.nome} className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm">
+          <Link
+            key={unidade.id}
+            to={`/gerente/unidade/${unidade.id}`}
+            className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm hover:bg-bg-tint"
+          >
             <span className="text-sm font-medium">{unidade.nome}</span>
             <span className="badge-normal rounded-full px-2 py-0.5 text-[11px] font-semibold">
               {unidade.percentual}% em dia
             </span>
-          </div>
+          </Link>
         ))}
       </div>
     </DashboardLayout>

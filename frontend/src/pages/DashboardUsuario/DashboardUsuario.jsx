@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { LayoutDashboard, Plus, Stethoscope } from "lucide-react";
+import { ClipboardList, LayoutDashboard, Plus, Stethoscope } from "lucide-react";
 
 import { CadastrarExameModal } from "../../components/CadastrarExameModal";
 import { DashboardLayout } from "../../components/DashboardLayout";
 
-const navItems = [
+export const navItems = [
   { to: "/usuario", label: "Meu Histórico", icon: LayoutDashboard },
+  { to: "/usuario/cadastrar-informacoes", label: "Cadastrar Informações", icon: ClipboardList },
   { to: "/usuario/solicitar", label: "Solicitar Acompanhamento", icon: Stethoscope },
 ];
 

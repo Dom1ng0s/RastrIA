@@ -1,12 +1,8 @@
 import { useState } from "react";
-import { LayoutDashboard, Stethoscope, Dumbbell, Check, Clock } from "lucide-react";
+import { Stethoscope, Dumbbell, Check, Clock } from "lucide-react";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
-
-const navItems = [
-  { to: "/usuario", label: "Meu Histórico", icon: LayoutDashboard },
-  { to: "/usuario/solicitar", label: "Solicitar Acompanhamento", icon: Stethoscope },
-];
+import { navItems } from "../DashboardUsuario/DashboardUsuario";
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/profissionais?tipo=)
 // e pelo vínculo de cuidado ativo do usuário (GET /api/vinculos-cuidado/meu)
