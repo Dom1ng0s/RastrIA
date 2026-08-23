@@ -1,12 +1,9 @@
-import { LayoutDashboard, UserCheck } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
 
-export const navItems = [
-  { to: "/gerente", label: "Painel Agregado", icon: LayoutDashboard },
-  { to: "/gerente/autorizacao", label: "Autorizar Usuários", icon: UserCheck },
-];
+export const navItems = [{ to: "/gerente", label: "Painel Agregado", icon: LayoutDashboard }];
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/instituicoes/:id/agregado)
 // quando o endpoint existir. Hierarquia multinível (Batalhão/Companhia/Pelotão) ainda

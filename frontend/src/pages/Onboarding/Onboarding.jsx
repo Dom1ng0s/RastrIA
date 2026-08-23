@@ -24,9 +24,9 @@ export default function Onboarding() {
 
   const onSubmit = async (dados) => {
     // TODO: substituir por mutation do TanStack Query (endpoint de perfil do
-    // usuário, ainda não definido no backend) quando existir. O destino fixo em
-    // /usuario reflete que toda conta nova nasce com papel "usuario" — ver
-    // pages/Cadastro/Cadastro.jsx e agents/claude.md.
+    // usuário, ainda não definido no backend) quando existir. Onboarding roda
+    // no primeiro login de uma conta já provisionada pela instituição (sem
+    // autocadastro — ver DOCUMENTACAO.md, seção 16, e agents/claude.md).
     console.log("onboarding", dados);
     navigate("/usuario");
   };

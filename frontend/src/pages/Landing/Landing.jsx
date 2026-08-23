@@ -28,8 +28,8 @@ function Header() {
           <Link to="/login" className="mr-4 text-sm font-medium text-text-dark">
             Entrar
           </Link>
-          <a href="#comecar" className="btn-primary rounded-lg px-4 py-2 text-sm font-semibold">
-            Criar conta
+          <a href="#contato" className="btn-primary rounded-lg px-4 py-2 text-sm font-semibold">
+            Fale com o time
           </a>
         </div>
         <button
@@ -76,11 +76,11 @@ function Header() {
                 Entrar
               </Link>
               <a
-                href="#comecar"
+                href="#contato"
                 onClick={() => setMenuAberto(false)}
                 className="btn-primary block rounded-lg px-3 py-2.5 text-center text-sm font-semibold"
               >
-                Criar conta
+                Fale com o time
               </a>
             </div>
           </div>
@@ -120,11 +120,11 @@ function Hero() {
           automaticamente e te conecta a profissionais qualificados — tudo em um só lugar.
         </p>
         <div className="flex flex-wrap gap-3">
-          <a href="#comecar" className="btn-primary rounded-lg px-6 py-3 text-sm font-semibold">
-            Começar agora
+          <a href="#contato" className="btn-primary rounded-lg px-6 py-3 text-sm font-semibold">
+            Fale com o time
           </a>
-          <a href="#instituicoes" className="btn-outline rounded-lg px-6 py-3 text-sm font-semibold">
-            Sou uma instituição
+          <a href="#como-funciona" className="btn-outline rounded-lg px-6 py-3 text-sm font-semibold">
+            Como funciona
           </a>
         </div>
       </div>
@@ -258,16 +258,13 @@ function CtaFinal() {
   return (
     <section id="comecar" className="mx-auto max-w-[1180px] px-6 pb-24">
       <div className="rounded-2xl bg-bg-tint p-10 text-center md:p-14">
-        <h2 className="mb-3 text-3xl font-semibold text-primary">Pronto para começar?</h2>
+        <h2 className="mb-3 text-3xl font-semibold text-primary">Pronto para levar a Rastria para sua instituição?</h2>
         <p className="mx-auto mb-8 max-w-[440px] text-base text-text-muted">
-          Escolha o caminho que faz sentido pra você.
+          Fale com nosso time e conheça o modelo de gestão de saúde ocupacional pensado para o seu efetivo.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
-          <Link to="/cadastro" className="btn-primary rounded-lg px-7 py-3.5 text-sm font-semibold">
-            Sou uma pessoa
-          </Link>
-          <a href="#contato" className="btn-outline rounded-lg px-7 py-3.5 text-sm font-semibold">
-            Represento uma instituição
+          <a href="#contato" className="btn-primary rounded-lg px-7 py-3.5 text-sm font-semibold">
+            Fale com o time
           </a>
         </div>
       </div>

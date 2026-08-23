@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { ClipboardList, LayoutDashboard, Plus, Stethoscope } from "lucide-react";
+import { ClipboardList, Download, LayoutDashboard, Stethoscope } from "lucide-react";
+import { Link } from "react-router-dom";
 
-import { CadastrarExameModal } from "../../components/CadastrarExameModal";
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { useToast } from "../../features/ui/ToastProvider";
 
 export const navItems = [
   { to: "/usuario", label: "Meu Histórico", icon: LayoutDashboard },
@@ -21,42 +22,63 @@ const registrosIniciais = [
 const badgeClasse = { normal: "badge-normal", atencao: "badge-atencao", alterado: "badge-alterado" };
 const badgeTexto = { normal: "Normal", atencao: "Atenção", alterado: "Alterado" };
 
-export default function DashboardUsuario() {
-  const [registros, setRegistros] = useState(registrosIniciais);
-  const [modalAberto, setModalAberto] = useState(false);
+// Sem conta pessoal (login provisionado pela instituição — ver DOCUMENTACAO.md,
+// seção 16), baixar o próprio histórico é o que garante ao usuário posse real
+// sobre seu dado, alinhado ao direito de portabilidade da LGPD.
+function baixarHistoricoCsv(registros) {
+  const cabecalho = "Índice,Valor,Data,Status\n";
+  const linhas = registros
+    .map((r) => `"${r.indice}","${r.valor}","${r.data}","${badgeTexto[r.status]}"`)
+    .join("\n");
+  const blob = new Blob([cabecalho + linhas], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "meu-historico-rastria.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+}
 
-  function adicionarRegistro(dados) {
-    // TODO: o status (normal/atencao/alterado) deve vir pronto da resposta da
-    // API, já calculado pela verificação automática no backend. Aqui, "normal"
-    // é só um placeholder até o endpoint existir.
-    setRegistros((atual) => [
-      { id: atual.length + 1, indice: dados.tipo, valor: dados.valor, data: dados.data, status: "normal" },
-      ...atual,
-    ]);
-  }
+export default function DashboardUsuario() {
+  const { showToast } = useToast();
+  const [registros] = useState(registrosIniciais);
 
   return (
     <DashboardLayout title="Meu Histórico" navItems={navItems}>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-text-muted">Seus exames e índices mais recentes.</p>
-        <button
-          type="button"
-          onClick={() => setModalAberto(true)}
-          className="btn-primary flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold"
-        >
-          <Plus size={16} /> Cadastrar exame
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              baixarHistoricoCsv(registros);
+              showToast("Histórico baixado com sucesso");
+            }}
+            className="btn-outline flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold"
+          >
+            <Download size={16} /> Baixar histórico
+          </button>
+          {/* Único ponto de entrada para cadastro é /usuario/cadastrar-informacoes (CadastroInformacoes),
+              que oferece a escolha entre exame e exercício físico — evita ter dois fluxos
+              concorrentes para a mesma ação. */}
+          <Link
+            to="/usuario/cadastrar-informacoes"
+            className="btn-primary flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold"
+          >
+            <ClipboardList size={16} /> Cadastrar informações
+          </Link>
+        </div>
       </div>
 
       <div className="space-y-3">
         {registros.map((registro) => (
           <div
             key={registro.id}
-            className={`card-registro ${registro.status !== "normal" ? "atencao" : ""} rounded-xl bg-white p-4 shadow-sm`}
+            className={`card-registro ${registro.status !== "normal" ? "atencao" : ""} rounded-xl bg-white p-4 shadow-sm transition-shadow hover:shadow-md`}
           >
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">{registro.indice}</span>
-              <span className={`${badgeClasse[registro.status]} rounded-full px-2 py-0.5 text-[11px] font-semibold`}>
+              <span className={`${badgeClasse[registro.status]} rounded-full px-2 py-0.5 text-[11px] font-semibold transition-colors`}>
                 {badgeTexto[registro.status]}
               </span>
             </div>
@@ -66,10 +88,6 @@ export default function DashboardUsuario() {
           </div>
         ))}
       </div>
-
-      {modalAberto && (
-        <CadastrarExameModal onClose={() => setModalAberto(false)} onSalvar={adicionarRegistro} />
-      )}
     </DashboardLayout>
   );
 }

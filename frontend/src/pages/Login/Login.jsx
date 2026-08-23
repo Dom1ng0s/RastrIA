@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
 import { ROLES } from "../../features/auth/roles";
@@ -61,13 +61,6 @@ export default function Login() {
           >
             Entrar
           </button>
-
-          <p className="mt-6 text-center text-sm text-text-muted">
-            Não tem conta?{" "}
-            <Link to="/cadastro" className="font-semibold text-primary">
-              Criar conta
-            </Link>
-          </p>
         </div>
       </div>
     </div>

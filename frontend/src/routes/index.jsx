@@ -1,7 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 
-import AutorizacaoUsuario from "../pages/AutorizacaoUsuario/AutorizacaoUsuario";
-import Cadastro from "../pages/Cadastro/Cadastro";
 import CadastroExercicioFisico from "../pages/CadastroExercicioFisico/CadastroExercicioFisico";
 import CadastroInformacoes from "../pages/CadastroInformacoes/CadastroInformacoes";
 import DashboardEducadorFisico from "../pages/DashboardEducadorFisico/DashboardEducadorFisico";
@@ -19,18 +17,20 @@ import Perfil from "../pages/Perfil/Perfil";
 import SolicitarAcompanhamento from "../pages/SolicitarAcompanhamento/SolicitarAcompanhamento";
 import TelaPorUnidade from "../pages/TelaPorUnidade/TelaPorUnidade";
 
+// NOTA: não existe mais rota de autocadastro (/cadastro) nem de autorização de
+// usuário pendente (/gerente/autorizacao) — contas são provisionadas
+// administrativamente (import em lote via Django admin), não criadas pelo
+// próprio usuário. Ver seção 16 de DOCUMENTACAO.md (decisão de 23/08/2026).
 export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/esqueci-senha" element={<EsqueciSenha />} />
-      <Route path="/cadastro" element={<Cadastro />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/perfil" element={<Perfil />} />
       <Route path="/gerente" element={<DashboardGerente />} />
       <Route path="/gerente/unidade/:id" element={<TelaPorUnidade />} />
-      <Route path="/gerente/autorizacao" element={<AutorizacaoUsuario />} />
       <Route path="/medico" element={<DashboardMedico />} />
       <Route path="/medico/paciente/:id" element={<DetalhePaciente />} />
       <Route path="/educador-fisico" element={<DashboardEducadorFisico />} />
