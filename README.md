@@ -1,6 +1,6 @@
 # Rastria
 
-Plataforma digital de acompanhamento de saúde e desempenho físico, com uso individual (B2C) e institucional (B2B/B2G).
+Plataforma digital de acompanhamento de saúde e desempenho físico, para uso institucional (B2B/B2G) — empresas, academias e corporações. Não há cadastro público de pessoa física; contas são provisionadas pela instituição.
 
 - **Guia completo do projeto e do domínio para desenvolvimento:** [agents/claude.md](agents/claude.md)
 - **MVP em produção:** rastria.up.railway.app

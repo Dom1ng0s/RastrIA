@@ -1,11 +1,10 @@
 # Rastria — Guia do Projeto
 
 ## Visão Geral
-Rastria é uma plataforma digital que centraliza o histórico de saúde e desempenho físico do usuário, verifica automaticamente os índices cadastrados contra tabelas de referência clínica, e conecta o usuário a uma rede pré-qualificada de médicos e educadores físicos. Além do uso individual (B2C), opera como plataforma institucional (B2B/B2G) para empresas, academias e corporações que precisam acompanhar a saúde ocupacional de seus integrantes — piloto em andamento: **Polícia Militar de Alagoas**.
+Rastria é uma plataforma digital que centraliza o histórico de saúde e desempenho físico do usuário, verifica automaticamente os índices cadastrados contra tabelas de referência clínica, e conecta o usuário a uma rede pré-qualificada de médicos e educadores físicos. Opera **exclusivamente como plataforma institucional (B2B/B2G)** para empresas, academias e corporações que precisam acompanhar a saúde ocupacional de seus integrantes — piloto em andamento: **Polícia Militar de Alagoas**. Não há cadastro público de pessoa física: contas são provisionadas pela própria instituição (ver "Decisão de Arquitetura: Fim do Autocadastro" abaixo).
 
 - MVP em produção: rastria.up.railway.app
 - Repositório: github.com/Dom1ng0s/RastrIA
-- Projeto aprovado na Fase 1 do Programa Centelha 3 — Alagoas (FAPEAL/SECTI-AL/SEBRAE-AL); resultado da avaliação previsto para 29/09/2026. O desenvolvimento segue independente desse resultado.
 
 **Problema:** o acompanhamento de saúde no Brasil é fragmentado entre clínicas, laboratórios e academias, sem histórico centralizado. Em paralelo, empresas e forças policiais são legalmente obrigadas a acompanhar a saúde ocupacional de seus integrantes (NR-7/PCMSO), mas hoje o fazem de forma manual.
 
@@ -16,7 +15,7 @@ O backend (`backend/`, Django+DRF) e o frontend (`frontend/`, React+Vite) já es
 
 **Login ainda não é autenticação real.** `pages/Login/Login.jsx` é hoje um seletor de papel (`features/auth/roles.js`) que só navega para a tela inicial do papel escolhido (`/gerente`, `/medico`, `/educador-fisico`, `/usuario`) — não há chamada de API, token JWT ou verificação de credencial. Isso é intencional para permitir revisar as 4 telas iniciais sem o backend de auth pronto; ao implementar login real, isso precisa ser substituído por uma mutation do TanStack Query contra `POST /api/auth/token/`, com o papel vindo do usuário autenticado (não de uma escolha manual).
 
-**Fluxo de cadastro (também sem backend ainda):** `/cadastro` (e-mail, senha, código de 6 dígitos da corporação) → `/onboarding` (peso, altura, idade) → `/usuario`. Toda conta nova nasce com papel `usuario` (`Papel.INDIVIDUAL`, já o default no model `Usuario` do backend) — quem atribui o cargo real (médico, educador físico, integrante, médico-do-trabalho, gerente) depois é o Comando/gestor da instituição vinculada pelo código, não o próprio cadastro. Isso está explicitado na tela para o usuário. **Decisão em aberto:** hoje o código da corporação é obrigatório no formulário; se o produto quiser permitir cadastro 100% individual (B2C) sem vínculo institucional, esse campo precisa virar opcional — confirmar antes de implementar o endpoint real.
+**Não existe mais autocadastro** (decisão de 23/08/2026 — ver seção dedicada abaixo). O fluxo atual é `/onboarding` (peso, altura, idade, roda no primeiro login) → `/usuario`. A tela `Cadastro.jsx`, a tela `AutorizacaoUsuario.jsx` e as rotas `/cadastro` e `/gerente/autorizacao` foram removidas do frontend. Contas nascem provisionadas administrativamente pela instituição (import em lote, via Django admin — ainda não implementado no backend), já com papel definido, não mais aguardando atribuição posterior por um gerente.
 
 ## Stack Técnica (alvo)
 | Camada | Escolha | Por quê |
@@ -88,8 +87,7 @@ RastrIA/
 │       ├── pages/
 │       │   ├── Landing/
 │       │   ├── Login/
-│       │   ├── Cadastro/                  # e-mail + senha + código da corporação
-│       │   ├── Onboarding/                # peso/altura/idade, logo após o cadastro
+│       │   ├── Onboarding/                # peso/altura/idade, no primeiro login (sem autocadastro — ver decisão dedicada)
 │       │   ├── DashboardGerente/          # Resp. Comando
 │       │   ├── DashboardMedico/           # Resp. Médico
 │       │   ├── DashboardEducadorFisico/   # Resp. Educador Físico
@@ -97,7 +95,8 @@ RastrIA/
 │       ├── features/             # feature-sliced: hooks de TanStack Query, stores Zustand, forms
 │       │   ├── auth/
 │       │   ├── saude/
-│       │   └── atendimentos/
+│       │   ├── atendimentos/
+│       │   └── ui/                        # ToastProvider (feedback visual global, ver Sistema de Componentes)
 │       ├── components/           # componentes reutilizáveis (Button, Card, etc.)
 │       ├── lib/
 │       │   └── api.js            # cliente HTTP (Axios) para o backend
@@ -182,6 +181,34 @@ Instituicao
 
 **Decisão de design a manter:** modelar `Instituicao` como estrutura **auto-referenciada** (`instituicao_pai`) desde o início, mesmo que o MVP inicialmente só use um nível. O piloto institucional (Polícia Militar) provavelmente exige hierarquia multinível (Batalhão → Companhia → Pelotão, cada uma vendo o painel agregado só do seu próprio efetivo). Modelar isso agora custa pouco e evita retrabalho de schema depois — não é necessário esperar a confirmação da PM para começar a modelar.
 
+## Decisão de Arquitetura: Fim do Autocadastro (23/08/2026)
+
+A Rastria **não tem mais cadastro público de pessoa física**. Contas passam a ser **provisionadas administrativamente** pela instituição parceira (import em lote de integrantes, via Django admin) — esse mecanismo, que já estava no roadmap como conveniência, agora é o **único** caminho de entrada no sistema. Não é o mesmo que "tornar o código da corporação obrigatório": o formulário de autocadastro deixou de existir.
+
+**O que não muda:** cada pessoa continua dona do próprio histórico de saúde — isso é regra de propriedade do dado, não de mecanismo de entrada. A conta ter sido criada pela instituição não transfere posse do dado para a instituição; o modelo de acesso segmentado (seção "Domínio — Papéis e Acesso") permanece intacto.
+
+**Compensação:** foi adicionado no `DashboardUsuario` um botão de **baixar o próprio histórico** (hoje, exportação CSV gerada no navegador, sem depender de endpoint de backend). Reforça a posse do dado pelo usuário e atende ao direito de portabilidade da LGPD.
+
+**Pendência real para o backend:** o fluxo de import em lote de integrantes deixou de ser "conveniência" e virou **bloqueante** — sem ele, não existe nenhum caminho para criar conta nova. Priorizar isso assim que o desenvolvimento do backend for retomado.
+
+Documento de decisão completo (contexto, motivação, tabela de mudanças de código): `DECISAO_FIM_AUTOCADASTRO.md` (mantido fora deste repositório — ver "O que Fica de Fora do Repositório"; compartilhado com o time via Drive/Notion).
+
+## Reunião com o Coronel Raumário — Novos Requisitos (22/08/2026)
+
+Levantados a partir de reunião presencial com o piloto institucional (PMAL), registrados como issues no repositório (#1, #5, #6, #7, #8).
+
+**Estrutura real da Junta Médica da PMAL** (resolve a pendência de mapear "médico-do-trabalho" para algo real na corporação): não é um médico individual, é um **colegiado permanente** — oficiais médicos da corporação + médicos civis designados pelo Comandante Geral, com hierarquia interna (presidente = oficial médico de maior precedência; secretário = oficial de menor hierarquia ou médico civil) e apoio multiprofissional (psicólogo, assistente social, técnico em enfermagem). Emite **pareceres formais** que fundamentam decisões administrativas (admissão, retorno ao trabalho, afastamento, aposentadoria).
+
+**Decisão de modelagem:** generalizar como `AvaliacaoFormal` (processo de avaliação com resultado/parecer) + `MembroAvaliacao` (profissionais participantes, com papel — presidente/secretário/membro), em vez de modelar "Junta Médica" como conceito específico da PMAL. Permite que qualquer instituição cliente configure com 1 ou múltiplos avaliadores, mantendo o produto genérico para outros verticais B2B/B2G.
+
+**Decisão de escopo:** o fluxo completo de `AvaliacaoFormal` (colegiado + parecer + decisão administrativa) fica para **depois do piloto de 30 dias** — processo de alto peso institucional (afeta carreira/aposentadoria), desproporcional ao prazo. Não bloqueia o piloto.
+
+**Novos tipos de profissional confirmados** (genéricos, não específicos da PMAL): `Nutricionista`, `Psicólogo`, `Assistente Social`, `Técnico em Enfermagem` — adicionar como subtipos de `Profissional`, junto dos já existentes `Medico`/`EducadorFisico`.
+
+**TAF — Teste de Aptidão Física (issue #7):** diferente da Junta Médica, **entra no escopo do piloto de 30 dias** — é um teste estruturado aplicado por 1 educador físico (sem colegiado), com componentes fixos (corrida, flexão, abdominal, barra) e critérios de aprovação por idade/sexo definidos em regulamento da corporação. Modelar como tipo estruturado de `RegistroSaude` com múltiplos componentes, não como registro de valor único.
+
+**Ranking de avaliações físicas / gamificação (issue #6):** sugestão do próprio Coronel, como estímulo à competição saudável. Formato: ranking com nome visível aos colegas (não anônimo). **Mitigação:** cada usuário pode optar por não aparecer no ranking (opt-out individual) — preserva o princípio de autonomia sobre o próprio dado.
+
 ## Fluxos Principais
 1. **Cadastro e verificação** — usuário cadastra exame/índice → sistema verifica contra tabela de referência → resultado exibido (normal/atenção/alterado).
 2. **Solicitação de acompanhamento** — usuário solicita → sistema notifica profissionais da rede disponíveis na especialidade → profissional confirma (**não** é aceite instantâneo tipo "corrida") → atendimento registrado no histórico.
@@ -203,7 +230,7 @@ Instituicao
 ## Escopo do MVP (fatias mínimas por pilar)
 | Pilar | MVP | Depois |
 |---|---|---|
-| Cadastro & Histórico | Cadastro manual estruturado por tipo de exame/índice; timeline visual | Upload de PDF/foto com OCR; compartilhamento seletivo granular |
+| Cadastro & Histórico | Cadastro manual estruturado por tipo de exame/índice; timeline visual; **TAF** (Teste de Aptidão Física, estruturado em componentes — ver "Reunião com o Coronel") | Upload de PDF/foto com OCR; compartilhamento seletivo granular |
 | Verificação Automática | Tabela de regras fixas (faixa min/max por tipo de exame); indicador normal/atenção/alterado | Análise de tendência ao longo do tempo (Mann-Kendall); alertas automáticos |
 | Conexão com Profissionais | Cadastro de profissionais com CRM/CREF verificado manualmente; solicitação → listagem de compatíveis → confirmação; contato efetivo fora da plataforma (WhatsApp/email) | Verificação automática de registro profissional; chat/vídeo embutido |
 | Institucional (B2B/B2G) | Cadastro em lote de integrantes (import CSV); painel de comando com agregado por unidade | Estrutura de diretor técnico/clínico; atendimento pleno |
@@ -217,7 +244,6 @@ Railway, builder Nixpacks. O serviço na raiz builda e serve o `frontend/`:
 O backend (`backend/`) ainda não tem serviço próprio no Railway — ver "Estado Atual do Repositório". Cada subpasta já tem seu próprio `railway.json` (`frontend/railway.json`, `backend/railway.json`) prontos para o dia em que forem promovidos a serviços Railway separados (apontando o "root directory" de cada serviço no dashboard); até lá, é o `railway.json`/`package.json` da raiz que valem para o único serviço existente.
 
 ## Modelo de Negócio (contexto, não afeta arquitetura diretamente)
-- Assinatura individual (B2C) — histórico ilimitado, alertas, compartilhamento.
 - Licença institucional (B2B/B2G) — cobrança por integrante ativo.
 - Comissão por atendimento (marketplace) — % sobre consultas realizadas pela rede.
 
