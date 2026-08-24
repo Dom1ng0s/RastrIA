@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ClipboardList, Download, LayoutDashboard, Stethoscope } from "lucide-react";
+import { ClipboardList, Download, LayoutDashboard, Stethoscope, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
@@ -9,6 +9,7 @@ export const navItems = [
   { to: "/usuario", label: "Meu Histórico", icon: LayoutDashboard },
   { to: "/usuario/cadastrar-informacoes", label: "Cadastrar Informações", icon: ClipboardList },
   { to: "/usuario/solicitar", label: "Solicitar Acompanhamento", icon: Stethoscope },
+  { to: "/usuario/ranking", label: "Ranking", icon: Trophy },
 ];
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/registros-saude)
@@ -21,6 +22,22 @@ const registrosIniciais = [
 
 const badgeClasse = { normal: "badge-normal", atencao: "badge-atencao", alterado: "badge-alterado" };
 const badgeTexto = { normal: "Normal", atencao: "Atenção", alterado: "Alterado" };
+
+// TAF só é cadastrado por um educador físico (issue #7, ver agents/claude.md) — o
+// usuário só visualiza o próprio último resultado, sem nenhuma ação de edição aqui.
+// TODO: substituir por dado real via TanStack Query (GET /api/taf/ultimo) quando o
+// endpoint existir.
+const ultimoTaf = {
+  data: "12 ago 2026",
+  corrida: "11min 30s",
+  flexoes: 32,
+  abdominais: 40,
+  barra: 6,
+  resultado: "apto",
+};
+
+const resultadoTafClasse = { apto: "badge-normal", inapto: "badge-alterado" };
+const resultadoTafTexto = { apto: "Apto", inapto: "Inapto" };
 
 // Sem conta pessoal (login provisionado pela instituição — ver DOCUMENTACAO.md,
 // seção 16), baixar o próprio histórico é o que garante ao usuário posse real
@@ -69,6 +86,30 @@ export default function DashboardUsuario() {
           </Link>
         </div>
       </div>
+
+      <section className="mb-8">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meu último TAF</h2>
+        <div className="rounded-xl bg-white p-4 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium">Resultado</span>
+            <span
+              className={`${resultadoTafClasse[ultimoTaf.resultado]} rounded-full px-2 py-0.5 text-[11px] font-semibold`}
+            >
+              {resultadoTafTexto[ultimoTaf.resultado]}
+            </span>
+          </div>
+          <p className="mt-1 text-xs text-text-muted">{ultimoTaf.data}</p>
+          <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-text-muted sm:grid-cols-4">
+            <span>Corrida · {ultimoTaf.corrida}</span>
+            <span>Flexão · {ultimoTaf.flexoes}</span>
+            <span>Abdominal · {ultimoTaf.abdominais}</span>
+            <span>Barra · {ultimoTaf.barra}</span>
+          </div>
+          <p className="mt-3 text-xs text-text-muted">
+            Cadastrado pelo educador físico responsável — não pode ser editado por aqui.
+          </p>
+        </div>
+      </section>
 
       <div className="space-y-3">
         {registros.map((registro) => (

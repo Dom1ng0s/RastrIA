@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 
 import CadastroExercicioFisico from "../pages/CadastroExercicioFisico/CadastroExercicioFisico";
 import CadastroInformacoes from "../pages/CadastroInformacoes/CadastroInformacoes";
+import CadastroTAF from "../pages/CadastroTAF/CadastroTAF";
 import DashboardEducadorFisico from "../pages/DashboardEducadorFisico/DashboardEducadorFisico";
 import DashboardGerente from "../pages/DashboardGerente/DashboardGerente";
 import DashboardMedico from "../pages/DashboardMedico/DashboardMedico";
@@ -14,6 +15,7 @@ import Login from "../pages/Login/Login";
 import NotFound from "../pages/NotFound/NotFound";
 import Onboarding from "../pages/Onboarding/Onboarding";
 import Perfil from "../pages/Perfil/Perfil";
+import RankingFisico from "../pages/RankingFisico/RankingFisico";
 import SolicitarAcompanhamento from "../pages/SolicitarAcompanhamento/SolicitarAcompanhamento";
 import TelaPorUnidade from "../pages/TelaPorUnidade/TelaPorUnidade";
 
@@ -35,10 +37,12 @@ export function AppRoutes() {
       <Route path="/medico/paciente/:id" element={<DetalhePaciente />} />
       <Route path="/educador-fisico" element={<DashboardEducadorFisico />} />
       <Route path="/educador-fisico/aluno/:id" element={<DetalheAluno />} />
+      <Route path="/educador-fisico/aluno/:id/taf" element={<CadastroTAF />} />
       <Route path="/usuario" element={<DashboardUsuario />} />
       <Route path="/usuario/cadastrar-informacoes" element={<CadastroInformacoes />} />
       <Route path="/usuario/cadastrar-informacoes/exercicio" element={<CadastroExercicioFisico />} />
       <Route path="/usuario/solicitar" element={<SolicitarAcompanhamento />} />
+      <Route path="/usuario/ranking" element={<RankingFisico />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
