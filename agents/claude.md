@@ -1,14 +1,14 @@
 # Rastria — Guia do Projeto
 
 ## Visão Geral
-Rastria é uma plataforma digital que centraliza o histórico de saúde e desempenho físico do usuário, verifica automaticamente os índices cadastrados contra tabelas de referência clínica, e conecta o usuário a uma rede pré-qualificada de médicos e educadores físicos. Opera **exclusivamente como plataforma institucional (B2B/B2G)** para empresas, academias e corporações que precisam acompanhar a saúde ocupacional de seus integrantes — piloto em andamento: **Polícia Militar de Alagoas**. Não há cadastro público de pessoa física: contas são provisionadas pela própria instituição (ver "Decisão de Arquitetura: Fim do Autocadastro" abaixo).
+Rastria é uma plataforma digital que centraliza o histórico de saúde e desempenho físico do usuário, verifica automaticamente os índices cadastrados contra tabelas de referência clínica, e conecta o usuário a médicos e educadores físicos **da própria instituição**. Opera **exclusivamente como plataforma institucional (B2B/B2G)** para empresas, academias e corporações que precisam acompanhar a saúde ocupacional de seus integrantes — piloto em andamento: **Polícia Militar de Alagoas**. Não há cadastro público de pessoa física: contas são provisionadas pela própria instituição (ver "Decisão de Arquitetura: Fim do Autocadastro" abaixo).
 
 - MVP em produção: rastria.up.railway.app
 - Repositório: github.com/Dom1ng0s/RastrIA
 
 **Problema:** o acompanhamento de saúde no Brasil é fragmentado entre clínicas, laboratórios e academias, sem histórico centralizado. Em paralelo, empresas e forças policiais são legalmente obrigadas a acompanhar a saúde ocupacional de seus integrantes (NR-7/PCMSO), mas hoje o fazem de forma manual.
 
-**Solução, em três pilares:** Cadastro (exames, avaliações, desempenho físico) → Verificação automática (índices comparados a tabelas de referência clínica) → Conexão (solicitação de acompanhamento a profissionais de uma rede pré-qualificada).
+**Solução, em três pilares:** Cadastro (exames, avaliações, desempenho físico) → Verificação automática (índices comparados a tabelas de referência clínica) → Conexão (solicitação de acompanhamento a profissionais da própria instituição).
 
 ## Estado Atual do Repositório
 O backend (`backend/`, Django+DRF) e o frontend (`frontend/`, React+Vite) já estão scaffolded — ver "Estrutura do Repositório" abaixo. O serviço Railway na raiz builda e serve o `frontend/` (ver "Deploy"). O backend **ainda não está deployado** como serviço — hoje só roda localmente; colocá-lo no ar exige configurar um segundo serviço no dashboard do Railway apontando para `backend/`, o que ainda não foi feito.
@@ -158,8 +158,8 @@ A segmentação de acesso por papel é o núcleo do produto, não um detalhe de 
 | Papel | O que enxerga | Descrição |
 |---|---|---|
 | Usuário individual | Próprio histórico | Cadastra dados, visualiza verificação automática, solicita acompanhamento |
-| Médico | Dados dos pacientes que atende | Membro da rede pré-qualificada, atende solicitações |
-| Educador físico | Dados de desempenho físico dos usuários que atende | Membro da rede pré-qualificada, escopo restrito a atividade física (não é escopo médico) |
+| Médico | Dados dos pacientes que atende, dentro da própria instituição | Vinculado à instituição, atende solicitações de integrantes dela |
+| Educador físico | Dados de desempenho físico dos usuários que atende, dentro da própria instituição | Vinculado à instituição, escopo restrito a atividade física (não é escopo médico) |
 | Integrante (institucional) | Próprio histórico | Colaborador de uma instituição parceira (empresa, corporação) |
 | Médico-do-trabalho | Dados individuais completos dos integrantes da instituição | Já vinculado à instituição via NR-7/PCMSO |
 | Gerente/Comandante | Apenas painel agregado | **Nunca** vê dado clínico individual nominal — só indicadores consolidados (ex: "92% do efetivo com exames em dia") |
@@ -205,13 +205,67 @@ Levantados a partir de reunião presencial com o piloto institucional (PMAL), re
 
 **Novos tipos de profissional confirmados** (genéricos, não específicos da PMAL): `Nutricionista`, `Psicólogo`, `Assistente Social`, `Técnico em Enfermagem` — adicionar como subtipos de `Profissional`, junto dos já existentes `Medico`/`EducadorFisico`.
 
-**TAF — Teste de Aptidão Física (issue #7):** diferente da Junta Médica, **entra no escopo do piloto de 30 dias** — é um teste estruturado aplicado por 1 educador físico (sem colegiado), com componentes fixos (corrida, flexão, abdominal, barra) e critérios de aprovação por idade/sexo definidos em regulamento da corporação. Modelar como tipo estruturado de `RegistroSaude` com múltiplos componentes, não como registro de valor único.
+**TAF — Teste de Aptidão Física (issue #7):** diferente da Junta Médica, **entra no escopo do piloto de 30 dias** — é um teste estruturado aplicado por 1 educador físico (sem colegiado), com componentes fixos (corrida, flexão, abdominal, barra) e critérios de aprovação por idade/sexo definidos em regulamento da corporação. Modelar como tipo estruturado de `RegistroSaude` com múltiplos componentes, não como registro de valor único. **Implementado em `pages/CadastroTAF/`** (commit `64d20b2`) — formulário estruturado com os 4 componentes + resultado apto/inapto; critério de aprovação por idade/sexo ainda não é calculado automaticamente (`resultado` é preenchido manualmente pelo educador físico até essa regra existir no backend).
 
-**Ranking de avaliações físicas / gamificação (issue #6):** sugestão do próprio Coronel, como estímulo à competição saudável. Formato: ranking com nome visível aos colegas (não anônimo). **Mitigação:** cada usuário pode optar por não aparecer no ranking (opt-out individual) — preserva o princípio de autonomia sobre o próprio dado.
+**Ranking de avaliações físicas / gamificação (issue #6):** sugestão do próprio Coronel, como estímulo à competição saudável. Formato: ranking com nome visível aos colegas (não anônimo), sempre restrito à mesma instituição (nunca cross-instituição). **Mitigação combinada:** cada usuário poder optar por não aparecer no ranking (opt-out individual) — preserva o princípio de autonomia sobre o próprio dado. **Implementado em `pages/RankingFisico/`** (commit `ecf733e`) — ranking por atividade física, filtrado por instituição. **Pendência real:** o opt-out combinado como condição da mitigação **ainda não foi implementado** — hoje todo integrante aparece no ranking sem opção de se ocultar. Não commitar isso como "resolvido" até o opt-out existir.
+
+## Fim da Rede Pré-Qualificada Entre Instituições (24/08/2026)
+
+Decisão tomada durante brainstorming sobre a issue #5: **não existe mais uma rede de médicos/educadores físicos compartilhada entre instituições diferentes.** Profissional agora pertence a uma instituição, do mesmo jeito que integrante — não é mais um pool geral cadastrado na plataforma e disponível para qualquer usuário de qualquer instituição.
+
+**Impacto no que já existe:** a tela `SolicitarAcompanhamento` (e o conceito de `VinculoCuidado`) precisam passar a filtrar profissionais **pela mesma instituição do usuário** — hoje ainda usa lista mockada genérica, sem esse filtro. Atualizar quando o backend de solicitação for implementado.
+
+## Hierarquia da Junta Médica — Brainstorming (24/08/2026)
+
+Conclusões de uma sessão de brainstorming sobre como modelar a composição/hierarquia da Junta Médica (issue #5), aprofundando a decisão de generalização (`AvaliacaoFormal`/`MembroAvaliacao`) registrada acima.
+
+**A composição não é fixa — é um mandato temporal.** A Junta Médica da PMAL muda de composição a cada ~6 meses. Isso significa que não dá para vincular um profissional "à Junta" permanentemente; o vínculo é a uma **gestão específica**, com data de início e fim:
+
+```
+GestaoJunta (instituição, data_inicio, data_fim)
+ └─ MembroGestaoJunta (profissional, papel: presidente | secretário | membro)
+```
+
+Um caso de perícia (`AvaliacaoFormal`) deve referenciar **qual gestão estava vigente** quando o caso foi aberto — preserva corretamente quem decidiu cada parecer, mesmo que a composição mude depois.
+
+**Quem decide o "presidente": o sistema ou uma pessoa?** Decisão: **uma pessoa atribui manualmente**, o sistema não tenta calcular precedência militar sozinho. Regras de precedência têm critérios de desempate (antiguidade, data de promoção) arriscados demais para modelar sem uma fonte oficial validada — errar quem é "legalmente" presidente de uma Junta que decide aposentadoria não é erro tolerável vindo de lógica automática não revisada.
+
+**Encaminhamento pontual a especialista** (trazido pelo Coronel): a Junta pode encaminhar um caso a um médico especialista para parecer técnico específico — isso **não é vínculo de membro da Junta**, é um relacionamento à parte, escopado a um caso:
+
+```
+EncaminhamentoEspecialista (avaliacao_formal, profissional, especialidade_solicitada, data)
+```
+
+O especialista encaminhado é sempre da própria instituição (consequência direta do fim da rede pré-qualificada entre instituições, ver seção acima) — não existe mais a possibilidade de buscar fora da instituição.
+
+**Decisão sobre conteúdo do laudo:** a Rastria **vai armazenar o laudo/parecer de fato** (não só um status categórico) — decisão tomada em 24/08/2026, revertendo a suposição inicial de que o conteúdo ficaria fora do sistema. Isso eleva a severidade dos requisitos de segurança (ver seção seguinte) de "importante" para **bloqueante antes de qualquer dado real de Junta Médica ser armazenado**.
+
+**Ainda em aberto:** o time vai confirmar em reunião futura com a PMAL qual é, de fato, o papel da Junta Médica dentro do sistema (nem toda essa modelagem está validada institucionalmente ainda — é conclusão de brainstorming interno do time, não confirmação da PMAL).
+
+## Segurança de Dados para Laudos Médicos — Requisitos Bloqueantes (24/08/2026)
+
+Definidos a partir da decisão de armazenar laudo real da Junta Médica (não só resultado categórico). **Nenhum destes itens está implementado ainda** — são pré-requisitos antes de qualquer laudo real (não fictício/mock) ser gravado em produção.
+
+**Base legal (LGPD, art. 11):** consentimento genérico de cadastro não é suficiente para dado desse tipo — usar tutela da saúde e/ou cumprimento de obrigação legal/regulatória (a PMAL já é obrigada, por regulamento próprio, a manter essas perícias). Confirmar com o jurídico da instituição qual hipótese está sendo formalmente adotada.
+
+**Arquitetura técnica — três itens bloqueantes antes de dado real:**
+1. **Controle de acesso por objeto** (já registrado como gap crítico em `LEVANTAMENTO_REQUISITOS_VALIDACOES.md`, seção 0) — para laudo de Junta Médica, a mesma falha seria muito mais grave que para registro de saúde comum.
+2. **Criptografia em nível de campo/aplicação** para o conteúdo do laudo (ex: `django-cryptography`/`django-fernet-fields`) — criptografia de disco sozinha não protege contra leitura direta via credencial de banco comprometida.
+3. **Log de auditoria imutável (append-only)** de toda leitura/alteração de laudo — necessário como prova de integridade caso uma decisão da Junta seja contestada administrativa ou judicialmente.
+
+**Armazenamento de arquivo:** se o laudo for documento (PDF), usar armazenamento de objeto privado (S3-compatível) com URLs assinadas de curta duração — nunca bucket público, nunca link fixo reutilizável.
+
+**Processo/governança (não é código, mas é pré-requisito do piloto real):**
+- Nomear formalmente um Encarregado de Dados (DPO), com contato público.
+- Elaborar Relatório de Impacto à Proteção de Dados (RIPD) antes do piloto com dado real.
+- Confirmar com o jurídico da PMAL o prazo de retenção legal desse tipo de documento (provavelmente décadas, por risco de contestação futura de aposentadoria/afastamento) — não assumir prazo técnico arbitrário.
+- Plano de resposta a incidente de vazamento (já registrado como risco geral do projeto) sobe de prioridade dado o teor do dado.
+
+**Recomendação de sequenciamento:** não gravar laudo real em produção até os 3 itens de arquitetura técnica acima existirem e estarem testados.
 
 ## Fluxos Principais
 1. **Cadastro e verificação** — usuário cadastra exame/índice → sistema verifica contra tabela de referência → resultado exibido (normal/atenção/alterado).
-2. **Solicitação de acompanhamento** — usuário solicita → sistema notifica profissionais da rede disponíveis na especialidade → profissional confirma (**não** é aceite instantâneo tipo "corrida") → atendimento registrado no histórico.
+2. **Solicitação de acompanhamento** — usuário solicita → sistema notifica profissionais disponíveis na especialidade **dentro da mesma instituição** → profissional confirma (**não** é aceite instantâneo tipo "corrida") → atendimento registrado no histórico.
 3. **Modelo institucional** — integrante cadastra dados → médico-do-trabalho analisa dado individual → gerente/comando vê apenas painel agregado.
 
 ## Regras de Design que Não Devem Ser Quebradas
@@ -224,7 +278,7 @@ Levantados a partir de reunião presencial com o piloto institucional (PMAL), re
 ## Compliance (referência rápida)
 - **LGPD** — dado de saúde é dado sensível; consentimento específico, acesso individual restrito ao profissional responsável.
 - **NR-7/PCMSO** — o modelo institucional (gerente vê agregado, médico-do-trabalho vê individual) digitaliza uma obrigação legal já existente.
-- **CFM Parecer nº 15/2026** — plataformas que intermediam atos médicos com matching instantâneo são tratadas como "ambiente médico virtual" (exige diretor técnico/clínico); o modelo de rede pré-qualificada com continuidade de cuidado evita esse enquadramento pleno.
+- **CFM Parecer nº 15/2026** — plataformas que intermediam atos médicos com matching instantâneo são tratadas como "ambiente médico virtual" (exige diretor técnico/clínico); o modelo de solicitação → confirmação com continuidade de cuidado evita esse enquadramento pleno, mesmo com o profissional já sendo da própria instituição (não é uma rede aberta entre instituições diferentes — decisão de 24/08/2026, ver seção dedicada).
 - **CONFEF/CREF** — profissionais precisam de registro verificado; escopo do educador físico é segregado do escopo médico.
 
 ## Escopo do MVP (fatias mínimas por pilar)
