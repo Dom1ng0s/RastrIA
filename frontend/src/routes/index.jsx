@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 
 import CadastroExercicioFisico from "../pages/CadastroExercicioFisico/CadastroExercicioFisico";
 import CadastroInformacoes from "../pages/CadastroInformacoes/CadastroInformacoes";
+import CadastroTAF from "../pages/CadastroTAF/CadastroTAF";
 import DashboardEducadorFisico from "../pages/DashboardEducadorFisico/DashboardEducadorFisico";
 import DashboardGerente from "../pages/DashboardGerente/DashboardGerente";
 import DashboardMedico from "../pages/DashboardMedico/DashboardMedico";
@@ -36,6 +37,7 @@ export function AppRoutes() {
       <Route path="/medico/paciente/:id" element={<DetalhePaciente />} />
       <Route path="/educador-fisico" element={<DashboardEducadorFisico />} />
       <Route path="/educador-fisico/aluno/:id" element={<DetalheAluno />} />
+      <Route path="/educador-fisico/aluno/:id/taf" element={<CadastroTAF />} />
       <Route path="/usuario" element={<DashboardUsuario />} />
       <Route path="/usuario/cadastrar-informacoes" element={<CadastroInformacoes />} />
       <Route path="/usuario/cadastrar-informacoes/exercicio" element={<CadastroExercicioFisico />} />
