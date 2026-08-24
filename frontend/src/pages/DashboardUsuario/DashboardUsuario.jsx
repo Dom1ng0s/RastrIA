@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ClipboardList, Download, LayoutDashboard, Stethoscope } from "lucide-react";
+import { ClipboardList, Download, LayoutDashboard, Stethoscope, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
@@ -9,6 +9,7 @@ export const navItems = [
   { to: "/usuario", label: "Meu Histórico", icon: LayoutDashboard },
   { to: "/usuario/cadastrar-informacoes", label: "Cadastrar Informações", icon: ClipboardList },
   { to: "/usuario/solicitar", label: "Solicitar Acompanhamento", icon: Stethoscope },
+  { to: "/usuario/ranking", label: "Ranking", icon: Trophy },
 ];
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/registros-saude)

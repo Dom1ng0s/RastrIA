@@ -14,6 +14,7 @@ import Login from "../pages/Login/Login";
 import NotFound from "../pages/NotFound/NotFound";
 import Onboarding from "../pages/Onboarding/Onboarding";
 import Perfil from "../pages/Perfil/Perfil";
+import RankingFisico from "../pages/RankingFisico/RankingFisico";
 import SolicitarAcompanhamento from "../pages/SolicitarAcompanhamento/SolicitarAcompanhamento";
 import TelaPorUnidade from "../pages/TelaPorUnidade/TelaPorUnidade";
 
@@ -39,6 +40,7 @@ export function AppRoutes() {
       <Route path="/usuario/cadastrar-informacoes" element={<CadastroInformacoes />} />
       <Route path="/usuario/cadastrar-informacoes/exercicio" element={<CadastroExercicioFisico />} />
       <Route path="/usuario/solicitar" element={<SolicitarAcompanhamento />} />
+      <Route path="/usuario/ranking" element={<RankingFisico />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
