@@ -199,6 +199,17 @@ Levantados a partir de reunião presencial com o piloto institucional (PMAL), re
 
 **Estrutura real da Junta Médica da PMAL** (resolve a pendência de mapear "médico-do-trabalho" para algo real na corporação): não é um médico individual, é um **colegiado permanente** — oficiais médicos da corporação + médicos civis designados pelo Comandante Geral, com hierarquia interna (presidente = oficial médico de maior precedência; secretário = oficial de menor hierarquia ou médico civil) e apoio multiprofissional (psicólogo, assistente social, técnico em enfermagem). Emite **pareceres formais** que fundamentam decisões administrativas (admissão, retorno ao trabalho, afastamento, aposentadoria).
 
+**Confirmação legal (24/08/2026) — Lei nº 5.346/1992 (Estatuto dos Policiais Militares do Estado de Alagoas):** o nome oficial não é "Junta Médica", é **"Junta Policial Militar de Saúde"** (usar essa nomenclatura no sistema). A lei documenta funções específicas, mais precisas que "admissão/afastamento/aposentadoria" genéricos:
+- Homologa incapacidade temporária que leva à reforma, após 18 meses de afastamento (Art. 54, III)
+- Atua como grau de recurso para retorno ao serviço de policial reformado por incapacidade (Art. 57)
+- Emite parecer para conceder e prorrogar (a cada 30 dias) licença para acompanhar tratamento de pessoa da família (Art. 100)
+- Define início e prorroga licença para tratamento de saúde própria (Art. 101)
+- Homologa (ou não) atestado de médico especialista externo à corporação — atestado externo sozinho não vale (Art. 101 §2º)
+
+TAF já é terminologia legal estabelecida da corporação (citada no Art. 122, ainda que esse artigo específico tenha sido declarado inconstitucional pelo STF via ADI nº 2620) — confirma que a nomenclatura usada no projeto está alinhada à da PMAL.
+
+**Ainda não esclarecido pela lei:** a composição interna (presidente/secretário/membros, mandato de ~6 meses) descrita pelo coronel não está neste Estatuto geral — deve estar em regulamento ou decreto específico da Junta Policial Militar de Saúde, ainda não localizado. Continua sendo item da reunião futura com a PM (ver "Pontos para Consulta com a PMAL", item 1.4).
+
 **Decisão de modelagem:** generalizar como `AvaliacaoFormal` (processo de avaliação com resultado/parecer) + `MembroAvaliacao` (profissionais participantes, com papel — presidente/secretário/membro), em vez de modelar "Junta Médica" como conceito específico da PMAL. Permite que qualquer instituição cliente configure com 1 ou múltiplos avaliadores, mantendo o produto genérico para outros verticais B2B/B2G.
 
 **Decisão de escopo:** o fluxo completo de `AvaliacaoFormal` (colegiado + parecer + decisão administrativa) fica para **depois do piloto de 30 dias** — processo de alto peso institucional (afeta carreira/aposentadoria), desproporcional ao prazo. Não bloqueia o piloto.
@@ -262,6 +273,64 @@ Definidos a partir da decisão de armazenar laudo real da Junta Médica (não s�
 - Plano de resposta a incidente de vazamento (já registrado como risco geral do projeto) sobe de prioridade dado o teor do dado.
 
 **Recomendação de sequenciamento:** não gravar laudo real em produção até os 3 itens de arquitetura técnica acima existirem e estarem testados.
+
+## Brainstorming: Operação do Piloto (24/08/2026)
+
+Discussão sobre como o piloto de 30 dias no batalhão do BOPE vai funcionar na prática — não confundir com decisão fechada; é levantamento de escopo para alimentar a reunião com a PM que vai definir a data de início. Nada aqui foi implementado ainda.
+
+**Suporte durante o piloto:** decisão inicial foi "o time dá suporte direto", mas isso precisa de estrutura pra não recair só sobre o Guilherme (reforça o risco #11 de bus factor já registrado). Recomendação: escala de plantão entre os 4, um canal único de contato com o efetivo (não mensagens avulsas pra pessoas diferentes do time), e diferenciar dúvida de uso (qualquer um resolve) de bug real de sistema (vai para quem entende o código, principalmente enquanto os itens bloqueantes de segurança não estiverem resolvidos).
+
+**Provisionamento inicial de contas:** a PM envia planilha, o time importa. Ainda faltam definir: (1) formato exato da planilha — proposta: nome completo, posto/graduação, unidade, papel no sistema, contato; (2) como a senha temporária inicial chega a cada pessoa com segurança — não deve ser texto puro em mensagem para todo o efetivo; padrão sugerido é senha temporária aleatória por pessoa + troca obrigatória no primeiro login.
+
+**Métricas de sucesso do piloto:** decisão foi usar uso + feedback combinados. Uso: % de integrantes que logaram ao menos uma vez, número de registros de saúde cadastrados, número de solicitações de acompanhamento feitas/confirmadas. Feedback: entrevista qualitativa com o coronel ao final + pesquisa curta para o efetivo participante. Relevante para a Fase 2 do Centelha (item 4.2.2-b do edital pede evidências do estágio atual de desenvolvimento).
+
+**Estimativa de esforço dos itens bloqueantes** (ver "Segurança de Dados" e riscos #0/#8 já registrados), para embasar a proposta de data de início na reunião com a PM:
+
+| Item | Esforço estimado |
+|---|---|
+| Deploy do backend + Postgres real | 1–2 dias (majoritariamente configuração — `dj_database_url` já está pronto) |
+| Controle de acesso por objeto | 3–5 dias (trabalho real em múltiplos ViewSets + teste por papel) |
+| Import em lote de integrantes | 2–3 dias (funcionalidade nova) |
+| Opt-out do ranking | ~1 dia |
+
+Total sequencial ~8–11 dias úteis; paralelizável entre os 4. Janela seguinte sugerida antes do piloto poder começar com responsabilidade: **2–3 semanas**. Divisão de tarefas entre os 4 para atacar isso fica para depois — não decidida nesta sessão.
+
+**Ainda em aberto:** data de início será definida em reunião futura com a PM (ainda não marcada nesta sessão).
+
+## Funcionalidades de Frontend Mapeadas, Ainda Não Implementadas (24/08/2026)
+
+Levantamento de gaps para discussão item a item — nenhuma decisão de design ainda tomada para os itens abaixo, é só mapeamento de escopo.
+
+**Decorrentes do brainstorming de operação do piloto (seção acima):**
+- Upload de planilha de integrantes dentro do painel do gerente (alternativa a depender só do Django admin para o fluxo recorrente de provisionamento). **Planilha precisa incluir coluna de CPF** (ver decisão de login abaixo). **Desenho fechado (24/08/2026):** aceitar upload em `.xlsx` e `.csv`; após upload, mostrar **prévia** dos registros para revisão de erros antes de confirmar a criação real das contas (não importar direto). Colunas mínimas: nome completo, CPF, posto/graduação, unidade, papel no sistema, **telefone/contato (obrigatório)**. Distribuição da senha inicial: **link individual de ativação por SMS/WhatsApp** (não enviar a senha temporária em texto puro — reaproveitar o mesmo padrão de link com token já usado em "Esqueci minha senha", aplicado ao primeiro acesso). Descartado: gerente/comando distribuir credenciais manualmente — contradiz o princípio de que o comando não deve ter acesso a nada tão individual quanto a credencial de um subordinado (mesmo racional do risco #1). Fallback para quem não tiver contato cadastrável: lista impressa, tratado como exceção manual, não como processo padrão.
+- ~~Troca de senha obrigatória no primeiro login~~ — **desenho fechado (24/08/2026):** login passa a ser o **CPF** (com validação de dígito verificador, não só formato — mesmo padrão do gov.br; resolve integrante sem e-mail institucional). Senha temporária gerada no provisionamento **bloqueia** qualquer ação até ser trocada (não é sugestão opcional). Regra da nova senha: mínimo 8 caracteres, 1 maiúscula, 1 número, 1 símbolo. Cuidado de privacidade: CPF nunca aparece em URL (só em campo de formulário/token); considerar mascarar CPF em telas de listagem que outros papéis podem ver de relance (ex: painel do gerente) — mostrar só os 3 primeiros dígitos.
+- Tela/passo de consentimento explícito (LGPD) — já é requisito do risco #3, nunca virou tela. **Desenho fechado (24/08/2026):** aparece junto com a troca de senha obrigatória, no mesmo fluxo de primeiro acesso (não é passo separado). Termo único, mas estruturado internamente em seções por tipo de dado (ex: dados de saúde, desempenho físico, acesso institucional) — não é consentimento granular com aceite por seção, é um único aceite ao final da leitura. Não é revogável pelo usuário, mas fica **sempre disponível para consulta** (ex: link em "Perfil"). Nota para o futuro (não bloqueia agora): se o conteúdo do termo mudar depois, vai precisar de controle de versão do termo aceito — não implementar isso agora, só ter em mente. Lembrete: esse consentimento documenta transparência, mas **não substitui** a base legal formal (tutela da saúde/obrigação legal) definida para o dado mais sensível — ver "Segurança de Dados para Laudos Médicos".
+
+**Ligadas à Junta Médica (fluxo pesado continua adiado — ver seção dedicada):**
+- Gestão de composição da Junta — definir presidente/secretário/membros da `GestaoJunta` vigente, com data de início/fim de mandato. **Discussão de desenho pausada (24/08/2026):** aguardando reunião futura com a PM sobre o papel real da Junta no sistema (pendência já registrada acima) — não faz sentido fechar telas antes dessa definição.
+- Abertura de caso de `AvaliacaoFormal` — selecionar integrante + motivo (admissão/retorno/afastamento/aposentadoria). **Também pausada pelo mesmo motivo.**
+- Registro do parecer — **bloqueado** até os requisitos de segurança (criptografia de campo, log de auditoria) existirem. Não desenhar a tela antes da base de segurança estar pronta.
+
+**Qualidade de vida / gaps que passaram despercebidos:**
+- Central de atendimentos concluídos (hoje só existe "pendente"; falta histórico do que já foi atendido). **Desenho fechado (24/08/2026):** são **duas telas distintas**, não uma vista de dois ângulos — (1) do lado do usuário/integrante: histórico de atendimentos recebidos (quem consultou, quando, resumo), complementar ao histórico de exames que já existe; (2) do lado do médico/educador físico: log de atendimentos já realizados, separado da lista "Meus pacientes"/"Meus alunos" do `DashboardMedico`/`DashboardEducadorFisico` (que mostra responsabilidade atual, não histórico). Ambas entram no escopo — nenhuma foi descartada.
+- Estados vazios (o que aparece para um integrante novo sem nenhum registro ainda). **Desenho fechado (24/08/2026):** não é só informativo — a tela vazia já vem com um botão guiando ativamente para a primeira ação (ex: "Cadastrar seu primeiro exame"), em vez de deixar a pessoa procurar sozinha o menu.
+- Material de treinamento in-app (issue #8). **Desenho fechado (24/08/2026):** formato definido como **tour guiado dentro do próprio app** (dicas/tooltips destacando elementos da tela), não vídeo, não página estática, não PDF para download. Avaliação de discussões anteriores sobre conectar isso a "central de atendimento" e "estados vazios" como um fluxo único foi descartada — as três funcionalidades são tratadas de forma independente. Nota técnica para implementação: considerar biblioteca de tour guiado para React (ex: react-joyride) em vez de construir do zero.
+
+**Dados pessoais complementares — origem ainda em discussão (24/08/2026)**
+
+Após a troca de senha obrigatória no primeiro acesso, cogitou-se direcionar o usuário para preencher dados pessoais complementares (além de peso/altura/idade, que já existem no `Onboarding.jsx`). Campos sugeridos, com justificativa:
+- **Data de nascimento** (em vez de "idade" solta) — idade calculada não fica desatualizada, e alimenta os critérios por idade/sexo do TAF e das tabelas de referência clínica.
+- **Sexo biológico** — mesmo motivo: verificação automática (TAF, exames) depende disso para aplicar o critério correto.
+- **Tipo sanguíneo** — baixa sensibilidade, alta utilidade prática em contexto policial/militar.
+- **Contato de emergência** (nome + telefone).
+
+**Duas opções em aberto para discussão, ainda não decidido:**
+1. **Usuário preenche no primeiro acesso** (Onboarding/Perfil, a definir qual) — abordagem original cogitada.
+2. **Vem pronto na planilha de integrantes enviada pela PM** — a instituição já deve ter esses dados nos registros de cada policial; evita redigitação e reduz erro de digitação pelo próprio usuário. Implica adicionar essas colunas à planilha de importação já desenhada (ver "Upload de planilha de integrantes" acima).
+
+**Também em aberto:** se o destino pós-troca de senha deve ser o `Onboarding.jsx` que já existe (reaproveitando a tela), ou se esse conteúdo deveria migrar para dentro do `Perfil` e o Onboarding deixar de existir como tela separada.
+
+**Decisão já tomada, não reabrir:** dado clínico/condição de saúde pré-existente **não** deve virar campo de texto livre em Perfil/Onboarding — se esse tipo de informação precisar existir, nasce como `RegistroSaude` de verdade, com todo o controle de acesso e consentimento que isso já exige.
 
 ## Fluxos Principais
 1. **Cadastro e verificação** — usuário cadastra exame/índice → sistema verifica contra tabela de referência → resultado exibido (normal/atenção/alterado).
