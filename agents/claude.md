@@ -297,12 +297,46 @@ Total sequencial ~8–11 dias úteis; paralelizável entre os 4. Janela seguinte
 
 **Ainda em aberto:** data de início será definida em reunião futura com a PM (ainda não marcada nesta sessão).
 
-## Funcionalidades de Frontend Mapeadas, Ainda Não Implementadas (24/08/2026)
+## Funcionalidades de Frontend Mapeadas (24/08/2026) — Aprovadas pela Equipe (25/08/2026)
 
-Levantamento de gaps para discussão item a item — nenhuma decisão de design ainda tomada para os itens abaixo, é só mapeamento de escopo.
+Levantamento de gaps discutido item a item. **As 6 funcionalidades com "Desenho fechado" abaixo foram apresentadas e aprovadas por toda a equipe em 25/08/2026 — prontas para virar issue no repositório**, usando os títulos sugeridos em `PONTOS_BRAINSTORMING_24-08.pdf` como ponto de partida.
+
+### Status de implementação (25/08/2026)
+
+Confirmado por commits reais no repositório:
+
+| Item | Status |
+|---|---|
+| Material de treinamento in-app (tour guiado) | ✅ **Implementado** (`6e22c22`, react-joyride, 4 dashboards, botão de reabrir, persistido em localStorage) — fecha também issue #1 (logo clicável) no mesmo commit |
+| Opt-out do ranking (mitigação combinada, ver "Reunião com o Coronel") | ✅ **Implementado** (`fe86855`, closes #14) — toggle em Perfil, quem sai some da lista geral |
+| Filtro por batalhão no ranking | ✅ **Implementado** (`fe86855`, closes #10) — não estava na lista original de 6, mas relacionado à pendência de hierarquia multinível |
+| Flag de exame atrasado no painel do comando | ✅ **Implementado** (`d63a61c`, closes #11) — **feature nova, fora da lista original**. Documentada como exceção deliberada e confirmada com o time à regra de segregação de acesso: mostra status administrativo de pendência (nome + tipo de exame + dias de atraso), nunca o resultado/valor clínico — analogia usada: "sistema de RH mostra treinamento vencido, não o conteúdo do treinamento" |
+| Upload de planilha de integrantes | 🔲 Ainda não implementado |
+| Troca de senha obrigatória + login por CPF | 🔲 Ainda não implementado |
+| Consentimento LGPD | 🔲 Ainda não implementado |
+| Central de atendimentos (usuário + profissional) | 🔲 Ainda não implementado |
+| Estados vazios com call-to-action | 🔲 Ainda não implementado |
+
+**Nota sobre modo escuro:** implementado junto com o tour guiado (`6e22c22`, ajustado em `0b58c84`) — **issue formal #9**, com label "accessibility" (corrigindo registro anterior que descrevia como iniciativa solta fora de qualquer issue). Zustand + Tailwind `darkMode:class`, com correção para abrir em modo claro por padrão (não seguir preferência do sistema automaticamente).
+
+**Limitação de verificação (25/08/2026, resolvida):** lista completa de issues conferida via print enviado pelo usuário. Duas correções sobre o registro anterior: **#10** é "filtro por batalhão no ranking" (não opt-out) e **#14** é "opt-out do ranking" (não filtro) — estavam invertidos no registro de 25/08 anterior. Issue #8 confirmada como o tour guiado ("Criação de guia e material de apresentação"). Issue #9 (modo escuro) era issue formal de verdade, com label "accessibility" — não foi iniciativa solta fora do processo como registrado antes.
+
+**Issues abertas adicionais, não previstas nesta lista:**
+- **#12** "Confirmar na Reunião" — corresponde aos pontos do `PONTOS_CONSULTA_PMAL.pdf`, já seguido como issue própria.
+- **#13** "Criar tela de onboarding - Login Primário" — **é a mesma issue que a sugestão "troca de senha obrigatória + login por CPF" desta lista**. Já está aberta, não abrir duplicata.
+- **#15** "Corrigir SolicitarAcompanhamento (filtrar por instituição, fim da rede)" — é exatamente o ajuste documentado em "Fim da Rede Pré-Qualificada Entre Instituições" acima. Já rastreado.
+- **#16** "Tela de Encaminhamento a Especialista pela Junta Médica (verificar em reunião)" — relacionado aos itens pausados da Junta Policial Militar de Saúde.
+
+**Inconsistência conhecida:** issue #3 ("Implementar Tela de Autorização do Usuário") está fechada, mas o código correspondente (`AutorizacaoUsuario.jsx`) foi **removido** posteriormente pela decisão de fim do autocadastro (23/08/2026). A issue permanece fechada como registro histórico do que foi feito na época — não é necessário reabrir, mas vale que a equipe saiba que "fechada" aqui não significa "existe no código hoje".
+
+**Issues que ainda precisam ser abertas** (das 5 originalmente especificadas, apenas 1 já existia como #13):
+1. Upload de planilha de integrantes com prévia
+2. Tela de consentimento LGPD no primeiro acesso
+3. Histórico de atendimentos (usuário e profissional)
+4. Estados vazios com call-to-action
 
 **Decorrentes do brainstorming de operação do piloto (seção acima):**
-- Upload de planilha de integrantes dentro do painel do gerente (alternativa a depender só do Django admin para o fluxo recorrente de provisionamento). **Planilha precisa incluir coluna de CPF** (ver decisão de login abaixo). **Desenho fechado (24/08/2026):** aceitar upload em `.xlsx` e `.csv`; após upload, mostrar **prévia** dos registros para revisão de erros antes de confirmar a criação real das contas (não importar direto). Colunas mínimas: nome completo, CPF, posto/graduação, unidade, papel no sistema, **telefone/contato (obrigatório)**. Distribuição da senha inicial: **link individual de ativação por SMS/WhatsApp** (não enviar a senha temporária em texto puro — reaproveitar o mesmo padrão de link com token já usado em "Esqueci minha senha", aplicado ao primeiro acesso). Descartado: gerente/comando distribuir credenciais manualmente — contradiz o princípio de que o comando não deve ter acesso a nada tão individual quanto a credencial de um subordinado (mesmo racional do risco #1). Fallback para quem não tiver contato cadastrável: lista impressa, tratado como exceção manual, não como processo padrão.
+- Upload de planilha de integrantes dentro do painel do gerente (alternativa a depender só do Django admin para o fluxo recorrente de provisionamento). **Desenho fechado (24/08/2026), aprovado pela equipe (25/08/2026):** aceitar upload em `.xlsx` e `.csv`; após upload, mostrar **prévia** dos registros para revisão de erros antes de confirmar a criação real das contas (não importar direto). **Colunas finais** (decisão de 25/08/2026, substitui lista anterior): nome completo, CPF, data de nascimento, sexo, telefone (ou e-mail institucional — a confirmar com a PMAL). Posto/graduação e unidade ainda precisam ser confirmados como colunas ou não. Distribuição da senha inicial: **link individual de ativação por SMS/WhatsApp** (ou e-mail, se a PMAL tiver e-mail institucional — não enviar a senha temporária em texto puro — reaproveitar o mesmo padrão de link com token já usado em "Esqueci minha senha", aplicado ao primeiro acesso). Descartado: gerente/comando distribuir credenciais manualmente — contradiz o princípio de que o comando não deve ter acesso a nada tão individual quanto a credencial de um subordinado (mesmo racional do risco #1). Fallback para quem não tiver contato cadastrável: lista impressa, tratado como exceção manual, não como processo padrão.
 - ~~Troca de senha obrigatória no primeiro login~~ — **desenho fechado (24/08/2026):** login passa a ser o **CPF** (com validação de dígito verificador, não só formato — mesmo padrão do gov.br; resolve integrante sem e-mail institucional). Senha temporária gerada no provisionamento **bloqueia** qualquer ação até ser trocada (não é sugestão opcional). Regra da nova senha: mínimo 8 caracteres, 1 maiúscula, 1 número, 1 símbolo. Cuidado de privacidade: CPF nunca aparece em URL (só em campo de formulário/token); considerar mascarar CPF em telas de listagem que outros papéis podem ver de relance (ex: painel do gerente) — mostrar só os 3 primeiros dígitos.
 - Tela/passo de consentimento explícito (LGPD) — já é requisito do risco #3, nunca virou tela. **Desenho fechado (24/08/2026):** aparece junto com a troca de senha obrigatória, no mesmo fluxo de primeiro acesso (não é passo separado). Termo único, mas estruturado internamente em seções por tipo de dado (ex: dados de saúde, desempenho físico, acesso institucional) — não é consentimento granular com aceite por seção, é um único aceite ao final da leitura. Não é revogável pelo usuário, mas fica **sempre disponível para consulta** (ex: link em "Perfil"). Nota para o futuro (não bloqueia agora): se o conteúdo do termo mudar depois, vai precisar de controle de versão do termo aceito — não implementar isso agora, só ter em mente. Lembrete: esse consentimento documenta transparência, mas **não substitui** a base legal formal (tutela da saúde/obrigação legal) definida para o dado mais sensível — ver "Segurança de Dados para Laudos Médicos".
 
@@ -316,19 +350,24 @@ Levantamento de gaps para discussão item a item — nenhuma decisão de design 
 - Estados vazios (o que aparece para um integrante novo sem nenhum registro ainda). **Desenho fechado (24/08/2026):** não é só informativo — a tela vazia já vem com um botão guiando ativamente para a primeira ação (ex: "Cadastrar seu primeiro exame"), em vez de deixar a pessoa procurar sozinha o menu.
 - Material de treinamento in-app (issue #8). **Desenho fechado (24/08/2026):** formato definido como **tour guiado dentro do próprio app** (dicas/tooltips destacando elementos da tela), não vídeo, não página estática, não PDF para download. Avaliação de discussões anteriores sobre conectar isso a "central de atendimento" e "estados vazios" como um fluxo único foi descartada — as três funcionalidades são tratadas de forma independente. Nota técnica para implementação: considerar biblioteca de tour guiado para React (ex: react-joyride) em vez de construir do zero.
 
-**Dados pessoais complementares — origem ainda em discussão (24/08/2026)**
+**Dados pessoais complementares — decisão final da equipe (25/08/2026)**
 
-Após a troca de senha obrigatória no primeiro acesso, cogitou-se direcionar o usuário para preencher dados pessoais complementares (além de peso/altura/idade, que já existem no `Onboarding.jsx`). Campos sugeridos, com justificativa:
-- **Data de nascimento** (em vez de "idade" solta) — idade calculada não fica desatualizada, e alimenta os critérios por idade/sexo do TAF e das tabelas de referência clínica.
-- **Sexo biológico** — mesmo motivo: verificação automática (TAF, exames) depende disso para aplicar o critério correto.
-- **Tipo sanguíneo** — baixa sensibilidade, alta utilidade prática em contexto policial/militar.
-- **Contato de emergência** (nome + telefone).
+Ponto em aberto apresentado para o restante do time e **aprovado com solução híbrida** (não foi "opção A ou B" — combina as duas):
 
-**Duas opções em aberto para discussão, ainda não decidido:**
-1. **Usuário preenche no primeiro acesso** (Onboarding/Perfil, a definir qual) — abordagem original cogitada.
-2. **Vem pronto na planilha de integrantes enviada pela PM** — a instituição já deve ter esses dados nos registros de cada policial; evita redigitação e reduz erro de digitação pelo próprio usuário. Implica adicionar essas colunas à planilha de importação já desenhada (ver "Upload de planilha de integrantes" acima).
+**Vem pronto na planilha da PM** (colunas finais, substituindo a lista anterior de "nome, CPF, posto/graduação, unidade, papel, telefone"):
+- Nome completo
+- CPF
+- Data de nascimento
+- Sexo
+- Telefone (para receber a senha temporária) — **pendente de confirmação:** verificar se a PMAL tem e-mail institucional para usar nesse campo no lugar do telefone. Atualizar aqui assim que confirmado.
 
-**Também em aberto:** se o destino pós-troca de senha deve ser o `Onboarding.jsx` que já existe (reaproveitando a tela), ou se esse conteúdo deveria migrar para dentro do `Perfil` e o Onboarding deixar de existir como tela separada.
+**Vira dado complementar, preenchido pelo próprio usuário** (não vem na planilha):
+- Tipo sanguíneo
+- Contato de emergência (nome + telefone)
+
+Posto/graduação e unidade, que estavam na lista original de colunas da planilha, precisam ser confirmados se continuam — não foram mencionados na decisão da equipe. Verificar antes de fechar o layout final da planilha.
+
+**Ainda em aberto:** se o destino do preenchimento complementar (tipo sanguíneo, contato de emergência) deve ser o `Onboarding.jsx` que já existe, ou se esse conteúdo deveria migrar para dentro do `Perfil` — a equipe não se pronunciou sobre isso especificamente.
 
 **Decisão já tomada, não reabrir:** dado clínico/condição de saúde pré-existente **não** deve virar campo de texto livre em Perfil/Onboarding — se esse tipo de informação precisar existir, nasce como `RegistroSaude` de verdade, com todo o controle de acesso e consentimento que isso já exige.
 
@@ -339,7 +378,6 @@ Após a troca de senha obrigatória no primeiro acesso, cogitou-se direcionar o 
 
 ## Regras de Design que Não Devem Ser Quebradas
 - **Segregação de acesso por papel** é a garantia central vendida ao cliente institucional — nunca expor endpoint que dê a um papel de comando/gerência acesso a dado clínico individual nominal, mesmo que pareça conveniente para uma feature.
-  - **Exceção confirmada (25/08/2026, issue #11):** status administrativo de pendência (ex: "Sd. João Pereira — Exame de sangue de rotina — 12 dias atrasado") não é dado clínico e pode aparecer nominalmente para o comando — é o equivalente a um sistema de RH mostrar "treinamento vencido" sem expor o conteúdo do treinamento. A regra continua valendo integralmente para **resultado/valor** de exame (normal/atenção/alterado, medidas), que nunca aparece nominalmente para esse papel. Implementado em `DashboardGerente.jsx` (seção "Exames administrativos atrasados").
 - **Conexão com profissionais é solicitação → confirmação, não matching instantâneo.** Essa escolha é deliberada: evita o enquadramento do Parecer CFM nº 15/2026 como "ambiente médico virtual" pleno (que exigiria diretor técnico/clínico formal). Não implementar aceite automático/instantâneo sem entender essa implicação regulatória.
 - **Tabela de regras da verificação automática deve ser versionada no banco, não hardcoded** — permite correção rápida se uma faixa de referência clínica estiver incorreta, sem precisar de deploy.
 - **Dado de saúde é dado sensível sob a LGPD** (Lei nº 13.709/2018) — exigir consentimento explícito e específico por finalidade; nunca reaproveitar um consentimento genérico de cadastro para autorizar compartilhamento de dado clínico.
