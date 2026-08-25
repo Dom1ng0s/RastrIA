@@ -1,9 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LayoutDashboard, Stethoscope } from "lucide-react";
+import { LayoutDashboard, Stethoscope, ToggleLeft, ToggleRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { useRankingPrefsStore } from "../../features/ranking/store";
 
 // TODO: navItems assume o contexto de "usuário individual". Quando existir
 // autenticação real, derivar dinamicamente pelo papel logado — Perfil é
@@ -32,6 +33,9 @@ export default function Perfil() {
     handleSubmit,
     formState: { errors, isSubmitting, isDirty },
   } = useForm({ resolver: zodResolver(perfilSchema), defaultValues: dadosMock });
+
+  const optedOutDoRanking = useRankingPrefsStore((state) => state.optedOut);
+  const toggleOptOutDoRanking = useRankingPrefsStore((state) => state.toggleOptOut);
 
   const onSubmit = async (dados) => {
     // TODO: substituir por mutation do TanStack Query (PATCH /api/usuarios/me).
@@ -87,6 +91,26 @@ export default function Perfil() {
             {isSubmitting ? "Salvando..." : "Salvar alterações"}
           </button>
         </form>
+      </div>
+
+      <div className="mt-6 max-w-[400px] rounded-2xl border border-line bg-white p-7">
+        <h2 className="mb-1 text-sm font-semibold text-text-dark">Ranking de desempenho físico</h2>
+        <p className="mb-4 text-xs text-text-muted">
+          O ranking mostra seu nome, restrito a integrantes da sua instituição. Você pode optar por
+          não aparecer nele a qualquer momento.
+        </p>
+        <button
+          type="button"
+          onClick={toggleOptOutDoRanking}
+          className="flex w-full items-center justify-between rounded-lg border border-line px-4 py-3 text-sm font-medium hover:bg-bg-tint"
+        >
+          <span>Aparecer no ranking</span>
+          {optedOutDoRanking ? (
+            <ToggleLeft size={28} className="text-text-muted" />
+          ) : (
+            <ToggleRight size={28} className="text-seafoam" />
+          )}
+        </button>
       </div>
     </DashboardLayout>
   );

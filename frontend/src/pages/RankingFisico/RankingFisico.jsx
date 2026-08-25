@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
 import { Trophy } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { useRankingPrefsStore } from "../../features/ranking/store";
 import { navItems } from "../DashboardUsuario/DashboardUsuario";
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/ranking?atividade=...)
@@ -18,6 +20,19 @@ const atividades = [
   { id: "natacao-500m", label: "Natação · 500m" },
   { id: "ciclismo-20km", label: "Ciclismo · 20km" },
 ];
+
+// Batalhão de cada pessoa (consistente entre atividades) — permite o filtro
+// "meu batalhão" (issue #10). Hierarquia Batalhão > Companhia já é decisão de
+// design assumida (ver "Instituicao" em agents/claude.md).
+const batalhaoPorPessoa = {
+  1: "1º Batalhão",
+  2: "2º Batalhão",
+  3: "1º Batalhão",
+  4: "1º Batalhão", // Você
+  5: "3º Batalhão",
+  6: "2º Batalhão",
+  7: "3º Batalhão",
+};
 
 const rankingsPorAtividade = {
   "corrida-5km": [
@@ -52,6 +67,11 @@ const rankingsPorAtividade = {
   ],
 };
 
+const escopos = [
+  { id: "corporacao", label: "Toda a corporação" },
+  { id: "batalhao", label: "Meu batalhão" },
+];
+
 const medalhaClasse = {
   1: "text-[#D4A017]",
   2: "text-[#8C8C8C]",
@@ -60,11 +80,23 @@ const medalhaClasse = {
 
 export default function RankingFisico() {
   const [atividadeId, setAtividadeId] = useState(atividades[0].id);
+  const [escopoId, setEscopoId] = useState(escopos[0].id);
+  const optedOut = useRankingPrefsStore((state) => state.optedOut);
 
-  const classificacao = useMemo(
-    () => rankingsPorAtividade[atividadeId].map((entrada, index) => ({ ...entrada, posicao: index + 1 })),
-    [atividadeId],
-  );
+  const meuBatalhao = batalhaoPorPessoa[usuarioAtualId];
+
+  const classificacao = useMemo(() => {
+    const listaBase = rankingsPorAtividade[atividadeId];
+    const listaNoEscopo =
+      escopoId === "batalhao"
+        ? listaBase.filter((entrada) => batalhaoPorPessoa[entrada.id] === meuBatalhao)
+        : listaBase;
+    const listaVisivel = optedOut
+      ? listaNoEscopo.filter((entrada) => entrada.id !== usuarioAtualId)
+      : listaNoEscopo;
+
+    return listaVisivel.map((entrada, index) => ({ ...entrada, posicao: index + 1 }));
+  }, [atividadeId, escopoId, meuBatalhao, optedOut]);
 
   const minhaPosicao = classificacao.find((entrada) => entrada.id === usuarioAtualId);
 
@@ -85,16 +117,43 @@ export default function RankingFisico() {
         </select>
       </div>
 
-      {minhaPosicao && (
-        <div className="mb-8 rounded-2xl bg-primary p-6">
-          <span className="text-xs font-medium text-white/70">Sua posição</span>
-          <div className="mt-1 text-4xl font-semibold text-white">
-            {minhaPosicao.posicao}º{" "}
-            <span className="font-body text-base font-normal text-white/70">
-              lugar · {minhaPosicao.tempo} · {atividades.find((atividade) => atividade.id === atividadeId)?.label}
-            </span>
-          </div>
+      <div className="mb-6 flex gap-2">
+        {escopos.map((escopo) => (
+          <button
+            key={escopo.id}
+            type="button"
+            onClick={() => setEscopoId(escopo.id)}
+            className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+              escopoId === escopo.id
+                ? "border-primary bg-bg-tint text-primary"
+                : "border-line text-text-dark hover:bg-bg-tint"
+            }`}
+          >
+            {escopo.label}
+          </button>
+        ))}
+      </div>
+
+      {optedOut ? (
+        <div className="mb-8 rounded-2xl border border-line bg-white p-6 text-sm text-text-muted">
+          Você optou por não aparecer no ranking. Você pode mudar isso a qualquer momento em{" "}
+          <Link to="/perfil" className="font-medium text-primary underline">
+            Perfil
+          </Link>
+          .
         </div>
+      ) : (
+        minhaPosicao && (
+          <div className="mb-8 rounded-2xl bg-primary p-6">
+            <span className="text-xs font-medium text-white/70">Sua posição</span>
+            <div className="mt-1 text-4xl font-semibold text-white">
+              {minhaPosicao.posicao}º{" "}
+              <span className="font-body text-base font-normal text-white/70">
+                lugar · {minhaPosicao.tempo} · {atividades.find((atividade) => atividade.id === atividadeId)?.label}
+              </span>
+            </div>
+          </div>
+        )
       )}
 
       <div className="space-y-2">
@@ -121,6 +180,12 @@ export default function RankingFisico() {
             <span className="text-sm font-semibold text-primary">{entrada.tempo}</span>
           </div>
         ))}
+
+        {classificacao.length === 0 && (
+          <div className="rounded-xl border border-dashed border-line p-8 text-center text-sm text-text-muted">
+            Nenhum resultado registrado nesse escopo ainda.
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );
