@@ -3,6 +3,8 @@ import { Route, Routes } from "react-router-dom";
 import CadastroExercicioFisico from "../pages/CadastroExercicioFisico/CadastroExercicioFisico";
 import CadastroInformacoes from "../pages/CadastroInformacoes/CadastroInformacoes";
 import CadastroTAF from "../pages/CadastroTAF/CadastroTAF";
+import AtendimentosEducadorFisico from "../pages/AtendimentosEducadorFisico/AtendimentosEducadorFisico";
+import AtendimentosMedico from "../pages/AtendimentosMedico/AtendimentosMedico";
 import DashboardEducadorFisico from "../pages/DashboardEducadorFisico/DashboardEducadorFisico";
 import DashboardGerente from "../pages/DashboardGerente/DashboardGerente";
 import DashboardMedico from "../pages/DashboardMedico/DashboardMedico";
@@ -10,6 +12,7 @@ import DashboardUsuario from "../pages/DashboardUsuario/DashboardUsuario";
 import DetalheAluno from "../pages/DetalheAluno/DetalheAluno";
 import DetalhePaciente from "../pages/DetalhePaciente/DetalhePaciente";
 import EsqueciSenha from "../pages/EsqueciSenha/EsqueciSenha";
+import HistoricoAtendimentos from "../pages/HistoricoAtendimentos/HistoricoAtendimentos";
 import Landing from "../pages/Landing/Landing";
 import Login from "../pages/Login/Login";
 import NotFound from "../pages/NotFound/NotFound";
@@ -35,13 +38,16 @@ export function AppRoutes() {
       <Route path="/gerente/unidade/:id" element={<TelaPorUnidade />} />
       <Route path="/medico" element={<DashboardMedico />} />
       <Route path="/medico/paciente/:id" element={<DetalhePaciente />} />
+      <Route path="/medico/atendimentos" element={<AtendimentosMedico />} />
       <Route path="/educador-fisico" element={<DashboardEducadorFisico />} />
       <Route path="/educador-fisico/aluno/:id" element={<DetalheAluno />} />
       <Route path="/educador-fisico/aluno/:id/taf" element={<CadastroTAF />} />
+      <Route path="/educador-fisico/atendimentos" element={<AtendimentosEducadorFisico />} />
       <Route path="/usuario" element={<DashboardUsuario />} />
       <Route path="/usuario/cadastrar-informacoes" element={<CadastroInformacoes />} />
       <Route path="/usuario/cadastrar-informacoes/exercicio" element={<CadastroExercicioFisico />} />
       <Route path="/usuario/solicitar" element={<SolicitarAcompanhamento />} />
+      <Route path="/usuario/atendimentos" element={<HistoricoAtendimentos />} />
       <Route path="/usuario/ranking" element={<RankingFisico />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
