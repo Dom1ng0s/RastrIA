@@ -1,12 +1,14 @@
-import { LayoutDashboard } from "lucide-react";
+import { AlertCircle, LayoutDashboard, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { EmptyState } from "../../components/EmptyState";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
 
 const navItems = [
   { to: "/educador-fisico", label: "Painel do Educador Físico", icon: LayoutDashboard, tour: "nav-painel" },
+  { to: "/educador-fisico/atendimentos", label: "Meus Atendimentos", icon: Users },
 ];
 
 const tourSteps = [
@@ -60,6 +62,10 @@ export default function DashboardEducadorFisico() {
               </div>
             </div>
           ))}
+
+          {solicitacoes.length === 0 && (
+            <EmptyState icon={AlertCircle} title="Nenhuma solicitação pendente no momento" />
+          )}
         </div>
       </section>
 
@@ -76,6 +82,14 @@ export default function DashboardEducadorFisico() {
               <span className="text-xs text-text-muted">Última avaliação · {aluno.ultimaAvaliacao}</span>
             </Link>
           ))}
+
+          {alunos.length === 0 && (
+            <EmptyState
+              icon={Users}
+              title="Nenhum aluno sob sua responsabilidade ainda"
+              description="Alunos aparecem aqui quando um integrante da sua instituição solicita e você confirma o acompanhamento."
+            />
+          )}
         </div>
       </section>
     </DashboardLayout>

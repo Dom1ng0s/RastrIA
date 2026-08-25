@@ -1,7 +1,8 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Building2 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { EmptyState } from "../../components/EmptyState";
 import { navItems, unidades } from "../DashboardGerente/DashboardGerente";
 
 export default function TelaPorUnidade() {
@@ -47,6 +48,10 @@ export default function TelaPorUnidade() {
             </span>
           </div>
         ))}
+
+        {unidade.subunidades.length === 0 && (
+          <EmptyState icon={Building2} title="Nenhuma subunidade cadastrada para esta unidade" />
+        )}
       </div>
     </DashboardLayout>
   );

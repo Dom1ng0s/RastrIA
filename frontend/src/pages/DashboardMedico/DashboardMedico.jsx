@@ -1,11 +1,15 @@
-import { LayoutDashboard } from "lucide-react";
+import { AlertCircle, LayoutDashboard, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { EmptyState } from "../../components/EmptyState";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
 
-const navItems = [{ to: "/medico", label: "Painel do Médico", icon: LayoutDashboard, tour: "nav-painel" }];
+const navItems = [
+  { to: "/medico", label: "Painel do Médico", icon: LayoutDashboard, tour: "nav-painel" },
+  { to: "/medico/atendimentos", label: "Meus Atendimentos", icon: Users },
+];
 
 const tourSteps = [
   {
@@ -64,6 +68,10 @@ export default function DashboardMedico() {
               </div>
             </div>
           ))}
+
+          {solicitacoes.length === 0 && (
+            <EmptyState icon={AlertCircle} title="Nenhuma solicitação pendente no momento" />
+          )}
         </div>
       </section>
 
@@ -80,6 +88,14 @@ export default function DashboardMedico() {
               <span className="text-xs text-text-muted">Último exame · {paciente.ultimoExame}</span>
             </Link>
           ))}
+
+          {pacientes.length === 0 && (
+            <EmptyState
+              icon={Users}
+              title="Nenhum paciente sob sua responsabilidade ainda"
+              description="Pacientes aparecem aqui quando um integrante da sua instituição solicita e você confirma o acompanhamento."
+            />
+          )}
         </div>
       </section>
     </DashboardLayout>

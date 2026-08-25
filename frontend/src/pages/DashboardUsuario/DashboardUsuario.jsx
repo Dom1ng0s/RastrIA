@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { ClipboardList, Download, LayoutDashboard, Stethoscope, Trophy } from "lucide-react";
+import { ClipboardList, Download, FileText, LayoutDashboard, Stethoscope, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { EmptyState } from "../../components/EmptyState";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
 import { useToast } from "../../features/ui/ToastProvider";
@@ -16,6 +17,7 @@ export const navItems = [
     tour: "nav-cadastrar",
   },
   { to: "/usuario/solicitar", label: "Solicitar Acompanhamento", icon: Stethoscope, tour: "nav-solicitar" },
+  { to: "/usuario/atendimentos", label: "Meus Atendimentos", icon: FileText, tour: "nav-atendimentos" },
   { to: "/usuario/ranking", label: "Ranking", icon: Trophy, tour: "nav-ranking" },
 ];
 
@@ -174,6 +176,16 @@ export default function DashboardUsuario() {
             </p>
           </div>
         ))}
+
+        {registros.length === 0 && (
+          <EmptyState
+            icon={ClipboardList}
+            title="Você ainda não tem nenhum registro de saúde"
+            description="Cadastre seu primeiro exame para começar a acompanhar seus índices."
+            actionLabel="Cadastrar seu primeiro exame"
+            actionTo="/usuario/cadastrar-informacoes"
+          />
+        )}
       </div>
     </DashboardLayout>
   );
