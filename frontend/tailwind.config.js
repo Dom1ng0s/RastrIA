@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
     extend: {
@@ -12,6 +13,12 @@ export default {
         "text-muted": "#5B6B67",
         "bg-tint": "#F2F8F6",
         line: "#E4E4E4",
+        "dark-bg": "#0F1715",
+        "dark-surface": "#16211E",
+        "dark-line": "#283733",
+        "dark-text": "#E7F2EF",
+        "dark-text-muted": "#8FA39E",
+        "dark-primary": "#3FCBAE",
       },
       fontFamily: {
         // Web app: Lora/Inter (via Google Fonts, ver index.html). Cambria/Calibri

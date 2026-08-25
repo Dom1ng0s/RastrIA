@@ -2,6 +2,7 @@ import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { Logo } from "../../components/Logo";
 
 const LINKS_NAV = [
@@ -14,7 +15,7 @@ function Header() {
   const [menuAberto, setMenuAberto] = useState(false);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-line bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-line bg-white/90 backdrop-blur dark:bg-dark-surface/90">
       <div className="mx-auto flex max-w-[1180px] items-center justify-between px-6 py-4">
         <Logo />
         <nav className="hidden items-center text-sm font-medium text-text-dark md:flex">
@@ -24,22 +25,21 @@ function Header() {
             </a>
           ))}
         </nav>
-        <div className="hidden items-center md:flex">
-          <Link to="/login" className="mr-4 text-sm font-medium text-text-dark">
+        <div className="hidden items-center gap-4 md:flex">
+          <ThemeToggle />
+          <Link to="/login" className="text-sm font-medium text-text-dark">
             Entrar
           </Link>
           <a href="#contato" className="btn-primary rounded-lg px-4 py-2 text-sm font-semibold">
             Fale com o time
           </a>
         </div>
-        <button
-          type="button"
-          aria-label="Abrir menu"
-          onClick={() => setMenuAberto(true)}
-          className="text-primary md:hidden"
-        >
-          <Menu size={24} />
-        </button>
+        <div className="flex items-center gap-4 md:hidden">
+          <ThemeToggle />
+          <button type="button" aria-label="Abrir menu" onClick={() => setMenuAberto(true)} className="text-primary">
+            <Menu size={24} />
+          </button>
+        </div>
       </div>
 
       {menuAberto && (

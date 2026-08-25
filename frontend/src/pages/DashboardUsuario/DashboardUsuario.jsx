@@ -3,13 +3,54 @@ import { ClipboardList, Download, LayoutDashboard, Stethoscope, Trophy } from "l
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { GuidedTour } from "../../features/tour/GuidedTour";
+import { useGuidedTour } from "../../features/tour/useGuidedTour";
 import { useToast } from "../../features/ui/ToastProvider";
 
 export const navItems = [
-  { to: "/usuario", label: "Meu Histórico", icon: LayoutDashboard },
-  { to: "/usuario/cadastrar-informacoes", label: "Cadastrar Informações", icon: ClipboardList },
-  { to: "/usuario/solicitar", label: "Solicitar Acompanhamento", icon: Stethoscope },
-  { to: "/usuario/ranking", label: "Ranking", icon: Trophy },
+  { to: "/usuario", label: "Meu Histórico", icon: LayoutDashboard, tour: "nav-historico" },
+  {
+    to: "/usuario/cadastrar-informacoes",
+    label: "Cadastrar Informações",
+    icon: ClipboardList,
+    tour: "nav-cadastrar",
+  },
+  { to: "/usuario/solicitar", label: "Solicitar Acompanhamento", icon: Stethoscope, tour: "nav-solicitar" },
+  { to: "/usuario/ranking", label: "Ranking", icon: Trophy, tour: "nav-ranking" },
+];
+
+const tourSteps = [
+  {
+    target: "[data-tour='nav-historico']",
+    title: "Meu Histórico",
+    content: "Aqui ficam seus exames, índices e o resultado do seu último TAF, sempre com o status mais recente.",
+    disableBeacon: true,
+  },
+  {
+    target: "[data-tour='cadastrar-informacoes']",
+    title: "Cadastrar informações",
+    content: "Use este botão para registrar um novo exame ou exercício físico.",
+  },
+  {
+    target: "[data-tour='ultimo-taf']",
+    title: "Meu último TAF",
+    content: "O resultado do seu Teste de Aptidão Física, cadastrado pelo educador físico responsável.",
+  },
+  {
+    target: "[data-tour='nav-solicitar']",
+    title: "Solicitar Acompanhamento",
+    content: "Peça acompanhamento a um médico ou educador físico da sua instituição.",
+  },
+  {
+    target: "[data-tour='nav-ranking']",
+    title: "Ranking",
+    content: "Veja como está seu desempenho físico em relação aos colegas da sua instituição.",
+  },
+  {
+    target: "[data-tour='baixar-historico']",
+    title: "Baixar histórico",
+    content: "Seu histórico é seu — baixe uma cópia completa em CSV a qualquer momento.",
+  },
 ];
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/registros-saude)
@@ -59,14 +100,18 @@ function baixarHistoricoCsv(registros) {
 export default function DashboardUsuario() {
   const { showToast } = useToast();
   const [registros] = useState(registrosIniciais);
+  const { run, handleCallback, restart } = useGuidedTour("usuario");
 
   return (
-    <DashboardLayout title="Meu Histórico" navItems={navItems}>
+    <DashboardLayout title="Meu Histórico" navItems={navItems} onHelp={restart}>
+      <GuidedTour run={run} steps={tourSteps} callback={handleCallback} />
+
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-text-muted">Seus exames e índices mais recentes.</p>
         <div className="flex items-center gap-2">
           <button
             type="button"
+            data-tour="baixar-historico"
             onClick={() => {
               baixarHistoricoCsv(registros);
               showToast("Histórico baixado com sucesso");
@@ -80,6 +125,7 @@ export default function DashboardUsuario() {
               concorrentes para a mesma ação. */}
           <Link
             to="/usuario/cadastrar-informacoes"
+            data-tour="cadastrar-informacoes"
             className="btn-primary flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold"
           >
             <ClipboardList size={16} /> Cadastrar informações
@@ -87,7 +133,7 @@ export default function DashboardUsuario() {
         </div>
       </div>
 
-      <section className="mb-8">
+      <section className="mb-8" data-tour="ultimo-taf">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meu último TAF</h2>
         <div className="rounded-xl bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between">

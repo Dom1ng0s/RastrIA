@@ -1,6 +1,8 @@
-import { LogOut, Menu, User, X } from "lucide-react";
+import { HelpCircle, LogOut, Menu, User, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+
+import { ThemeToggle } from "../features/theme/ThemeToggle";
 
 import { Logo } from "./Logo";
 
@@ -15,6 +17,7 @@ function SidebarContent({ navItems, location, navigate, onNavigate }) {
               key={item.to}
               to={item.to}
               onClick={onNavigate}
+              data-tour={item.tour}
               className={`nav-item flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${
                 location.pathname === item.to ? "active" : ""
               }`}
@@ -54,7 +57,7 @@ function SidebarContent({ navItems, location, navigate, onNavigate }) {
   );
 }
 
-export function DashboardLayout({ title, navItems, children }) {
+export function DashboardLayout({ title, navItems, children, onHelp }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
@@ -105,6 +108,20 @@ export function DashboardLayout({ title, navItems, children }) {
             <Menu size={22} />
           </button>
           <h1 className="text-xl font-semibold text-primary">{title}</h1>
+          <div className="ml-auto flex items-center gap-3">
+            <ThemeToggle />
+            {onHelp && (
+              <button
+                type="button"
+                aria-label="Ver tour guiado"
+                title="Ver tour guiado"
+                onClick={onHelp}
+                className="text-text-muted hover:text-primary"
+              >
+                <HelpCircle size={20} />
+              </button>
+            )}
+          </div>
         </header>
         <main className="p-5 md:p-8">{children}</main>
       </div>

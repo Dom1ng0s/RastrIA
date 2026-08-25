@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import { Logo } from "./Logo";
 
 export function AuthBrandPanel({ heading, subtitle }) {
@@ -18,7 +20,9 @@ export function AuthBrandPanel({ heading, subtitle }) {
         />
       </svg>
 
-      <Logo reverse className="relative z-10" />
+      <Link to="/" className="relative z-10 w-fit">
+        <Logo reverse />
+      </Link>
 
       <div className="relative z-10">
         <h1 className="mb-3 text-3xl font-semibold leading-tight text-white">{heading}</h1>

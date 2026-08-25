@@ -2,8 +2,27 @@ import { LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { GuidedTour } from "../../features/tour/GuidedTour";
+import { useGuidedTour } from "../../features/tour/useGuidedTour";
 
-export const navItems = [{ to: "/gerente", label: "Painel Agregado", icon: LayoutDashboard }];
+export const navItems = [
+  { to: "/gerente", label: "Painel Agregado", icon: LayoutDashboard, tour: "nav-agregado" },
+];
+
+const tourSteps = [
+  {
+    target: "[data-tour='efetivo-geral']",
+    title: "Efetivo geral",
+    content:
+      "Indicador agregado do percentual de exames em dia — este painel nunca mostra dado clínico individual nominal.",
+    disableBeacon: true,
+  },
+  {
+    target: "[data-tour='por-unidade']",
+    title: "Por unidade",
+    content: "Acompanhe o percentual em dia de cada batalhão e clique para ver o detalhamento por unidade.",
+  },
+];
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/instituicoes/:id/agregado)
 // quando o endpoint existir. Hierarquia multinível (Batalhão/Companhia/Pelotão) ainda
@@ -41,9 +60,13 @@ export const unidades = [
 ];
 
 export default function DashboardGerente() {
+  const { run, handleCallback, restart } = useGuidedTour("gerente");
+
   return (
-    <DashboardLayout title="Painel do Comando" navItems={navItems}>
-      <div className="mb-8 rounded-2xl bg-primary p-6">
+    <DashboardLayout title="Painel do Comando" navItems={navItems} onHelp={restart}>
+      <GuidedTour run={run} steps={tourSteps} callback={handleCallback} />
+
+      <div className="mb-8 rounded-2xl bg-primary p-6" data-tour="efetivo-geral">
         <span className="text-xs font-medium text-white/70">Efetivo geral</span>
         <div className="mt-1 text-4xl font-semibold text-white">
           92% <span className="font-body text-base font-normal text-white/70">com exames em dia</span>
@@ -56,7 +79,7 @@ export default function DashboardGerente() {
       </div>
 
       <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Por unidade</h2>
-      <div className="space-y-2">
+      <div className="space-y-2" data-tour="por-unidade">
         {unidades.map((unidade) => (
           <Link
             key={unidade.id}

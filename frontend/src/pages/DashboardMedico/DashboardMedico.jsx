@@ -2,8 +2,24 @@ import { LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { GuidedTour } from "../../features/tour/GuidedTour";
+import { useGuidedTour } from "../../features/tour/useGuidedTour";
 
-const navItems = [{ to: "/medico", label: "Painel do Médico", icon: LayoutDashboard }];
+const navItems = [{ to: "/medico", label: "Painel do Médico", icon: LayoutDashboard, tour: "nav-painel" }];
+
+const tourSteps = [
+  {
+    target: "[data-tour='solicitacoes-pendentes']",
+    title: "Solicitações pendentes",
+    content: "Confirme ou recuse pedidos de acompanhamento de integrantes da sua instituição.",
+    disableBeacon: true,
+  },
+  {
+    target: "[data-tour='meus-pacientes']",
+    title: "Meus pacientes",
+    content: "Acesse o histórico de cada paciente sob seu acompanhamento.",
+  },
+];
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/solicitacoes,
 // GET /api/vinculos-cuidado) quando os endpoints estiverem prontos.
@@ -18,9 +34,13 @@ const pacientes = [
 ];
 
 export default function DashboardMedico() {
+  const { run, handleCallback, restart } = useGuidedTour("medico");
+
   return (
-    <DashboardLayout title="Painel do Médico" navItems={navItems}>
-      <section className="mb-10">
+    <DashboardLayout title="Painel do Médico" navItems={navItems} onHelp={restart}>
+      <GuidedTour run={run} steps={tourSteps} callback={handleCallback} />
+
+      <section className="mb-10" data-tour="solicitacoes-pendentes">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">
           Solicitações pendentes
         </h2>
@@ -47,7 +67,7 @@ export default function DashboardMedico() {
         </div>
       </section>
 
-      <section>
+      <section data-tour="meus-pacientes">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meus pacientes</h2>
         <div className="space-y-2">
           {pacientes.map((paciente) => (

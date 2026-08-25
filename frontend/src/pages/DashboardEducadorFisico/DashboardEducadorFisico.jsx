@@ -2,8 +2,26 @@ import { LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { GuidedTour } from "../../features/tour/GuidedTour";
+import { useGuidedTour } from "../../features/tour/useGuidedTour";
 
-const navItems = [{ to: "/educador-fisico", label: "Painel do Educador Físico", icon: LayoutDashboard }];
+const navItems = [
+  { to: "/educador-fisico", label: "Painel do Educador Físico", icon: LayoutDashboard, tour: "nav-painel" },
+];
+
+const tourSteps = [
+  {
+    target: "[data-tour='solicitacoes-pendentes']",
+    title: "Solicitações pendentes",
+    content: "Confirme ou recuse pedidos de acompanhamento de integrantes da sua instituição.",
+    disableBeacon: true,
+  },
+  {
+    target: "[data-tour='meus-alunos']",
+    title: "Meus alunos",
+    content: "Acesse a avaliação física de cada aluno sob seu acompanhamento, incluindo o cadastro do TAF.",
+  },
+];
 
 // TODO: substituir por dados reais via TanStack Query quando os endpoints existirem.
 const solicitacoes = [{ id: 1, usuario: "Diego Martins", data: "18 ago 2026" }];
@@ -14,14 +32,18 @@ const alunos = [
 ];
 
 export default function DashboardEducadorFisico() {
+  const { run, handleCallback, restart } = useGuidedTour("educador-fisico");
+
   return (
-    <DashboardLayout title="Painel do Educador Físico" navItems={navItems}>
+    <DashboardLayout title="Painel do Educador Físico" navItems={navItems} onHelp={restart}>
+      <GuidedTour run={run} steps={tourSteps} callback={handleCallback} />
+
       <p className="mb-6 text-sm text-text-muted">
         Escopo restrito a desempenho físico — sem acesso a dado clínico (ver "Regras de Design"
         em agents/claude.md).
       </p>
 
-      <section className="mb-10">
+      <section className="mb-10" data-tour="solicitacoes-pendentes">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">
           Solicitações pendentes
         </h2>
@@ -41,7 +63,7 @@ export default function DashboardEducadorFisico() {
         </div>
       </section>
 
-      <section>
+      <section data-tour="meus-alunos">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meus alunos</h2>
         <div className="space-y-2">
           {alunos.map((aluno) => (

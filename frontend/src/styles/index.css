@@ -13,6 +13,57 @@
   }
 }
 
+/*
+ * Modo escuro (issue #9): as telas do produto reaproveitam um conjunto pequeno
+ * e consistente de classes utilitárias (bg-white, bg-bg-tint, text-text-dark,
+ * text-text-muted, border-line, text-primary) em vez de cor hardcoded — ver
+ * "Sistema de componentes visuais" em agents/claude.md. Por isso, sobrescrever
+ * essas classes aqui (fora de @layer, então com prioridade sobre a layer de
+ * utilities do Tailwind) aplica o tema escuro a toda a área logada sem precisar
+ * editar tela por tela. O painel lateral (bg-primary) já é escuro por design de
+ * marca e não muda entre os temas.
+ */
+.dark body {
+  background-color: theme("colors.dark-bg");
+  color: theme("colors.dark-text");
+}
+.dark .bg-white {
+  background-color: theme("colors.dark-surface");
+}
+.dark .bg-bg-tint {
+  background-color: theme("colors.dark-bg");
+}
+.dark .border-line {
+  border-color: theme("colors.dark-line");
+}
+.dark .text-text-dark {
+  color: theme("colors.dark-text");
+}
+.dark .text-text-muted {
+  color: theme("colors.dark-text-muted");
+}
+.dark .text-primary {
+  color: theme("colors.dark-primary");
+}
+.dark .shadow-sm,
+.dark .shadow-md {
+  box-shadow: none;
+}
+.dark .btn-outline {
+  background-color: theme("colors.dark-surface");
+  color: theme("colors.dark-primary");
+  border-color: theme("colors.dark-primary");
+}
+.dark .btn-outline:hover {
+  background-color: theme("colors.dark-line");
+}
+.dark .hover\:text-primary:hover {
+  color: theme("colors.dark-primary");
+}
+.dark .hover\:bg-bg-tint:hover {
+  background-color: theme("colors.dark-line");
+}
+
 @layer components {
   /* Sistema de componentes visuais compartilhado entre as telas — ver
      agents/claude.md > Identidade de Marca. Ao portar uma nova tela do
