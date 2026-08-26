@@ -371,6 +371,8 @@ Posto/graduação e unidade, que estavam na lista original de colunas da planilh
 
 **Decisão já tomada, não reabrir:** dado clínico/condição de saúde pré-existente **não** deve virar campo de texto livre em Perfil/Onboarding — se esse tipo de informação precisar existir, nasce como `RegistroSaude` de verdade, com todo o controle de acesso e consentimento que isso já exige.
 
+**Correção de implementação (26/08/2026):** `Onboarding.jsx` e `Perfil.jsx` tinham um campo "Idade" editável e independente, que não deveria existir — idade **nunca** é um valor digitado/armazenado separadamente, é sempre calculada a partir da data de nascimento (que, como definido acima, vem da planilha da instituição, não do usuário). Corrigido: campo removido dos dois formulários; `Perfil.jsx` agora exibe data de nascimento + idade calculada como informação somente leitura, no mesmo padrão do campo E-mail.
+
 ## Fluxos Principais
 1. **Cadastro e verificação** — usuário cadastra exame/índice → sistema verifica contra tabela de referência → resultado exibido (normal/atenção/alterado).
 2. **Solicitação de acompanhamento** — usuário solicita → sistema notifica profissionais disponíveis na especialidade **dentro da mesma instituição** → profissional confirma (**não** é aceite instantâneo tipo "corrida") → atendimento registrado no histórico.
@@ -453,3 +455,16 @@ Componentes React reutilizáveis já existentes em `src/components/`: `Logo` (í
 
 ## Documentação adicional
 Manual de marca (`docs/brand/Rastria_Manual_de_Marca.pdf`), pitch deck (`docs/pitch/Rastria_Pitch_Deck.pdf`/`.pptx`) e diagramas UML (`docs/diagrams/casos_de_uso.svg`, `classes.svg`, `sequencia.svg`, `fluxo_institucional_corrigido.svg`) já estão versionados no repositório. A estratégia de estrutura/branches acima já foi incorporada neste arquivo, não é necessário um `docs/ESTRUTURA_REPOSITORIO.md` separado.
+
+## Changelog
+
+Log de correções e mudanças pontuais que não têm uma seção narrativa própria acima — decisões maiores continuam documentadas nas seções dedicadas (Fim do Autocadastro, Reunião com o Coronel, etc.).
+
+**26/08/2026**
+- **fix:** idade removida como campo editável em `Onboarding.jsx`/`Perfil.jsx` — passa a ser calculada a partir da data de nascimento (que vem da planilha da instituição), exibida como somente leitura no Perfil.
+- **chore:** removidas todas as menções ao Programa Centelha nas páginas do app (rodapé da Landing, `AuthBrandPanel`).
+- **fix:** alinhamento do ícone da logo corrigido (`viewBox` do SVG recentralizado) — o desenho ocupava só a metade inferior da caixa original, ficando visualmente deslocado em relação ao texto "Rastria".
+- **bug:** campos de formulário ilegíveis no modo escuro — nenhum `<input>`/`<select>` do app tinha a classe `bg-white`, então o texto digitado herdava a cor clara global do `<body>` em modo escuro sem um fundo escuro correspondente por trás. Corrigidos 24 campos em 9 arquivos; confirmado via varredura que não resta nenhum caso.
+- **fix:** cards com texto longo (nome de integrante) estourando ou desalinhando em telas pequenas — padrão `flex items-center justify-between` sem `min-w-0`/`truncate` no texto nem `shrink-0` no badge/botão ao lado, em ~10 telas de lista. Caso mais grave: "Solicitações pendentes" em `DashboardMedico`/`DashboardEducadorFisico`, com dois botões ao lado do nome.
+- **bug:** menu mobile da Landing sobrepondo o conteúdo da página, reportado em produção. Causa: `<header>` com `backdrop-blur` virava *containing block* do menu (`position: fixed`) em navegadores WebKit/Blink, prendendo o overlay dentro da caixa baixa do header em vez de cobrir a tela inteira. Corrigido extraindo o menu para `createPortal` direto em `document.body`.
+- **enhancement:** botão "Entrar" da Landing (desktop e mobile) alinhado visualmente ao mesmo destaque do "Fale com o time" (`btn-outline`).
