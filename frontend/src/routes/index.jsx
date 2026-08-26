@@ -18,6 +18,7 @@ import Login from "../pages/Login/Login";
 import NotFound from "../pages/NotFound/NotFound";
 import Onboarding from "../pages/Onboarding/Onboarding";
 import Perfil from "../pages/Perfil/Perfil";
+import PrimeiroAcesso from "../pages/PrimeiroAcesso/PrimeiroAcesso";
 import RankingFisico from "../pages/RankingFisico/RankingFisico";
 import SolicitarAcompanhamento from "../pages/SolicitarAcompanhamento/SolicitarAcompanhamento";
 import TelaPorUnidade from "../pages/TelaPorUnidade/TelaPorUnidade";
@@ -31,6 +32,7 @@ export function AppRoutes() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/primeiro-acesso/:token" element={<PrimeiroAcesso />} />
       <Route path="/esqueci-senha" element={<EsqueciSenha />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/perfil" element={<Perfil />} />

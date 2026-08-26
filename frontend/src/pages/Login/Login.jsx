@@ -1,16 +1,41 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
 import { ROLES } from "../../features/auth/roles";
+import { formatarCpf, validarCpf } from "../../lib/cpf";
+
+const schema = z.object({
+  cpf: z
+    .string()
+    .min(1, "Informe seu CPF")
+    .refine(validarCpf, "CPF inválido"),
+  senha: z.string().min(1, "Informe sua senha"),
+});
 
 export default function Login() {
-  const [papelSelecionado, setPapelSelecionado] = useState(null);
   const navigate = useNavigate();
+  const [mostrarAtalhoDev, setMostrarAtalhoDev] = useState(false);
 
-  const entrar = () => {
-    const papel = ROLES.find((r) => r.id === papelSelecionado);
-    if (papel) navigate(papel.path);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm({ resolver: zodResolver(schema) });
+
+  const onSubmit = async () => {
+    // TODO: substituir por mutation do TanStack Query (POST /api/auth/token/,
+    // usando CPF como identificador) quando o endpoint existir. A resposta do
+    // backend deve indicar se a senha ainda é temporária — nesse caso, o
+    // frontend deve redirecionar para /primeiro-acesso/:token em vez do
+    // dashboard, mesmo que a pessoa tenha chegado direto pelo /login (ex: link
+    // de ativação perdido). Esse redirecionamento não está implementado aqui,
+    // só a tela — depende do backend existir para saber o que responder.
+    navigate("/usuario");
   };
 
   return (
@@ -31,36 +56,77 @@ export default function Login() {
       <div className="flex flex-col justify-center p-10 md:p-14">
         <div className="mx-auto w-full max-w-[360px]">
           <h2 className="mb-1 text-2xl font-semibold text-primary">Entrar</h2>
-          {/* TODO: autenticação real (JWT contra POST /api/auth/token/) ainda não
-              existe — a seleção de papel abaixo só redireciona para a tela inicial
-              correspondente. Ver "Estado Atual do Repositório" em agents/claude.md. */}
-          <p className="mb-8 text-sm text-text-muted">Escolha como você quer entrar.</p>
+          <p className="mb-8 text-sm text-text-muted">Acesse sua conta com seu CPF.</p>
 
-          <div className="mb-6 space-y-2">
-            {ROLES.map((papel) => (
-              <button
-                key={papel.id}
-                type="button"
-                onClick={() => setPapelSelecionado(papel.id)}
-                className={`w-full rounded-lg border px-4 py-3 text-left text-sm font-medium transition-colors ${
-                  papelSelecionado === papel.id
-                    ? "border-primary bg-bg-tint text-primary"
-                    : "border-line text-text-dark hover:bg-bg-tint"
-                }`}
-              >
-                {papel.label}
-              </button>
-            ))}
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="cpf">
+              CPF
+            </label>
+            <input
+              id="cpf"
+              type="text"
+              inputMode="numeric"
+              placeholder="000.000.000-00"
+              autoComplete="username"
+              className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+              {...register("cpf", {
+                onChange: (event) => setValue("cpf", formatarCpf(event.target.value)),
+              })}
+            />
+            {errors.cpf && <p className="mb-3 text-xs text-coral">{errors.cpf.message}</p>}
+
+            <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="senha">
+              Senha
+            </label>
+            <input
+              id="senha"
+              type="password"
+              autoComplete="current-password"
+              className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+              {...register("senha")}
+            />
+            {errors.senha && <p className="mb-1 text-xs text-coral">{errors.senha.message}</p>}
+            <Link to="/esqueci-senha" className="mb-6 mt-1 block text-right text-xs font-medium text-primary">
+              Esqueci minha senha
+            </Link>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn-primary w-full rounded-lg py-2.5 text-sm font-semibold disabled:opacity-60"
+            >
+              {isSubmitting ? "Entrando..." : "Entrar"}
+            </button>
+          </form>
+
+          {/* Atalho temporário de desenvolvimento — sem backend de autenticação
+              real ainda, é a única forma de navegar entre os 4 papéis para
+              testar/demonstrar o app. Remover quando o login real acima estiver
+              de fato integrado à API. Ver "Estado Atual do Repositório" em
+              agents/claude.md. */}
+          <div className="mt-8 border-t border-line pt-5">
+            <button
+              type="button"
+              onClick={() => setMostrarAtalhoDev((atual) => !atual)}
+              className="text-xs font-medium text-text-muted underline"
+            >
+              {mostrarAtalhoDev ? "Ocultar" : "Ambiente de testes: entrar direto como..."}
+            </button>
+            {mostrarAtalhoDev && (
+              <div className="mt-3 space-y-2">
+                {ROLES.map((papel) => (
+                  <button
+                    key={papel.id}
+                    type="button"
+                    onClick={() => navigate(papel.path)}
+                    className="w-full rounded-lg border border-line px-4 py-2 text-left text-xs font-medium text-text-dark hover:bg-bg-tint"
+                  >
+                    {papel.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-
-          <button
-            type="button"
-            disabled={!papelSelecionado}
-            onClick={entrar}
-            className="btn-primary w-full rounded-lg py-2.5 text-sm font-semibold disabled:opacity-40"
-          >
-            Entrar
-          </button>
         </div>
       </div>
     </div>
