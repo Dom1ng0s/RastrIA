@@ -42,8 +42,8 @@ export default function TelaPorUnidade() {
       <div className="space-y-2">
         {unidade.subunidades.map((sub) => (
           <div key={sub.nome} className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm">
-            <span className="text-sm font-medium">{sub.nome}</span>
-            <span className="badge-normal rounded-full px-2 py-0.5 text-[11px] font-semibold">
+            <span className="min-w-0 flex-1 truncate text-sm font-medium">{sub.nome}</span>
+            <span className="shrink-0 badge-normal rounded-full px-2 py-0.5 text-[11px] font-semibold">
               {sub.percentual}% em dia
             </span>
           </div>

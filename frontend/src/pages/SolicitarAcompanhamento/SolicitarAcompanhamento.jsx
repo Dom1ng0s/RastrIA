@@ -70,15 +70,15 @@ export default function SolicitarAcompanhamento() {
       {/* Vínculo de cuidado já ativo — próxima solicitação vai direto para o mesmo profissional */}
       {vinculoAtivo && !solicitacaoPendente && (
         <div className="mb-6 flex items-center justify-between rounded-xl border border-line bg-white p-4">
-          <div>
+          <div className="min-w-0 flex-1">
             <span className="text-xs font-medium text-text-muted">Seu acompanhamento contínuo</span>
-            <p className="text-sm font-semibold text-primary">{vinculoAtivo.nome}</p>
-            <span className="text-xs text-text-muted">{vinculoAtivo.especialidade}</span>
+            <p className="truncate text-sm font-semibold text-primary">{vinculoAtivo.nome}</p>
+            <span className="truncate text-xs text-text-muted">{vinculoAtivo.especialidade}</span>
           </div>
           <button
             type="button"
             onClick={() => solicitar(vinculoAtivo)}
-            className="btn-primary rounded-lg px-4 py-2 text-sm font-semibold"
+            className="btn-primary shrink-0 rounded-lg px-4 py-2 text-sm font-semibold"
           >
             Nova solicitação
           </button>
@@ -135,18 +135,18 @@ export default function SolicitarAcompanhamento() {
                 key={profissional.id}
                 className="flex items-center justify-between rounded-xl border border-line bg-white p-4 transition-shadow hover:shadow-md"
               >
-                <div>
-                  <p className="text-sm font-medium">{profissional.nome}</p>
-                  <span className="text-xs text-text-muted">{profissional.especialidade}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">{profissional.nome}</p>
+                  <span className="block truncate text-xs text-text-muted">{profissional.especialidade}</span>
                   <div className="mt-1 flex items-center gap-1.5 text-xs text-seafoam">
-                    <Check size={12} />
-                    Disponível — {profissional.disponibilidade}
+                    <Check size={12} className="shrink-0" />
+                    <span className="truncate">Disponível — {profissional.disponibilidade}</span>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => solicitar(profissional)}
-                  className="btn-outline rounded-lg px-4 py-2 text-sm font-semibold"
+                  className="btn-outline shrink-0 rounded-lg px-4 py-2 text-sm font-semibold"
                 >
                   Solicitar
                 </button>

@@ -32,8 +32,8 @@ export function AtendimentosRealizados({ navItems, tituloPagina, escopo }) {
         {atendimentos.map((atendimento) => (
           <div key={atendimento.id} className="rounded-xl bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{atendimento.pessoa}</span>
-              <span className="text-xs text-text-muted">{atendimento.data}</span>
+              <span className="min-w-0 flex-1 truncate text-sm font-medium">{atendimento.pessoa}</span>
+              <span className="shrink-0 text-xs text-text-muted">{atendimento.data}</span>
             </div>
             <p className="mt-2 text-sm text-text-dark">{atendimento.resumo}</p>
           </div>

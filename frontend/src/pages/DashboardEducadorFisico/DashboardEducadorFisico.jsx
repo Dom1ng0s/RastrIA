@@ -55,8 +55,8 @@ export default function DashboardEducadorFisico() {
               key={solicitacao.id}
               className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm"
             >
-              <p className="text-sm font-medium">{solicitacao.usuario}</p>
-              <div className="flex gap-2">
+              <p className="min-w-0 flex-1 truncate text-sm font-medium">{solicitacao.usuario}</p>
+              <div className="flex shrink-0 gap-2">
                 <button className="btn-primary rounded-lg px-3 py-1.5 text-xs font-semibold">Confirmar</button>
                 <button className="btn-outline rounded-lg px-3 py-1.5 text-xs font-semibold">Recusar</button>
               </div>
@@ -78,8 +78,8 @@ export default function DashboardEducadorFisico() {
               to={`/educador-fisico/aluno/${aluno.id}`}
               className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm hover:bg-bg-tint"
             >
-              <span className="text-sm font-medium">{aluno.nome}</span>
-              <span className="text-xs text-text-muted">Última avaliação · {aluno.ultimaAvaliacao}</span>
+              <span className="min-w-0 flex-1 truncate text-sm font-medium">{aluno.nome}</span>
+              <span className="shrink-0 text-xs text-text-muted">Última avaliação · {aluno.ultimaAvaliacao}</span>
             </Link>
           ))}
 

@@ -109,18 +109,18 @@ export default function DashboardGerente() {
               key={entrada.id}
               className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex min-w-0 flex-1 items-center gap-3">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full badge-atencao">
                   <AlertTriangle size={16} />
                 </span>
-                <div>
-                  <p className="text-sm font-medium">{entrada.nome}</p>
-                  <p className="text-xs text-text-muted">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">{entrada.nome}</p>
+                  <p className="truncate text-xs text-text-muted">
                     {entrada.exame} · {entrada.unidade}
                   </p>
                 </div>
               </div>
-              <span className="badge-atencao rounded-full px-2 py-0.5 text-[11px] font-semibold">
+              <span className="shrink-0 badge-atencao rounded-full px-2 py-0.5 text-[11px] font-semibold">
                 {entrada.diasAtraso} dias atrasado
               </span>
             </div>
@@ -142,8 +142,8 @@ export default function DashboardGerente() {
             to={`/gerente/unidade/${unidade.id}`}
             className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm hover:bg-bg-tint"
           >
-            <span className="text-sm font-medium">{unidade.nome}</span>
-            <span className="badge-normal rounded-full px-2 py-0.5 text-[11px] font-semibold">
+            <span className="min-w-0 flex-1 truncate text-sm font-medium">{unidade.nome}</span>
+            <span className="shrink-0 badge-normal rounded-full px-2 py-0.5 text-[11px] font-semibold">
               {unidade.percentual}% em dia
             </span>
           </Link>

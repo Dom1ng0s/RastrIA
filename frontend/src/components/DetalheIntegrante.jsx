@@ -99,8 +99,8 @@ export function DetalheIntegrante({ nome, voltarPara, navItems, tituloPagina, es
         {registros.map((registro) => (
           <div key={registro.id} className="rounded-xl bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{registro.indice}</span>
-              <span className={`${badgeClasse[registro.status]} rounded-full px-2 py-0.5 text-[11px] font-semibold`}>
+              <span className="min-w-0 flex-1 truncate text-sm font-medium">{registro.indice}</span>
+              <span className={`${badgeClasse[registro.status]} shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold`}>
                 {badgeTexto[registro.status]}
               </span>
             </div>

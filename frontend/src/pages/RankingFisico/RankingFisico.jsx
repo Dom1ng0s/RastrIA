@@ -164,20 +164,20 @@ export default function RankingFisico() {
               entrada.id === usuarioAtualId ? "border-l-4 border-seafoam" : ""
             }`}
           >
-            <div className="flex items-center gap-3">
-              <span className="flex w-7 items-center justify-center text-sm font-semibold text-text-muted">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <span className="flex w-7 shrink-0 items-center justify-center text-sm font-semibold text-text-muted">
                 {entrada.posicao <= 3 ? (
                   <Trophy size={18} className={medalhaClasse[entrada.posicao]} />
                 ) : (
                   entrada.posicao
                 )}
               </span>
-              <div>
-                <p className="text-sm font-medium">{entrada.nome}</p>
-                <p className="text-xs text-text-muted">{entrada.unidade}</p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">{entrada.nome}</p>
+                <p className="truncate text-xs text-text-muted">{entrada.unidade}</p>
               </div>
             </div>
-            <span className="text-sm font-semibold text-primary">{entrada.tempo}</span>
+            <span className="shrink-0 text-sm font-semibold text-primary">{entrada.tempo}</span>
           </div>
         ))}
 

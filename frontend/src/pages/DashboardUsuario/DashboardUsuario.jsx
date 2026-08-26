@@ -166,8 +166,8 @@ export default function DashboardUsuario() {
             className={`card-registro ${registro.status !== "normal" ? "atencao" : ""} rounded-xl bg-white p-4 shadow-sm transition-shadow hover:shadow-md`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{registro.indice}</span>
-              <span className={`${badgeClasse[registro.status]} rounded-full px-2 py-0.5 text-[11px] font-semibold transition-colors`}>
+              <span className="min-w-0 flex-1 truncate text-sm font-medium">{registro.indice}</span>
+              <span className={`${badgeClasse[registro.status]} shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold transition-colors`}>
                 {badgeTexto[registro.status]}
               </span>
             </div>

@@ -54,13 +54,13 @@ export default function DashboardMedico() {
               key={solicitacao.id}
               className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm"
             >
-              <div>
-                <p className="text-sm font-medium">{solicitacao.paciente}</p>
-                <p className="text-xs text-text-muted">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">{solicitacao.paciente}</p>
+                <p className="truncate text-xs text-text-muted">
                   {solicitacao.especialidade} · {solicitacao.data}
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex shrink-0 gap-2">
                 {/* TODO: confirmar/recusar via mutation (PATCH /api/solicitacoes/:id) —
                     fluxo é sempre solicitação → confirmação, nunca aceite automático */}
                 <button className="btn-primary rounded-lg px-3 py-1.5 text-xs font-semibold">Confirmar</button>
@@ -84,8 +84,8 @@ export default function DashboardMedico() {
               to={`/medico/paciente/${paciente.id}`}
               className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm hover:bg-bg-tint"
             >
-              <span className="text-sm font-medium">{paciente.nome}</span>
-              <span className="text-xs text-text-muted">Último exame · {paciente.ultimoExame}</span>
+              <span className="min-w-0 flex-1 truncate text-sm font-medium">{paciente.nome}</span>
+              <span className="shrink-0 text-xs text-text-muted">Último exame · {paciente.ultimoExame}</span>
             </Link>
           ))}
 
