@@ -19,15 +19,28 @@ const navItems = [
 const perfilSchema = z.object({
   pesoKg: z.coerce.number({ invalid_type_error: "Informe um número" }).positive("Informe um peso válido"),
   alturaCm: z.coerce.number({ invalid_type_error: "Informe um número" }).positive("Informe uma altura válida"),
-  idade: z.coerce
-    .number({ invalid_type_error: "Informe um número" })
-    .int("Informe um número inteiro")
-    .positive("Informe uma idade válida"),
 });
 
+// Calcula idade a partir da data de nascimento — não deve ser um campo
+// separado editável pelo usuário, já que a fonte da verdade é a data de
+// nascimento cadastrada pela instituição (planilha de integrantes), não um
+// número digitado à mão que fica desatualizado a cada aniversário.
+function calcularIdade(dataNascimentoIso) {
+  const hoje = new Date();
+  const nascimento = new Date(dataNascimentoIso);
+  let idade = hoje.getFullYear() - nascimento.getFullYear();
+  const aindaNaoFezAniversarioEsteAno =
+    hoje.getMonth() < nascimento.getMonth() ||
+    (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() < nascimento.getDate());
+  if (aindaNaoFezAniversarioEsteAno) idade -= 1;
+  return idade;
+}
+
 // TODO: substituir por dado real via TanStack Query (GET /api/usuarios/me) quando
-// o endpoint existir — hoje reflete só o que foi digitado no Onboarding.
-const dadosMock = { email: "usuario@rastria.app", pesoKg: 70, alturaCm: 170, idade: 30 };
+// o endpoint existir. `dataNascimento` vem da planilha de integrantes importada
+// pela instituição (ver "Dados pessoais complementares" em agents/claude.md) —
+// não é preenchida pelo usuário, por isso não aparece no formulário abaixo.
+const dadosMock = { email: "usuario@rastria.app", dataNascimento: "1996-03-15", pesoKg: 70, alturaCm: 170 };
 
 export default function Perfil() {
   const {
@@ -51,6 +64,12 @@ export default function Perfil() {
         <label className="mb-1.5 block text-xs font-medium text-text-dark">E-mail</label>
         <p className="mb-5 text-sm text-text-muted">{dadosMock.email}</p>
 
+        <label className="mb-1.5 block text-xs font-medium text-text-dark">Data de nascimento</label>
+        <p className="mb-5 text-sm text-text-muted">
+          {new Date(dadosMock.dataNascimento).toLocaleDateString("pt-BR")} · {calcularIdade(dadosMock.dataNascimento)}{" "}
+          anos
+        </p>
+
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="pesoKg">
             Peso (kg)
@@ -73,18 +92,7 @@ export default function Perfil() {
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("alturaCm")}
           />
-          {errors.alturaCm && <p className="mb-3 text-xs text-coral">{errors.alturaCm.message}</p>}
-
-          <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="idade">
-            Idade
-          </label>
-          <input
-            id="idade"
-            type="number"
-            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-            {...register("idade")}
-          />
-          {errors.idade && <p className="mb-4 text-xs text-coral">{errors.idade.message}</p>}
+          {errors.alturaCm && <p className="mb-4 text-xs text-coral">{errors.alturaCm.message}</p>}
 
           <button
             type="submit"

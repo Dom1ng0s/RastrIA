@@ -8,10 +8,6 @@ import { Logo } from "../../components/Logo";
 const onboardingSchema = z.object({
   pesoKg: z.coerce.number({ invalid_type_error: "Informe um número" }).positive("Informe um peso válido"),
   alturaCm: z.coerce.number({ invalid_type_error: "Informe um número" }).positive("Informe uma altura válida"),
-  idade: z.coerce
-    .number({ invalid_type_error: "Informe um número" })
-    .int("Informe um número inteiro")
-    .positive("Informe uma idade válida"),
 });
 
 export default function Onboarding() {
@@ -66,17 +62,10 @@ export default function Onboarding() {
           />
           {errors.alturaCm && <p className="mb-3 text-xs text-coral">{errors.alturaCm.message}</p>}
 
-          <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="idade">
-            Idade
-          </label>
-          <input
-            id="idade"
-            type="number"
-            placeholder="30"
-            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-            {...register("idade")}
-          />
-          {errors.idade && <p className="mb-4 text-xs text-coral">{errors.idade.message}</p>}
+          {/* Idade não é coletada aqui — vem da data de nascimento cadastrada
+              pela instituição na planilha de integrantes (ver "Dados pessoais
+              complementares" em agents/claude.md), não é informação que o
+              próprio usuário digita. */}
 
           <button
             type="submit"
