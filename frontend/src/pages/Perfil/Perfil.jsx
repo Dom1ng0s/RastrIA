@@ -1,9 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LayoutDashboard, Stethoscope, ToggleLeft, ToggleRight } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { useConsentimentoStore } from "../../features/consentimento/store";
 import { useRankingPrefsStore } from "../../features/ranking/store";
 
 // TODO: navItems assume o contexto de "usuário individual". Quando existir
@@ -36,6 +38,7 @@ export default function Perfil() {
 
   const optedOutDoRanking = useRankingPrefsStore((state) => state.optedOut);
   const toggleOptOutDoRanking = useRankingPrefsStore((state) => state.toggleOptOut);
+  const consentimento = useConsentimentoStore((state) => state.consentimento);
 
   const onSubmit = async (dados) => {
     // TODO: substituir por mutation do TanStack Query (PATCH /api/usuarios/me).
@@ -111,6 +114,21 @@ export default function Perfil() {
             <ToggleRight size={28} className="text-seafoam" />
           )}
         </button>
+      </div>
+
+      <div className="mt-6 max-w-[400px] rounded-2xl border border-line bg-white p-7">
+        <h2 className="mb-1 text-sm font-semibold text-text-dark">Consentimento LGPD</h2>
+        <p className="mb-4 text-xs text-text-muted">
+          {consentimento
+            ? "Termo aceito no primeiro acesso. O aceite não pode ser revogado, mas você pode consultar o conteúdo do termo a qualquer momento."
+            : "Nenhum registro de aceite encontrado nesta conta."}
+        </p>
+        <Link
+          to="/perfil/termo-consentimento"
+          className="btn-outline block w-full rounded-lg py-2.5 text-center text-sm font-semibold"
+        >
+          Consultar termo aceito
+        </Link>
       </div>
     </DashboardLayout>
   );
