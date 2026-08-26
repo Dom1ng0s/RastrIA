@@ -312,8 +312,8 @@ Confirmado por commits reais no repositório:
 | Filtro por batalhão no ranking | ✅ **Implementado** (`fe86855`, closes #10) — não estava na lista original de 6, mas relacionado à pendência de hierarquia multinível |
 | Flag de exame atrasado no painel do comando | ✅ **Implementado** (`d63a61c`, closes #11) — **feature nova, fora da lista original**. Documentada como exceção deliberada e confirmada com o time à regra de segregação de acesso: mostra status administrativo de pendência (nome + tipo de exame + dias de atraso), nunca o resultado/valor clínico — analogia usada: "sistema de RH mostra treinamento vencido, não o conteúdo do treinamento" |
 | Upload de planilha de integrantes | 🔲 Ainda não implementado |
-| Troca de senha obrigatória + login por CPF | 🔲 Ainda não implementado |
-| Consentimento LGPD | 🔲 Ainda não implementado |
+| Troca de senha obrigatória + login por CPF | ✅ **Implementado** (`pages/PrimeiroAcesso/`, closes #13) |
+| Consentimento LGPD | ✅ **Implementado** (`dc3decb`, closes #18) — passo integrado ao fluxo de `PrimeiroAcesso`, termo consultável em `/perfil/termo-consentimento` |
 | Central de atendimentos (usuário + profissional) | 🔲 Ainda não implementado |
 | Estados vazios com call-to-action | 🔲 Ainda não implementado |
 
