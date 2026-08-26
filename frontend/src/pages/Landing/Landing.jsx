@@ -322,7 +322,6 @@ function Footer() {
         <div>
           <span className="mb-3 block text-xs font-semibold text-[#9FCFC4]">CONTATO</span>
           <p className="text-sm text-[#CFEAE3]">Maceió, Alagoas</p>
-          <p className="mt-1 text-sm text-[#CFEAE3]">Programa Centelha 3 — Alagoas</p>
         </div>
       </div>
     </footer>

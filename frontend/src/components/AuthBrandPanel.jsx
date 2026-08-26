@@ -28,8 +28,6 @@ export function AuthBrandPanel({ heading, subtitle }) {
         <h1 className="mb-3 text-3xl font-semibold leading-tight text-white">{heading}</h1>
         <p className="max-w-[280px] text-sm text-[#CFEAE3]">{subtitle}</p>
       </div>
-
-      <p className="relative z-10 text-xs text-[#9FCFC4]">Programa Centelha 3 · Alagoas</p>
     </div>
   );
 }
