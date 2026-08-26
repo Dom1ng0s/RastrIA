@@ -1,5 +1,6 @@
 import { Landmark, Lock, Menu, ShieldCheck, X } from "lucide-react";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
@@ -10,6 +11,65 @@ const LINKS_NAV = [
   { href: "#instituicoes", label: "Para instituições" },
   { href: "#contato", label: "Contato" },
 ];
+
+/**
+ * Renderizado via createPortal direto em document.body (não como filho do
+ * <header>). Correção de bug real: o <header> tem backdrop-blur, e em
+ * navegadores WebKit/Blink (Chrome/Safari), qualquer ancestral com
+ * backdrop-filter vira o "containing block" de um descendente
+ * position:fixed — o menu ficava preso dentro da caixa (baixinha) do
+ * header em vez de cobrir a tela inteira. Portal contorna isso de vez,
+ * independente de qualquer propriedade CSS de ancestral.
+ */
+function MenuMobile({ aberto, onFechar }) {
+  if (!aberto) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-30 md:hidden">
+      <button
+        type="button"
+        aria-label="Fechar menu"
+        onClick={onFechar}
+        className="absolute inset-0 bg-primary/40"
+      />
+      <div className="absolute right-0 top-0 flex h-full w-72 flex-col gap-1 bg-white p-6 shadow-xl">
+        <div className="mb-6 flex items-center justify-between">
+          <Logo />
+          <button type="button" aria-label="Fechar menu" onClick={onFechar}>
+            <X size={22} className="text-text-dark" />
+          </button>
+        </div>
+        {LINKS_NAV.map((link) => (
+          <a
+            key={link.href}
+            href={link.href}
+            onClick={onFechar}
+            className="rounded-lg px-3 py-2.5 text-sm font-medium text-text-dark hover:bg-bg-tint"
+          >
+            {link.label}
+          </a>
+        ))}
+        <div className="mt-4 space-y-2 border-t border-line pt-4">
+          <Link
+            to="/login"
+            onClick={onFechar}
+            className="block rounded-lg px-3 py-2.5 text-sm font-medium text-text-dark hover:bg-bg-tint"
+          >
+            Entrar
+          </Link>
+          <a
+            href="#contato"
+            onClick={onFechar}
+            className="btn-primary block rounded-lg px-3 py-2.5 text-center text-sm font-semibold"
+          >
+            Fale com o time
+          </a>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
 
 function Header() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -42,50 +102,7 @@ function Header() {
         </div>
       </div>
 
-      {menuAberto && (
-        <div className="fixed inset-0 z-30 md:hidden">
-          <button
-            type="button"
-            aria-label="Fechar menu"
-            onClick={() => setMenuAberto(false)}
-            className="absolute inset-0 bg-primary/40"
-          />
-          <div className="absolute right-0 top-0 flex h-full w-72 flex-col gap-1 bg-white p-6 shadow-xl">
-            <div className="mb-6 flex items-center justify-between">
-              <Logo />
-              <button type="button" aria-label="Fechar menu" onClick={() => setMenuAberto(false)}>
-                <X size={22} className="text-text-dark" />
-              </button>
-            </div>
-            {LINKS_NAV.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuAberto(false)}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-text-dark hover:bg-bg-tint"
-              >
-                {link.label}
-              </a>
-            ))}
-            <div className="mt-4 space-y-2 border-t border-line pt-4">
-              <Link
-                to="/login"
-                onClick={() => setMenuAberto(false)}
-                className="block rounded-lg px-3 py-2.5 text-sm font-medium text-text-dark hover:bg-bg-tint"
-              >
-                Entrar
-              </Link>
-              <a
-                href="#contato"
-                onClick={() => setMenuAberto(false)}
-                className="btn-primary block rounded-lg px-3 py-2.5 text-center text-sm font-semibold"
-              >
-                Fale com o time
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
+      <MenuMobile aberto={menuAberto} onFechar={() => setMenuAberto(false)} />
     </header>
   );
 }
