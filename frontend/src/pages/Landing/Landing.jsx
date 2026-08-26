@@ -1,4 +1,4 @@
-import { Menu, X } from "lucide-react";
+import { Landmark, Lock, Menu, ShieldCheck, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -159,9 +159,15 @@ function TrustStrip() {
   return (
     <section className="border-y border-line bg-bg-tint">
       <div className="mx-auto flex max-w-[1180px] flex-wrap justify-center px-6 py-6 text-sm font-medium text-text-dark">
-        <span className="mx-6 my-1">🔒 Dado sensível protegido (LGPD)</span>
-        <span className="mx-6 my-1">✓ Profissionais com CRM/CREF verificado</span>
-        <span className="mx-6 my-1">🏛️ Modelo alinhado à NR-7/PCMSO</span>
+        <span className="mx-6 my-1 flex items-center gap-2">
+          <Lock size={16} className="text-primary" /> Dado sensível protegido (LGPD)
+        </span>
+        <span className="mx-6 my-1 flex items-center gap-2">
+          <ShieldCheck size={16} className="text-primary" /> Profissionais com CRM/CREF verificado
+        </span>
+        <span className="mx-6 my-1 flex items-center gap-2">
+          <Landmark size={16} className="text-primary" /> Modelo alinhado à NR-7/PCMSO
+        </span>
       </div>
     </section>
   );
