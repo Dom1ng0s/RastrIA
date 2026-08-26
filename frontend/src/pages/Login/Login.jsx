@@ -70,7 +70,7 @@ export default function Login() {
               inputMode="numeric"
               placeholder="000.000.000-00"
               autoComplete="username"
-              className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+              className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
               {...register("cpf", {
                 onChange: (event) => setValue("cpf", formatarCpf(event.target.value)),
               })}
@@ -84,7 +84,7 @@ export default function Login() {
               id="senha"
               type="password"
               autoComplete="current-password"
-              className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+              className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
               {...register("senha")}
             />
             {errors.senha && <p className="mb-1 text-xs text-coral">{errors.senha.message}</p>}

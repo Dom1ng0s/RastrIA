@@ -53,7 +53,7 @@ function MenuMobile({ aberto, onFechar }) {
           <Link
             to="/login"
             onClick={onFechar}
-            className="block rounded-lg px-3 py-2.5 text-sm font-medium text-text-dark hover:bg-bg-tint"
+            className="btn-outline block rounded-lg px-3 py-2.5 text-center text-sm font-semibold"
           >
             Entrar
           </Link>
@@ -87,7 +87,7 @@ function Header() {
         </nav>
         <div className="hidden items-center gap-4 md:flex">
           <ThemeToggle />
-          <Link to="/login" className="text-sm font-medium text-text-dark">
+          <Link to="/login" className="btn-outline rounded-lg px-4 py-2 text-sm font-semibold">
             Entrar
           </Link>
           <a href="#contato" className="btn-primary rounded-lg px-4 py-2 text-sm font-semibold">

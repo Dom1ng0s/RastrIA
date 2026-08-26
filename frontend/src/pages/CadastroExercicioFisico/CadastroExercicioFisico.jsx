@@ -49,7 +49,7 @@ export default function CadastroExercicioFisico() {
           <select
             id="tipo"
             defaultValue=""
-            className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("tipo")}
           >
             <option value="" disabled>
@@ -72,7 +72,7 @@ export default function CadastroExercicioFisico() {
                 id="valor"
                 type="text"
                 placeholder="Ex: 5km em 27min"
-                className="w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+                className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                 {...register("valor")}
               />
               {errors.valor && <p className="mt-1 text-xs text-coral">{errors.valor.message}</p>}
@@ -85,7 +85,7 @@ export default function CadastroExercicioFisico() {
                 id="data"
                 type="text"
                 placeholder="dd/mm/aaaa"
-                className="w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+                className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                 {...register("data")}
               />
               {errors.data && <p className="mt-1 text-xs text-coral">{errors.data.message}</p>}

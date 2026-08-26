@@ -136,7 +136,7 @@ export default function PrimeiroAcesso() {
                   id="senha"
                   type="password"
                   autoComplete="new-password"
-                  className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+                  className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                   {...register("senha")}
                 />
                 {errors.senha && <p className="mb-3 text-xs text-coral">{errors.senha.message}</p>}
@@ -151,7 +151,7 @@ export default function PrimeiroAcesso() {
                   id="confirmarSenha"
                   type="password"
                   autoComplete="new-password"
-                  className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+                  className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                   {...register("confirmarSenha")}
                 />
                 {errors.confirmarSenha && (

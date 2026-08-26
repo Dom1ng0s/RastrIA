@@ -49,7 +49,7 @@ export default function Onboarding() {
             type="number"
             step="0.1"
             placeholder="70"
-            className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("pesoKg")}
           />
           {errors.pesoKg && <p className="mb-3 text-xs text-coral">{errors.pesoKg.message}</p>}
@@ -61,7 +61,7 @@ export default function Onboarding() {
             id="alturaCm"
             type="number"
             placeholder="170"
-            className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("alturaCm")}
           />
           {errors.alturaCm && <p className="mb-3 text-xs text-coral">{errors.alturaCm.message}</p>}
@@ -73,7 +73,7 @@ export default function Onboarding() {
             id="idade"
             type="number"
             placeholder="30"
-            className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("idade")}
           />
           {errors.idade && <p className="mb-4 text-xs text-coral">{errors.idade.message}</p>}

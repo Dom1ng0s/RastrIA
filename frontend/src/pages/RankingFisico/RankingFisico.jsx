@@ -107,7 +107,7 @@ export default function RankingFisico() {
         <select
           value={atividadeId}
           onChange={(evento) => setAtividadeId(evento.target.value)}
-          className="w-full rounded-lg border border-line px-3.5 py-2.5 text-sm sm:w-64"
+          className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark sm:w-64"
         >
           {atividades.map((atividade) => (
             <option key={atividade.id} value={atividade.id}>

@@ -76,7 +76,7 @@ export default function EsqueciSenha() {
                   inputMode="numeric"
                   placeholder="000.000.000-00"
                   autoComplete="username"
-                  className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+                  className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                   {...register("cpf", {
                     onChange: (event) => setValue("cpf", formatarCpf(event.target.value)),
                   })}

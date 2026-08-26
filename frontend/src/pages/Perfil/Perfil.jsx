@@ -59,7 +59,7 @@ export default function Perfil() {
             id="pesoKg"
             type="number"
             step="0.1"
-            className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("pesoKg")}
           />
           {errors.pesoKg && <p className="mb-3 text-xs text-coral">{errors.pesoKg.message}</p>}
@@ -70,7 +70,7 @@ export default function Perfil() {
           <input
             id="alturaCm"
             type="number"
-            className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("alturaCm")}
           />
           {errors.alturaCm && <p className="mb-3 text-xs text-coral">{errors.alturaCm.message}</p>}
@@ -81,7 +81,7 @@ export default function Perfil() {
           <input
             id="idade"
             type="number"
-            className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("idade")}
           />
           {errors.idade && <p className="mb-4 text-xs text-coral">{errors.idade.message}</p>}

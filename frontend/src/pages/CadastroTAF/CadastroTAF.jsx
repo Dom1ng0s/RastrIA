@@ -72,7 +72,7 @@ export default function CadastroTAF() {
             id="data"
             type="text"
             placeholder="dd/mm/aaaa"
-            className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("data")}
           />
           {errors.data && <p className="mb-3 text-xs text-coral">{errors.data.message}</p>}
@@ -86,7 +86,7 @@ export default function CadastroTAF() {
                 id="corridaTempo"
                 type="text"
                 placeholder="Ex: 11min 30s"
-                className="w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+                className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                 {...register("corridaTempo")}
               />
               {errors.corridaTempo && <p className="mt-1 text-xs text-coral">{errors.corridaTempo.message}</p>}
@@ -99,7 +99,7 @@ export default function CadastroTAF() {
                 id="flexoes"
                 type="number"
                 min="0"
-                className="w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+                className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                 {...register("flexoes")}
               />
               {errors.flexoes && <p className="mt-1 text-xs text-coral">{errors.flexoes.message}</p>}
@@ -115,7 +115,7 @@ export default function CadastroTAF() {
                 id="abdominais"
                 type="number"
                 min="0"
-                className="w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+                className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                 {...register("abdominais")}
               />
               {errors.abdominais && <p className="mt-1 text-xs text-coral">{errors.abdominais.message}</p>}
@@ -128,7 +128,7 @@ export default function CadastroTAF() {
                 id="barra"
                 type="number"
                 min="0"
-                className="w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+                className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                 {...register("barra")}
               />
               {errors.barra && <p className="mt-1 text-xs text-coral">{errors.barra.message}</p>}
@@ -141,7 +141,7 @@ export default function CadastroTAF() {
           <select
             id="resultado"
             defaultValue=""
-            className="mb-1 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm"
+            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("resultado")}
           >
             <option value="" disabled>
