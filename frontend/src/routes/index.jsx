@@ -22,6 +22,7 @@ import PrimeiroAcesso from "../pages/PrimeiroAcesso/PrimeiroAcesso";
 import RankingFisico from "../pages/RankingFisico/RankingFisico";
 import SolicitarAcompanhamento from "../pages/SolicitarAcompanhamento/SolicitarAcompanhamento";
 import TelaPorUnidade from "../pages/TelaPorUnidade/TelaPorUnidade";
+import TermoConsentimento from "../pages/TermoConsentimento/TermoConsentimento";
 
 // NOTA: não existe mais rota de autocadastro (/cadastro) nem de autorização de
 // usuário pendente (/gerente/autorizacao) — contas são provisionadas
@@ -36,6 +37,7 @@ export function AppRoutes() {
       <Route path="/esqueci-senha" element={<EsqueciSenha />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/perfil" element={<Perfil />} />
+      <Route path="/perfil/termo-consentimento" element={<TermoConsentimento />} />
       <Route path="/gerente" element={<DashboardGerente />} />
       <Route path="/gerente/unidade/:id" element={<TelaPorUnidade />} />
       <Route path="/medico" element={<DashboardMedico />} />
