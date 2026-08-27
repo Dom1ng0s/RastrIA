@@ -123,7 +123,7 @@ export function DashboardLayout({ title, navItems, children, onHelp }) {
             )}
           </div>
         </header>
-        <main className="p-5 md:p-8">{children}</main>
+        <main className="mx-auto max-w-6xl p-5 md:p-8">{children}</main>
       </div>
     </div>
   );
