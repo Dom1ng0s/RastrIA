@@ -1,12 +1,24 @@
 import { HelpCircle, LogOut, Menu, User, X } from "lucide-react";
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
+import { useAuthStore } from "../features/auth/store";
 import { ThemeToggle } from "../features/theme/ThemeToggle";
 
 import { Logo } from "./Logo";
 
-function SidebarContent({ navItems, location, navigate, onNavigate }) {
+function SidebarContent({ navItems, location, onNavigate }) {
+  const logout = useAuthStore((state) => state.logout);
+
+  const sair = () => {
+    onNavigate?.();
+    logout();
+    // Navegação "dura" para forçar a reinicialização das stores (consentimento,
+    // ranking, tour) que só leem o localStorage na carga — assim o estado de um
+    // papel não permanece em memória para o próximo.
+    window.location.assign("/login");
+  };
+
   return (
     <>
       <div>
@@ -40,13 +52,9 @@ function SidebarContent({ navItems, location, navigate, onNavigate }) {
           <User size={18} />
           Perfil
         </Link>
-        {/* TODO: limpar sessão real (tokens/store de auth) quando login real existir */}
         <button
           type="button"
-          onClick={() => {
-            onNavigate?.();
-            navigate("/login");
-          }}
+          onClick={sair}
           className="nav-item flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium"
         >
           <LogOut size={18} />
@@ -59,14 +67,13 @@ function SidebarContent({ navItems, location, navigate, onNavigate }) {
 
 export function DashboardLayout({ title, navItems, children, onHelp }) {
   const location = useLocation();
-  const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
 
   return (
     <div className="flex min-h-screen">
       {/* Sidebar fixa — telas médias/grandes */}
       <aside className="hidden w-64 flex-shrink-0 flex-col justify-between bg-primary p-6 md:flex">
-        <SidebarContent navItems={navItems} location={location} navigate={navigate} />
+        <SidebarContent navItems={navItems} location={location} />
       </aside>
 
       {/* Gaveta mobile */}
@@ -90,7 +97,6 @@ export function DashboardLayout({ title, navItems, children, onHelp }) {
             <SidebarContent
               navItems={navItems}
               location={location}
-              navigate={navigate}
               onNavigate={() => setMenuAberto(false)}
             />
           </aside>
