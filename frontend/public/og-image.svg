@@ -1,0 +1,14 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0C4A44"/>
+  <path d="M0 430 C150 430 175 180 300 180 C400 180 425 530 500 530 C580 530 590 90 720 90 C860 90 860 360 1200 300" fill="none" stroke="#14B892" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity="0.28"/>
+  <g transform="translate(96 250)">
+    <svg width="90" height="90" viewBox="0 16 40 24">
+      <circle cx="8" cy="30" r="5" fill="#14B892"/>
+      <path d="M8 30 C14 30 15 20 20 20 C24 20 25 34 29 34 C32 34 32 26 36 26" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="36" cy="26" r="3.5" fill="#FF6B4A"/>
+    </svg>
+    <text x="112" y="72" font-family="Georgia, 'Times New Roman', serif" font-size="76" font-weight="700" fill="#ffffff">Rastria</text>
+  </g>
+  <text x="96" y="400" font-family="Georgia, 'Times New Roman', serif" font-size="52" font-weight="600" fill="#ffffff">Seu histórico de saúde, verificado e conectado</text>
+  <text x="96" y="470" font-family="Arial, Helvetica, sans-serif" font-size="30" fill="#CFEAE3">Gestão de saúde ocupacional com acesso segmentado por papel</text>
+</svg>
