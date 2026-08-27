@@ -12,7 +12,7 @@ import DashboardUsuario from "../pages/DashboardUsuario/DashboardUsuario";
 import DetalheAluno from "../pages/DetalheAluno/DetalheAluno";
 import DetalhePaciente from "../pages/DetalhePaciente/DetalhePaciente";
 import EsqueciSenha from "../pages/EsqueciSenha/EsqueciSenha";
-import HistoricoAtendimentos from "../pages/HistoricoAtendimentos/HistoricoAtendimentos";
+import RedefinirSenha from "../pages/RedefinirSenha/RedefinirSenha";import HistoricoAtendimentos from "../pages/HistoricoAtendimentos/HistoricoAtendimentos";
 import Landing from "../pages/Landing/Landing";
 import Login from "../pages/Login/Login";
 import NotFound from "../pages/NotFound/NotFound";
@@ -35,6 +35,7 @@ export function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/primeiro-acesso/:token" element={<PrimeiroAcesso />} />
       <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+      <Route path="/redefinir-senha/:token" element={<RedefinirSenha />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/perfil" element={<Perfil />} />
       <Route path="/perfil/termo-consentimento" element={<TermoConsentimento />} />

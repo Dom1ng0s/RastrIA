@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { PasswordInput } from "../../components/PasswordInput";
 import { TermoConsentimentoLGPD } from "../../components/TermoConsentimentoLGPD";
 import { useConsentimentoStore } from "../../features/consentimento/store";
 import { mascararCpf } from "../../lib/cpf";
@@ -132,13 +133,7 @@ export default function PrimeiroAcesso() {
                 <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="senha">
                   Nova senha
                 </label>
-                <input
-                  id="senha"
-                  type="password"
-                  autoComplete="new-password"
-                  className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-                  {...register("senha")}
-                />
+                <PasswordInput id="senha" autoComplete="new-password" className="mb-1" {...register("senha")} />
                 {errors.senha && <p className="mb-3 text-xs text-coral">{errors.senha.message}</p>}
                 <p className="mb-4 text-xs text-text-muted">
                   Mínimo 8 caracteres, 1 maiúscula, 1 número e 1 símbolo.
@@ -147,11 +142,10 @@ export default function PrimeiroAcesso() {
                 <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="confirmarSenha">
                   Confirmar senha
                 </label>
-                <input
+                <PasswordInput
                   id="confirmarSenha"
-                  type="password"
                   autoComplete="new-password"
-                  className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+                  className="mb-1"
                   {...register("confirmarSenha")}
                 />
                 {errors.confirmarSenha && (

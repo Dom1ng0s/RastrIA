@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { PasswordInput } from "../../components/PasswordInput";
 import { useAuthStore } from "../../features/auth/store";
 import { ROLES } from "../../features/auth/roles";
 import { formatarCpf, validarCpf } from "../../lib/cpf";
@@ -80,13 +81,7 @@ export default function Login() {
             <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="senha">
               Senha
             </label>
-            <input
-              id="senha"
-              type="password"
-              autoComplete="current-password"
-              className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-              {...register("senha")}
-            />
+            <PasswordInput id="senha" autoComplete="current-password" className="mb-1" {...register("senha")} />
             {errors.senha && <p className="mb-1 text-xs text-coral">{errors.senha.message}</p>}
             <Link to="/esqueci-senha" className="mb-6 mt-1 block text-right text-xs font-medium text-primary">
               Esqueci minha senha
