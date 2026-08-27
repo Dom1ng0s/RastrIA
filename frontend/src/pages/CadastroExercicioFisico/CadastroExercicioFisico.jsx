@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { useToast } from "../../features/ui/ToastProvider";
 import { navItems } from "../DashboardUsuario/DashboardUsuario";
 
 const TIPOS_EXERCICIO = ["Corrida", "Musculação", "Natação", "Ciclismo", "Funcional"];
@@ -20,6 +21,7 @@ const cadastroExercicioSchema = z.object({
 
 export default function CadastroExercicioFisico() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const {
     register,
     handleSubmit,
@@ -29,6 +31,7 @@ export default function CadastroExercicioFisico() {
   const onSubmit = async (dados) => {
     // TODO: substituir por mutation do TanStack Query (POST /api/registros-saude, tipo="desempenho_fisico").
     console.log("exercício cadastrado", dados);
+    showToast("Registro salvo com sucesso");
     navigate("/usuario/cadastrar-informacoes");
   };
 

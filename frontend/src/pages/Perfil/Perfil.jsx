@@ -7,6 +7,7 @@ import { z } from "zod";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { useConsentimentoStore } from "../../features/consentimento/store";
 import { useRankingPrefsStore } from "../../features/ranking/store";
+import { useToast } from "../../features/ui/ToastProvider";
 
 // TODO: navItems assume o contexto de "usuário individual". Quando existir
 // autenticação real, derivar dinamicamente pelo papel logado — Perfil é
@@ -46,16 +47,21 @@ export default function Perfil() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting, isDirty },
   } = useForm({ resolver: zodResolver(perfilSchema), defaultValues: dadosMock });
 
   const optedOutDoRanking = useRankingPrefsStore((state) => state.optedOut);
   const toggleOptOutDoRanking = useRankingPrefsStore((state) => state.toggleOptOut);
   const consentimento = useConsentimentoStore((state) => state.consentimento);
+  const { showToast } = useToast();
 
   const onSubmit = async (dados) => {
     // TODO: substituir por mutation do TanStack Query (PATCH /api/usuarios/me).
     console.log("perfil atualizado", dados);
+    showToast("Alterações salvas");
+    // Zera o isDirty: os valores salvos passam a ser o novo baseline do form.
+    reset(dados);
   };
 
   return (
