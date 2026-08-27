@@ -8,6 +8,7 @@ import { DashboardLayout } from "../../components/DashboardLayout";
 import { useConsentimentoStore } from "../../features/consentimento/store";
 import { useRankingPrefsStore } from "../../features/ranking/store";
 import { useToast } from "../../features/ui/ToastProvider";
+import { calcularIdade, formatarDataNascimento } from "../../lib/dataNascimento";
 
 // TODO: navItems assume o contexto de "usuário individual". Quando existir
 // autenticação real, derivar dinamicamente pelo papel logado — Perfil é
@@ -22,20 +23,9 @@ const perfilSchema = z.object({
   alturaCm: z.coerce.number({ invalid_type_error: "Informe um número" }).positive("Informe uma altura válida"),
 });
 
-// Calcula idade a partir da data de nascimento — não deve ser um campo
-// separado editável pelo usuário, já que a fonte da verdade é a data de
-// nascimento cadastrada pela instituição (planilha de integrantes), não um
-// número digitado à mão que fica desatualizado a cada aniversário.
-function calcularIdade(dataNascimentoIso) {
-  const hoje = new Date();
-  const nascimento = new Date(dataNascimentoIso);
-  let idade = hoje.getFullYear() - nascimento.getFullYear();
-  const aindaNaoFezAniversarioEsteAno =
-    hoje.getMonth() < nascimento.getMonth() ||
-    (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() < nascimento.getDate());
-  if (aindaNaoFezAniversarioEsteAno) idade -= 1;
-  return idade;
-}
+// A idade deriva da data de nascimento (fonte da verdade: planilha de
+// integrantes da instituição), nunca de um número digitado à mão que
+// desatualiza a cada aniversário. Cálculo e formatação em lib/dataNascimento.
 
 // TODO: substituir por dado real via TanStack Query (GET /api/usuarios/me) quando
 // o endpoint existir. `dataNascimento` vem da planilha de integrantes importada
@@ -72,8 +62,7 @@ export default function Perfil() {
 
         <label className="mb-1.5 block text-xs font-medium text-text-dark">Data de nascimento</label>
         <p className="mb-5 text-sm text-text-muted">
-          {new Date(dadosMock.dataNascimento).toLocaleDateString("pt-BR")} · {calcularIdade(dadosMock.dataNascimento)}{" "}
-          anos
+          {formatarDataNascimento(dadosMock.dataNascimento)} · {calcularIdade(dadosMock.dataNascimento)} anos
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
