@@ -134,7 +134,7 @@ function Hero() {
         </h1>
         <p className="mb-8 max-w-[440px] text-base text-text-muted md:text-lg">
           A Rastria reúne seu histórico de saúde e desempenho físico, verifica seus índices
-          automaticamente e te conecta a profissionais qualificados — tudo em um só lugar.
+          automaticamente e te conecta aos profissionais da sua própria instituição — tudo em um só lugar.
         </p>
         <div className="flex flex-wrap gap-3">
           <a href="#contato" className="btn-primary rounded-lg px-6 py-3 text-sm font-semibold">
@@ -194,7 +194,7 @@ function ComoFunciona() {
   const passos = [
     { numero: 1, cor: "bg-seafoam", titulo: "Cadastre", texto: "Exames laboratoriais, avaliações cardiológicas, bioimpedância e desempenho físico." },
     { numero: 2, cor: "bg-primary", titulo: "Verifique", texto: "Seus índices são comparados automaticamente com parâmetros de referência clínica." },
-    { numero: 3, cor: "bg-coral", titulo: "Conecte-se", texto: "Acesse médicos e educadores físicos de uma rede pré-qualificada, com continuidade." },
+    { numero: 3, cor: "bg-coral", titulo: "Conecte-se", texto: "Acesse médicos e educadores físicos da sua própria instituição, com continuidade de cuidado." },
   ];
 
   return (
