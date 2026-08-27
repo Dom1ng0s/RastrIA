@@ -10,6 +10,14 @@ import { useAuthStore } from "../../features/auth/store";
 import { ROLES } from "../../features/auth/roles";
 import { formatarCpf, validarCpf } from "../../lib/cpf";
 
+// Telas do fluxo de acesso alcançáveis só por URL enquanto não há backend.
+// Os tokens são os mocks aceitos por PrimeiroAcesso/RedefinirSenha.
+const FLUXOS_DEMO = [
+  { to: "/onboarding", label: "Onboarding (primeiro login)" },
+  { to: "/primeiro-acesso/token-exemplo", label: "Primeiro acesso (definir senha)" },
+  { to: "/redefinir-senha/token-exemplo", label: "Redefinir senha (link do e-mail)" },
+];
+
 const schema = z.object({
   cpf: z
     .string()
@@ -123,6 +131,24 @@ export default function Login() {
                   >
                     {papel.label}
                   </button>
+                ))}
+
+                {/* Telas do fluxo de acesso não têm CTA que leve até elas
+                    enquanto não há backend (o login sempre cai no dashboard).
+                    Links diretos aqui garantem que essas telas entrem na
+                    validação com stakeholders. Remover junto com o atalho de
+                    papéis quando o login real existir. */}
+                <p className="pt-2 text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+                  Fluxo de acesso
+                </p>
+                {FLUXOS_DEMO.map((fluxo) => (
+                  <Link
+                    key={fluxo.to}
+                    to={fluxo.to}
+                    className="block w-full rounded-lg border border-line px-4 py-2 text-left text-xs font-medium text-text-dark hover:bg-bg-tint"
+                  >
+                    {fluxo.label}
+                  </Link>
                 ))}
               </div>
             )}
