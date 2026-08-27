@@ -1,6 +1,8 @@
 import { AlertCircle, LayoutDashboard, Users } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
+import { CampoBusca } from "../../components/CampoBusca";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { EmptyState } from "../../components/EmptyState";
 import { GuidedTour } from "../../features/tour/GuidedTour";
@@ -35,6 +37,9 @@ const alunos = [
 
 export default function DashboardEducadorFisico() {
   const { run, handleCallback, restart } = useGuidedTour("educador-fisico");
+  const [buscaAluno, setBuscaAluno] = useState("");
+
+  const alunosFiltrados = alunos.filter((aluno) => aluno.nome.toLowerCase().includes(buscaAluno.toLowerCase()));
 
   return (
     <DashboardLayout title="Painel do Educador Físico" navItems={navItems} onHelp={restart}>
@@ -71,8 +76,9 @@ export default function DashboardEducadorFisico() {
 
       <section data-tour="meus-alunos">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meus alunos</h2>
-        <div className="space-y-2">
-          {alunos.map((aluno) => (
+        <CampoBusca valor={buscaAluno} aoMudar={setBuscaAluno} placeholder="Buscar aluno por nome..." />
+        <div className="mt-3 space-y-2">
+          {alunosFiltrados.map((aluno) => (
             <Link
               key={aluno.id}
               to={`/educador-fisico/aluno/${aluno.id}`}
@@ -89,6 +95,10 @@ export default function DashboardEducadorFisico() {
               title="Nenhum aluno sob sua responsabilidade ainda"
               description="Alunos aparecem aqui quando um integrante da sua instituição solicita e você confirma o acompanhamento."
             />
+          )}
+
+          {alunos.length > 0 && alunosFiltrados.length === 0 && (
+            <p className="py-6 text-center text-sm text-text-muted">Nenhum aluno encontrado com esse nome.</p>
           )}
         </div>
       </section>

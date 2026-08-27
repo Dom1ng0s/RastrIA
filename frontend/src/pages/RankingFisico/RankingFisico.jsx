@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { CampoBusca } from "../../components/CampoBusca";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { useRankingPrefsStore } from "../../features/ranking/store";
 import { navItems } from "../DashboardUsuario/DashboardUsuario";
@@ -81,6 +82,7 @@ const medalhaClasse = {
 export default function RankingFisico() {
   const [atividadeId, setAtividadeId] = useState(atividades[0].id);
   const [escopoId, setEscopoId] = useState(escopos[0].id);
+  const [busca, setBusca] = useState("");
   const optedOut = useRankingPrefsStore((state) => state.optedOut);
 
   const meuBatalhao = batalhaoPorPessoa[usuarioAtualId];
@@ -97,6 +99,14 @@ export default function RankingFisico() {
 
     return listaVisivel.map((entrada, index) => ({ ...entrada, posicao: index + 1 }));
   }, [atividadeId, escopoId, meuBatalhao, optedOut]);
+
+  // Busca por nome é aplicada por cima da classificação já calculada — não
+  // recalcula posição (a posição reflete o escopo escolhido, não a busca;
+  // buscar não deveria fazer alguém "subir" de posição, só filtrar quem
+  // aparece na tela).
+  const classificacaoFiltrada = classificacao.filter((entrada) =>
+    entrada.nome.toLowerCase().includes(busca.toLowerCase()),
+  );
 
   const minhaPosicao = classificacao.find((entrada) => entrada.id === usuarioAtualId);
 
@@ -134,6 +144,10 @@ export default function RankingFisico() {
         ))}
       </div>
 
+      <div className="mb-6">
+        <CampoBusca valor={busca} aoMudar={setBusca} placeholder="Buscar colega por nome..." />
+      </div>
+
       {optedOut ? (
         <div className="mb-8 rounded-2xl border border-line bg-white p-6 text-sm text-text-muted">
           Você optou por não aparecer no ranking. Você pode mudar isso a qualquer momento em{" "}
@@ -157,7 +171,7 @@ export default function RankingFisico() {
       )}
 
       <div className="space-y-2">
-        {classificacao.map((entrada) => (
+        {classificacaoFiltrada.map((entrada) => (
           <div
             key={entrada.id}
             className={`flex items-center justify-between rounded-xl bg-white p-4 shadow-sm ${
@@ -184,6 +198,12 @@ export default function RankingFisico() {
         {classificacao.length === 0 && (
           <div className="rounded-xl border border-dashed border-line p-8 text-center text-sm text-text-muted">
             Nenhum resultado registrado nesse escopo ainda.
+          </div>
+        )}
+
+        {classificacao.length > 0 && classificacaoFiltrada.length === 0 && (
+          <div className="rounded-xl border border-dashed border-line p-8 text-center text-sm text-text-muted">
+            Nenhum colega encontrado com esse nome, nesse escopo.
           </div>
         )}
       </div>

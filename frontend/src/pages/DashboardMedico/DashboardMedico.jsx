@@ -1,6 +1,8 @@
 import { AlertCircle, LayoutDashboard, Users } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
+import { CampoBusca } from "../../components/CampoBusca";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { EmptyState } from "../../components/EmptyState";
 import { GuidedTour } from "../../features/tour/GuidedTour";
@@ -39,6 +41,11 @@ const pacientes = [
 
 export default function DashboardMedico() {
   const { run, handleCallback, restart } = useGuidedTour("medico");
+  const [buscaPaciente, setBuscaPaciente] = useState("");
+
+  const pacientesFiltrados = pacientes.filter((paciente) =>
+    paciente.nome.toLowerCase().includes(buscaPaciente.toLowerCase()),
+  );
 
   return (
     <DashboardLayout title="Painel do Médico" navItems={navItems} onHelp={restart}>
@@ -77,8 +84,9 @@ export default function DashboardMedico() {
 
       <section data-tour="meus-pacientes">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meus pacientes</h2>
-        <div className="space-y-2">
-          {pacientes.map((paciente) => (
+        <CampoBusca valor={buscaPaciente} aoMudar={setBuscaPaciente} placeholder="Buscar paciente por nome..." />
+        <div className="mt-3 space-y-2">
+          {pacientesFiltrados.map((paciente) => (
             <Link
               key={paciente.id}
               to={`/medico/paciente/${paciente.id}`}
@@ -95,6 +103,12 @@ export default function DashboardMedico() {
               title="Nenhum paciente sob sua responsabilidade ainda"
               description="Pacientes aparecem aqui quando um integrante da sua instituição solicita e você confirma o acompanhamento."
             />
+          )}
+
+          {pacientes.length > 0 && pacientesFiltrados.length === 0 && (
+            <p className="py-6 text-center text-sm text-text-muted">
+              Nenhum paciente encontrado com esse nome.
+            </p>
           )}
         </div>
       </section>
