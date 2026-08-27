@@ -298,7 +298,7 @@ function CtaFinal() {
 function Footer() {
   return (
     <footer id="contato" className="bg-primary">
-      <div className="mx-auto grid max-w-[1180px] gap-10 px-6 py-14 md:grid-cols-3">
+      <div className="mx-auto grid max-w-[1180px] gap-10 px-6 py-14 sm:grid-cols-2 md:grid-cols-4">
         <div>
           <Logo reverse className="mb-3" />
           <p className="max-w-[240px] text-sm text-[#CFEAE3]">
@@ -317,6 +317,17 @@ function Footer() {
             <a href="https://rastria.up.railway.app" className="block hover:text-white">
               rastria.up.railway.app
             </a>
+          </div>
+        </div>
+        <div>
+          <span className="mb-3 block text-xs font-semibold text-[#9FCFC4]">LEGAL</span>
+          <div className="space-y-2 text-sm text-[#CFEAE3]">
+            <Link to="/termos-de-uso" className="block hover:text-white">
+              Termos de Uso
+            </Link>
+            <Link to="/politica-de-privacidade" className="block hover:text-white">
+              Política de Privacidade
+            </Link>
           </div>
         </div>
         <div>

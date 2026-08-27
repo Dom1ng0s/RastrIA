@@ -18,11 +18,13 @@ import Login from "../pages/Login/Login";
 import NotFound from "../pages/NotFound/NotFound";
 import Onboarding from "../pages/Onboarding/Onboarding";
 import Perfil from "../pages/Perfil/Perfil";
+import PoliticaDePrivacidade from "../pages/PoliticaDePrivacidade/PoliticaDePrivacidade";
 import PrimeiroAcesso from "../pages/PrimeiroAcesso/PrimeiroAcesso";
 import RankingFisico from "../pages/RankingFisico/RankingFisico";
 import SolicitarAcompanhamento from "../pages/SolicitarAcompanhamento/SolicitarAcompanhamento";
 import TelaPorUnidade from "../pages/TelaPorUnidade/TelaPorUnidade";
 import TermoConsentimento from "../pages/TermoConsentimento/TermoConsentimento";
+import TermosDeUso from "../pages/TermosDeUso/TermosDeUso";
 
 // NOTA: não existe mais rota de autocadastro (/cadastro) nem de autorização de
 // usuário pendente (/gerente/autorizacao) — contas são provisionadas
@@ -39,6 +41,8 @@ export function AppRoutes() {
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/perfil" element={<Perfil />} />
       <Route path="/perfil/termo-consentimento" element={<TermoConsentimento />} />
+      <Route path="/termos-de-uso" element={<TermosDeUso />} />
+      <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
       <Route path="/gerente" element={<DashboardGerente />} />
       <Route path="/gerente/unidade/:id" element={<TelaPorUnidade />} />
       <Route path="/medico" element={<DashboardMedico />} />
