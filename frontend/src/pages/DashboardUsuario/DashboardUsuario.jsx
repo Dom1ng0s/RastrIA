@@ -1,5 +1,14 @@
-import { useState } from "react";
-import { ClipboardList, Download, FileText, LayoutDashboard, Stethoscope, Trophy } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  ChevronDown,
+  ClipboardList,
+  Download,
+  FileSpreadsheet,
+  FileText,
+  LayoutDashboard,
+  Stethoscope,
+  Trophy,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
@@ -51,7 +60,7 @@ const tourSteps = [
   {
     target: "[data-tour='baixar-historico']",
     title: "Baixar histórico",
-    content: "Seu histórico é seu — baixe uma cópia completa em CSV a qualquer momento.",
+    content: "Seu histórico é seu — baixe uma cópia completa em CSV ou PDF a qualquer momento.",
   },
 ];
 
@@ -84,25 +93,78 @@ const resultadoTafTexto = { apto: "Apto", inapto: "Inapto" };
 
 // Sem conta pessoal (login provisionado pela instituição — ver DOCUMENTACAO.md,
 // seção 16), baixar o próprio histórico é o que garante ao usuário posse real
-// sobre seu dado, alinhado ao direito de portabilidade da LGPD.
-function baixarHistoricoCsv(registros) {
-  const cabecalho = "Índice,Valor,Data,Status\n";
-  const linhas = registros
-    .map((r) => `"${r.indice}","${r.valor}","${r.data}","${badgeTexto[r.status]}"`)
-    .join("\n");
-  const blob = new Blob([cabecalho + linhas], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "meu-historico-rastria.csv";
-  link.click();
-  URL.revokeObjectURL(url);
+// sobre seu dado, alinhado ao direito de portabilidade da LGPD. A montagem/escape
+// do arquivo (CSV com neutralização de injeção de fórmula, ou PDF) vive em
+// lib/exportarHistorico.js.
+//
+// TODO: hoje o export cobre os registros de saúde e o último TAF que a tela já
+// tem em mão. Quando GET /api/registros-saude e o histórico de TAF/desempenho
+// físico existirem, montar as seções a partir da resposta completa da API — não
+// só do que está renderizado — para o arquivo ser de fato o histórico inteiro.
+function montarDadosHistorico(registros, taf) {
+  const secoes = [
+    {
+      titulo: "Exames e índices",
+      colunas: ["Índice", "Valor", "Data", "Status"],
+      linhas: registros.map((r) => [r.indice, r.valor, r.data, badgeTexto[r.status]]),
+    },
+  ];
+
+  if (taf) {
+    secoes.push({
+      titulo: "Último TAF",
+      colunas: ["Componente", "Resultado"],
+      linhas: [
+        ["Data", taf.data],
+        ["Corrida", taf.corrida],
+        ["Flexão", String(taf.flexoes)],
+        ["Abdominal", String(taf.abdominais)],
+        ["Barra", String(taf.barra)],
+        ["Resultado", resultadoTafTexto[taf.resultado]],
+      ],
+    });
+  }
+
+  return { geradoEm: new Date(), secoes };
 }
 
 export default function DashboardUsuario() {
   const { showToast } = useToast();
   const [registros] = useState(registrosIniciais);
   const { run, handleCallback, restart } = useGuidedTour("usuario");
+  const [menuExportarAberto, setMenuExportarAberto] = useState(false);
+  const menuExportarRef = useRef(null);
+
+  useEffect(() => {
+    if (!menuExportarAberto) return undefined;
+    const aoClicarFora = (evento) => {
+      if (menuExportarRef.current && !menuExportarRef.current.contains(evento.target)) {
+        setMenuExportarAberto(false);
+      }
+    };
+    const aoTeclar = (evento) => {
+      if (evento.key === "Escape") setMenuExportarAberto(false);
+    };
+    document.addEventListener("mousedown", aoClicarFora);
+    document.addEventListener("keydown", aoTeclar);
+    return () => {
+      document.removeEventListener("mousedown", aoClicarFora);
+      document.removeEventListener("keydown", aoTeclar);
+    };
+  }, [menuExportarAberto]);
+
+  const baixarComo = async (formato) => {
+    setMenuExportarAberto(false);
+    try {
+      // import dinâmico: o jsPDF (e o resto do módulo) só entra no bundle quando
+      // o usuário de fato baixa algo, mantendo a carga inicial do dashboard leve.
+      const { baixarHistorico } = await import("../../lib/exportarHistorico");
+      baixarHistorico(montarDadosHistorico(registros, ultimoTaf), formato);
+      showToast(`Histórico baixado em ${formato.toUpperCase()}`);
+    } catch {
+      showToast("Não foi possível gerar o arquivo", "erro");
+    }
+  };
 
   return (
     <DashboardLayout title="Meu Histórico" navItems={navItems} onHelp={restart}>
@@ -111,17 +173,45 @@ export default function DashboardUsuario() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-text-muted">Seus exames e índices mais recentes.</p>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            data-tour="baixar-historico"
-            onClick={() => {
-              baixarHistoricoCsv(registros);
-              showToast("Histórico baixado com sucesso");
-            }}
-            className="btn-outline flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold"
-          >
-            <Download size={16} /> Baixar histórico
-          </button>
+          <div className="relative" ref={menuExportarRef}>
+            <button
+              type="button"
+              data-tour="baixar-historico"
+              onClick={() => setMenuExportarAberto((aberto) => !aberto)}
+              aria-haspopup="menu"
+              aria-expanded={menuExportarAberto}
+              className="btn-outline flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold"
+            >
+              <Download size={16} /> Baixar histórico
+              <ChevronDown
+                size={14}
+                className={`transition-transform ${menuExportarAberto ? "rotate-180" : ""}`}
+              />
+            </button>
+            {menuExportarAberto && (
+              <div
+                role="menu"
+                className="absolute right-0 z-10 mt-2 w-48 overflow-hidden rounded-lg border border-line bg-white py-1 shadow-lg"
+              >
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => baixarComo("csv")}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-text-dark hover:bg-bg-tint"
+                >
+                  <FileSpreadsheet size={15} /> Baixar em CSV
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => baixarComo("pdf")}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-text-dark hover:bg-bg-tint"
+                >
+                  <FileText size={15} /> Baixar em PDF
+                </button>
+              </div>
+            )}
+          </div>
           {/* Único ponto de entrada para cadastro é /usuario/cadastrar-informacoes (CadastroInformacoes),
               que oferece a escolha entre exame e exercício físico — evita ter dois fluxos
               concorrentes para a mesma ação. */}
