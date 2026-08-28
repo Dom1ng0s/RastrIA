@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { Logo } from "../../components/Logo";
+import { ThemeToggle } from "../../features/theme/ThemeToggle";
 
 const onboardingSchema = z.object({
   pesoKg: z.coerce.number({ invalid_type_error: "Informe um número" }).positive("Informe um peso válido"),
@@ -29,6 +30,7 @@ export default function Onboarding() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg-tint p-6">
+      <ThemeToggle className="fixed right-4 top-4 z-20" />
       <div className="w-full max-w-[400px] rounded-2xl bg-white p-8 shadow-sm">
         <Logo className="mb-6" />
         <h2 className="mb-1 text-2xl font-semibold text-primary">Complete seu perfil</h2>

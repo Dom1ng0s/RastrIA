@@ -8,6 +8,7 @@ import { AuthBrandPanel } from "../../components/AuthBrandPanel";
 import { PasswordInput } from "../../components/PasswordInput";
 import { TermoConsentimentoLGPD } from "../../components/TermoConsentimentoLGPD";
 import { useConsentimentoStore } from "../../features/consentimento/store";
+import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { mascararCpf } from "../../lib/cpf";
 import { senhaForteSchema } from "../../lib/senha";
 
@@ -71,6 +72,7 @@ export default function PrimeiroAcesso() {
   if (!conta) {
     return (
       <div className="grid min-h-screen md:grid-cols-2">
+        <ThemeToggle className="fixed right-4 top-4 z-20" />
         <AuthBrandPanel
           heading={<>Link inválido ou expirado.</>}
           subtitle="Peça para o responsável pela sua instituição gerar um novo link de ativação."
@@ -90,6 +92,7 @@ export default function PrimeiroAcesso() {
 
   return (
     <div className="grid min-h-screen md:grid-cols-2">
+      <ThemeToggle className="fixed right-4 top-4 z-20" />
       <AuthBrandPanel
         heading={
           <>

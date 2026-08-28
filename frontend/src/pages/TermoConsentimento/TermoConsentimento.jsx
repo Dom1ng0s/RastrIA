@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 import { TermoConsentimentoLGPD } from "../../components/TermoConsentimentoLGPD";
 import { useConsentimentoStore } from "../../features/consentimento/store";
+import { ThemeToggle } from "../../features/theme/ThemeToggle";
 
 // Consulta somente-leitura do termo aceito no primeiro acesso — não é
 // revogável pelo usuário, mas precisa ficar sempre disponível (ver issue
@@ -15,10 +16,13 @@ export default function TermoConsentimento() {
 
   return (
     <div className="mx-auto min-h-screen max-w-[640px] p-8">
-      <Link to="/perfil" className="mb-6 inline-flex items-center gap-1.5 text-sm text-primary hover:underline">
-        <ArrowLeft size={16} />
-        Voltar para o Perfil
-      </Link>
+      <div className="mb-6 flex items-center justify-between">
+        <Link to="/perfil" className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline">
+          <ArrowLeft size={16} />
+          Voltar para o Perfil
+        </Link>
+        <ThemeToggle />
+      </div>
 
       <div className="rounded-2xl border border-line bg-white p-7">
         {consentimento ? (

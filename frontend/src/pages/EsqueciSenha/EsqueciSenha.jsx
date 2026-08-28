@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { ThemeToggle } from "../../features/theme/ThemeToggle";
 
 const schema = z.object({
   email: z.string().min(1, "Informe seu e-mail").email("E-mail inválido"),
@@ -30,6 +31,7 @@ export default function EsqueciSenha() {
 
   return (
     <div className="grid min-h-screen md:grid-cols-2">
+      <ThemeToggle className="fixed right-4 top-4 z-20" />
       <AuthBrandPanel
         heading={
           <>

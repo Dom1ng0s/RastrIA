@@ -8,6 +8,7 @@ import { AuthBrandPanel } from "../../components/AuthBrandPanel";
 import { PasswordInput } from "../../components/PasswordInput";
 import { useAuthStore } from "../../features/auth/store";
 import { ROLES } from "../../features/auth/roles";
+import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { formatarCpf, validarCpf } from "../../lib/cpf";
 
 // Telas do fluxo de acesso alcançáveis só por URL enquanto não há backend.
@@ -51,6 +52,7 @@ export default function Login() {
 
   return (
     <div className="grid min-h-screen md:grid-cols-2">
+      <ThemeToggle className="fixed right-4 top-4 z-20" />
       <AuthBrandPanel
         heading={
           <>

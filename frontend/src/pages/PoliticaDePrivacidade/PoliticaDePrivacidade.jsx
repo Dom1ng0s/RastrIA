@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { Logo } from "../../components/Logo";
 import { TERMO_CONSENTIMENTO } from "../../features/consentimento/termo";
+import { ThemeToggle } from "../../features/theme/ThemeToggle";
 
 /**
  * Página pública (sem necessidade de login) — contraparte pública do
@@ -25,9 +26,12 @@ export default function PoliticaDePrivacidade() {
           <Link to="/">
             <Logo />
           </Link>
-          <Link to="/" className="flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
-            <ArrowLeft size={16} /> Voltar
-          </Link>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <Link to="/" className="flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
+              <ArrowLeft size={16} /> Voltar
+            </Link>
+          </div>
         </div>
       </header>
 

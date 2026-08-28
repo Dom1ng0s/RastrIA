@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { Logo } from "../../components/Logo";
+import { ThemeToggle } from "../../features/theme/ThemeToggle";
 
 /**
  * Página pública (sem necessidade de login) — ver issue "páginas de Termos de
@@ -19,9 +20,12 @@ export default function TermosDeUso() {
           <Link to="/">
             <Logo />
           </Link>
-          <Link to="/" className="flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
-            <ArrowLeft size={16} /> Voltar
-          </Link>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <Link to="/" className="flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
+              <ArrowLeft size={16} /> Voltar
+            </Link>
+          </div>
         </div>
       </header>
 

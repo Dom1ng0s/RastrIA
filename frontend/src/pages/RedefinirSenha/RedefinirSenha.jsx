@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
 import { PasswordInput } from "../../components/PasswordInput";
+import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { senhaForteSchema } from "../../lib/senha";
 
 const schema = z
@@ -47,6 +48,7 @@ export default function RedefinirSenha() {
   if (!conta) {
     return (
       <div className="grid min-h-screen md:grid-cols-2">
+        <ThemeToggle className="fixed right-4 top-4 z-20" />
         <AuthBrandPanel
           heading={<>Link inválido ou expirado.</>}
           subtitle="Solicite um novo link em 'Esqueci minha senha'."
@@ -66,6 +68,7 @@ export default function RedefinirSenha() {
 
   return (
     <div className="grid min-h-screen md:grid-cols-2">
+      <ThemeToggle className="fixed right-4 top-4 z-20" />
       <AuthBrandPanel
         heading={
           <>
