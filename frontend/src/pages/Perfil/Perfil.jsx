@@ -5,10 +5,12 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { PasswordInput } from "../../components/PasswordInput";
 import { useConsentimentoStore } from "../../features/consentimento/store";
 import { useRankingPrefsStore } from "../../features/ranking/store";
 import { useToast } from "../../features/ui/ToastProvider";
 import { calcularIdade, formatarDataNascimento } from "../../lib/dataNascimento";
+import { senhaForteSchema } from "../../lib/senha";
 
 // TODO: navItems assume o contexto de "usuário individual". Quando existir
 // autenticação real, derivar dinamicamente pelo papel logado — Perfil é
@@ -22,6 +24,23 @@ const perfilSchema = z.object({
   pesoKg: z.coerce.number({ invalid_type_error: "Informe um número" }).positive("Informe um peso válido"),
   alturaCm: z.coerce.number({ invalid_type_error: "Informe um número" }).positive("Informe uma altura válida"),
 });
+
+// `senhaForteSchema` (lib/senha.js) é a mesma regra do primeiro acesso e da
+// redefinição por token — reaproveitada aqui para a troca voluntária de senha.
+const trocarSenhaSchema = z
+  .object({
+    senhaAtual: z.string().min(1, "Informe sua senha atual"),
+    novaSenha: senhaForteSchema,
+    confirmarNovaSenha: z.string().min(1, "Confirme a nova senha"),
+  })
+  .refine((dados) => dados.novaSenha === dados.confirmarNovaSenha, {
+    message: "As senhas não coincidem",
+    path: ["confirmarNovaSenha"],
+  })
+  .refine((dados) => dados.novaSenha !== dados.senhaAtual, {
+    message: "A nova senha deve ser diferente da atual",
+    path: ["novaSenha"],
+  });
 
 // A idade deriva da data de nascimento (fonte da verdade: planilha de
 // integrantes da instituição), nunca de um número digitado à mão que
@@ -41,6 +60,13 @@ export default function Perfil() {
     formState: { errors, isSubmitting, isDirty },
   } = useForm({ resolver: zodResolver(perfilSchema), defaultValues: dadosMock });
 
+  const {
+    register: registerSenha,
+    handleSubmit: handleSubmitSenha,
+    reset: resetSenha,
+    formState: { errors: errosSenha, isSubmitting: enviandoSenha },
+  } = useForm({ resolver: zodResolver(trocarSenhaSchema) });
+
   const optedOutDoRanking = useRankingPrefsStore((state) => state.optedOut);
   const toggleOptOutDoRanking = useRankingPrefsStore((state) => state.toggleOptOut);
   const consentimento = useConsentimentoStore((state) => state.consentimento);
@@ -52,6 +78,17 @@ export default function Perfil() {
     showToast("Alterações salvas");
     // Zera o isDirty: os valores salvos passam a ser o novo baseline do form.
     reset(dados);
+  };
+
+  const onTrocarSenha = async () => {
+    // TODO: substituir por mutation do TanStack Query, enviando
+    // { senha_atual, nova_senha } para POST /api/auth/trocar-senha/. O endpoint
+    // ainda não existe no backend (ver apps/usuarios/views.py) — o mecanismo de
+    // troca é o mesmo do primeiro acesso/redefinição, só que autenticado e
+    // exigindo a senha atual. Em caso de 400 (senha atual incorreta), reportar
+    // no próprio campo "Senha atual" (react-hook-form setError), não num toast.
+    showToast("Senha alterada");
+    resetSenha();
   };
 
   return (
@@ -95,6 +132,68 @@ export default function Perfil() {
             className="btn-primary mt-3 w-full rounded-lg py-2.5 text-sm font-semibold disabled:opacity-40"
           >
             {isSubmitting ? "Salvando..." : "Salvar alterações"}
+          </button>
+        </form>
+      </div>
+
+      <div className="mt-6 max-w-[400px] rounded-2xl border border-line bg-white p-7">
+        <h2 className="mb-1 text-sm font-semibold text-text-dark">Trocar senha</h2>
+        <p className="mb-4 text-xs text-text-muted">
+          Escolha uma senha forte para proteger sua conta. Você continuará conectado neste dispositivo.
+        </p>
+
+        <form onSubmit={handleSubmitSenha(onTrocarSenha)} noValidate>
+          <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="senhaAtual">
+            Senha atual
+          </label>
+          <PasswordInput
+            id="senhaAtual"
+            autoComplete="current-password"
+            className="mb-1"
+            {...registerSenha("senhaAtual")}
+          />
+          {errosSenha.senhaAtual && (
+            <p className="mb-3 text-xs text-coral">{errosSenha.senhaAtual.message}</p>
+          )}
+
+          <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="novaSenha">
+            Nova senha
+          </label>
+          <PasswordInput
+            id="novaSenha"
+            autoComplete="new-password"
+            className="mb-1"
+            {...registerSenha("novaSenha")}
+          />
+          {errosSenha.novaSenha && (
+            <p className="mb-1 text-xs text-coral">{errosSenha.novaSenha.message}</p>
+          )}
+          <p className="mb-3 text-xs text-text-muted">
+            Mínimo 8 caracteres, 1 maiúscula, 1 número e 1 símbolo.
+          </p>
+
+          <label
+            className="mb-1.5 block text-xs font-medium text-text-dark"
+            htmlFor="confirmarNovaSenha"
+          >
+            Confirmar nova senha
+          </label>
+          <PasswordInput
+            id="confirmarNovaSenha"
+            autoComplete="new-password"
+            className="mb-1"
+            {...registerSenha("confirmarNovaSenha")}
+          />
+          {errosSenha.confirmarNovaSenha && (
+            <p className="mb-3 text-xs text-coral">{errosSenha.confirmarNovaSenha.message}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={enviandoSenha}
+            className="btn-primary mt-3 w-full rounded-lg py-2.5 text-sm font-semibold disabled:opacity-40"
+          >
+            {enviandoSenha ? "Salvando..." : "Trocar senha"}
           </button>
         </form>
       </div>
