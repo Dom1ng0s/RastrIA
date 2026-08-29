@@ -95,8 +95,7 @@ export default function DashboardGerente() {
 
       <div className="mb-6 rounded-lg border border-line bg-white p-4 text-sm text-text-muted">
         Este painel mostra apenas indicadores agregados por unidade e status administrativo de
-        pendência — nunca dado clínico individual nominal, como resultado ou valor de exame (ver
-        "Regras de Design" em agents/claude.md).
+        pendência — nunca resultados ou valores clínicos individuais.
       </div>
 
       <section className="mb-8" data-tour="exames-atrasados">

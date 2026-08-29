@@ -34,8 +34,7 @@ export default function TelaPorUnidade() {
       </div>
 
       <div className="mb-6 rounded-lg border border-line bg-white p-4 text-sm text-text-muted">
-        Indicadores agregados por subunidade — nunca dado clínico individual nominal (ver
-        "Regras de Design" em agents/claude.md).
+        Indicadores agregados por subunidade — nunca resultados ou valores clínicos individuais.
       </div>
 
       <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Por subunidade</h2>
