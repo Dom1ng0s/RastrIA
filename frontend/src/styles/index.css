@@ -3,8 +3,27 @@
 @tailwind utilities;
 
 @layer base {
+  /* Declara o esquema de cor do documento acompanhando o tema escolhido (classe
+     `.dark` no <html>, ver features/theme/store.js). No tema claro isto faz o
+     navegador/SO parar de aplicar auto-dark por `prefers-color-scheme`, que era
+     parte da causa do texto ilegível da issue #69. Não usamos
+     `<meta name="color-scheme">` fixo porque o app tem tema escuro de verdade. */
+  :root {
+    color-scheme: light;
+  }
+  :root.dark {
+    color-scheme: dark;
+  }
+
   body {
-    @apply font-body text-text-dark;
+    /* Fundo/cor explícitos no tema claro (padrão do app): sem isto o <body>
+       fica transparente e, num ambiente que respeita `color-scheme` dark (SO
+       em modo escuro, Dark Reader), as telas públicas sem fundo próprio
+       (Landing, lado direito do Login, área ao redor do card do Onboarding)
+       renderizam texto claro sobre fundo quase preto. O tema escuro do app
+       continua sobrescrevendo via `.dark body` (regra fora de @layer, portanto
+       com prioridade sobre esta). Ver issue #69. */
+    @apply bg-white font-body text-text-dark;
   }
   h1,
   h2,
