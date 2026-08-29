@@ -25,7 +25,7 @@ export const PasswordInput = forwardRef(function PasswordInput({ id, className =
         type="button"
         onClick={() => setVisivel((atual) => !atual)}
         aria-label={visivel ? "Ocultar senha" : "Mostrar senha"}
-        tabIndex={-1}
+        aria-pressed={visivel}
         className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-dark"
       >
         {visivel ? <EyeOff size={18} /> : <Eye size={18} />}

@@ -5,8 +5,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { FieldError } from "../../components/FieldError";
 import { useToast } from "../../features/ui/ToastProvider";
 import { dataRegistroSchema } from "../../lib/dataRegistro";
+import { fieldErrorProps } from "../../lib/fieldA11y";
 import { navItems } from "../DashboardUsuario/DashboardUsuario";
 
 const TIPOS_EXERCICIO = ["Corrida", "Musculação", "Natação", "Ciclismo", "Funcional"];
@@ -52,6 +54,7 @@ export default function CadastroExercicioFisico() {
             defaultValue=""
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("tipo")}
+            {...fieldErrorProps(errors.tipo, "tipo")}
           >
             <option value="" disabled>
               Selecione
@@ -62,7 +65,9 @@ export default function CadastroExercicioFisico() {
               </option>
             ))}
           </select>
-          {errors.tipo && <p className="mb-3 text-xs text-coral">{errors.tipo.message}</p>}
+          <FieldError id="tipo-erro" className="mb-3">
+            {errors.tipo?.message}
+          </FieldError>
 
           <div className="mb-1 grid grid-cols-2 gap-3">
             <div>
@@ -75,8 +80,11 @@ export default function CadastroExercicioFisico() {
                 placeholder="Ex: 5km em 27min"
                 className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                 {...register("valor")}
+                {...fieldErrorProps(errors.valor, "valor")}
               />
-              {errors.valor && <p className="mt-1 text-xs text-coral">{errors.valor.message}</p>}
+              <FieldError id="valor-erro" className="mt-1">
+                {errors.valor?.message}
+              </FieldError>
             </div>
             <div>
               <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="data">
@@ -88,8 +96,11 @@ export default function CadastroExercicioFisico() {
                 placeholder="dd/mm/aaaa"
                 className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                 {...register("data")}
+                {...fieldErrorProps(errors.data, "data")}
               />
-              {errors.data && <p className="mt-1 text-xs text-coral">{errors.data.message}</p>}
+              <FieldError id="data-erro" className="mt-1">
+                {errors.data?.message}
+              </FieldError>
             </div>
           </div>
 

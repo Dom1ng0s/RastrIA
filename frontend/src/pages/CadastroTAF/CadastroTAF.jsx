@@ -5,8 +5,10 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { FieldError } from "../../components/FieldError";
 import { useToast } from "../../features/ui/ToastProvider";
 import { dataRegistroSchema } from "../../lib/dataRegistro";
+import { fieldErrorProps } from "../../lib/fieldA11y";
 
 const navItems = [{ to: "/educador-fisico", label: "Painel do Educador Físico", icon: LayoutDashboard }];
 
@@ -72,8 +74,11 @@ export default function CadastroTAF() {
             placeholder="dd/mm/aaaa"
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("data")}
+            {...fieldErrorProps(errors.data, "data")}
           />
-          {errors.data && <p className="mb-3 text-xs text-coral">{errors.data.message}</p>}
+          <FieldError id="data-erro" className="mb-3">
+            {errors.data?.message}
+          </FieldError>
 
           <div className="mb-1 grid grid-cols-2 gap-3">
             <div>
@@ -86,8 +91,11 @@ export default function CadastroTAF() {
                 placeholder="Ex: 11min 30s"
                 className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                 {...register("corridaTempo")}
+                {...fieldErrorProps(errors.corridaTempo, "corridaTempo")}
               />
-              {errors.corridaTempo && <p className="mt-1 text-xs text-coral">{errors.corridaTempo.message}</p>}
+              <FieldError id="corridaTempo-erro" className="mt-1">
+                {errors.corridaTempo?.message}
+              </FieldError>
             </div>
             <div>
               <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="flexoes">
@@ -99,8 +107,11 @@ export default function CadastroTAF() {
                 min="0"
                 className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                 {...register("flexoes")}
+                {...fieldErrorProps(errors.flexoes, "flexoes")}
               />
-              {errors.flexoes && <p className="mt-1 text-xs text-coral">{errors.flexoes.message}</p>}
+              <FieldError id="flexoes-erro" className="mt-1">
+                {errors.flexoes?.message}
+              </FieldError>
             </div>
           </div>
 
@@ -115,8 +126,11 @@ export default function CadastroTAF() {
                 min="0"
                 className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                 {...register("abdominais")}
+                {...fieldErrorProps(errors.abdominais, "abdominais")}
               />
-              {errors.abdominais && <p className="mt-1 text-xs text-coral">{errors.abdominais.message}</p>}
+              <FieldError id="abdominais-erro" className="mt-1">
+                {errors.abdominais?.message}
+              </FieldError>
             </div>
             <div>
               <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="barra">
@@ -128,8 +142,11 @@ export default function CadastroTAF() {
                 min="0"
                 className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                 {...register("barra")}
+                {...fieldErrorProps(errors.barra, "barra")}
               />
-              {errors.barra && <p className="mt-1 text-xs text-coral">{errors.barra.message}</p>}
+              <FieldError id="barra-erro" className="mt-1">
+                {errors.barra?.message}
+              </FieldError>
             </div>
           </div>
 
@@ -141,6 +158,7 @@ export default function CadastroTAF() {
             defaultValue=""
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("resultado")}
+            {...fieldErrorProps(errors.resultado, "resultado")}
           >
             <option value="" disabled>
               Selecione
@@ -148,7 +166,9 @@ export default function CadastroTAF() {
             <option value="apto">Apto</option>
             <option value="inapto">Inapto</option>
           </select>
-          {errors.resultado && <p className="mb-3 text-xs text-coral">{errors.resultado.message}</p>}
+          <FieldError id="resultado-erro" className="mb-3">
+            {errors.resultado?.message}
+          </FieldError>
 
           <button
             type="submit"
