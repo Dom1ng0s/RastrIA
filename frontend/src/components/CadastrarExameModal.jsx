@@ -3,15 +3,14 @@ import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { dataRegistroSchema } from "../lib/dataRegistro";
+
 const TIPOS_EXAME = ["Glicemia em jejum", "Pressão arterial", "Hemograma completo", "IMC", "Colesterol total"];
 
 const cadastroExameSchema = z.object({
   tipo: z.string().min(1, "Selecione o tipo de exame"),
   valor: z.string().min(1, "Informe o valor"),
-  data: z
-    .string()
-    .min(1, "Informe a data")
-    .regex(/^\d{2}\/\d{2}\/\d{4}$/, "Use o formato dd/mm/aaaa"),
+  data: dataRegistroSchema,
 });
 
 export function CadastrarExameModal({ onClose, onSalvar }) {
