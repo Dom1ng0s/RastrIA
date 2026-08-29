@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { useToast } from "../../features/ui/ToastProvider";
+import { dataRegistroSchema } from "../../lib/dataRegistro";
 
 const navItems = [{ to: "/educador-fisico", label: "Painel do Educador Físico", icon: LayoutDashboard }];
 
@@ -16,10 +17,7 @@ const NOMES_MOCK = { 1: "Diego Martins", 2: "Juliana Prado" };
 // fixos (corrida, flexão, abdominal, barra) — não como registro de valor único.
 // Ver "Reunião com o Coronel Raumário" (issue #7) em agents/claude.md.
 const cadastroTafSchema = z.object({
-  data: z
-    .string()
-    .min(1, "Informe a data")
-    .regex(/^\d{2}\/\d{2}\/\d{4}$/, "Use o formato dd/mm/aaaa"),
+  data: dataRegistroSchema,
   corridaTempo: z.string().min(1, "Informe o tempo da corrida"),
   flexoes: z.coerce.number({ invalid_type_error: "Informe um número" }).int().min(0, "Informe um número válido"),
   abdominais: z.coerce.number({ invalid_type_error: "Informe um número" }).int().min(0, "Informe um número válido"),

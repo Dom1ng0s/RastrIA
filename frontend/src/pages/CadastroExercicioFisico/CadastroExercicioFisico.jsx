@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { useToast } from "../../features/ui/ToastProvider";
+import { dataRegistroSchema } from "../../lib/dataRegistro";
 import { navItems } from "../DashboardUsuario/DashboardUsuario";
 
 const TIPOS_EXERCICIO = ["Corrida", "Musculação", "Natação", "Ciclismo", "Funcional"];
@@ -13,10 +14,7 @@ const TIPOS_EXERCICIO = ["Corrida", "Musculação", "Natação", "Ciclismo", "Fu
 const cadastroExercicioSchema = z.object({
   tipo: z.string().min(1, "Selecione o tipo de exercício"),
   valor: z.string().min(1, "Informe o resultado"),
-  data: z
-    .string()
-    .min(1, "Informe a data")
-    .regex(/^\d{2}\/\d{2}\/\d{4}$/, "Use o formato dd/mm/aaaa"),
+  data: dataRegistroSchema,
 });
 
 export default function CadastroExercicioFisico() {
