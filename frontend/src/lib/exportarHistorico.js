@@ -131,8 +131,14 @@ function baixarBlob(blob, nomeArquivo) {
   const link = document.createElement("a");
   link.href = url;
   link.download = nomeArquivo;
+  // O anchor precisa estar no DOM: em navegadores baseados em Gecko (Firefox),
+  // `.click()` num elemento desconectado do documento não dispara o download.
+  document.body.appendChild(link);
   link.click();
-  URL.revokeObjectURL(url);
+  link.remove();
+  // Revogar a URL só depois de o navegador ter iniciado o download — fazer isso
+  // de forma síncrona logo após `.click()` corta o download de arquivos maiores.
+  setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 // `formato`: "csv" | "pdf".
