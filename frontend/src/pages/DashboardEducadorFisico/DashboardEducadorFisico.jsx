@@ -46,8 +46,7 @@ export default function DashboardEducadorFisico() {
       <GuidedTour run={run} steps={tourSteps} callback={handleCallback} />
 
       <p className="mb-6 text-sm text-text-muted">
-        Escopo restrito a desempenho físico — sem acesso a dado clínico (ver "Regras de Design"
-        em agents/claude.md).
+        Escopo restrito a desempenho físico — sem acesso a dado clínico.
       </p>
 
       <section className="mb-10" data-tour="solicitacoes-pendentes">
