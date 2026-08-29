@@ -2,8 +2,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+import { FieldError } from "../../components/FieldError";
 import { Logo } from "../../components/Logo";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
+import { fieldErrorProps } from "../../lib/fieldA11y";
 import {
   ALTURA_CM_MAX,
   ALTURA_CM_MIN,
@@ -52,8 +54,11 @@ export default function Onboarding() {
             placeholder="70"
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("pesoKg")}
+            {...fieldErrorProps(errors.pesoKg, "pesoKg")}
           />
-          {errors.pesoKg && <p className="mb-3 text-xs text-coral">{errors.pesoKg.message}</p>}
+          <FieldError id="pesoKg-erro" className="mb-3">
+            {errors.pesoKg?.message}
+          </FieldError>
 
           <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="alturaCm">
             Altura (cm)
@@ -66,9 +71,15 @@ export default function Onboarding() {
             placeholder="170"
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("alturaCm")}
+            aria-invalid={errors.alturaCm ? true : undefined}
+            aria-describedby={`alturaCm-dica${errors.alturaCm ? " alturaCm-erro" : ""}`}
           />
-          <p className="mb-3 text-xs text-text-muted">Em centímetros, não em metros (ex: 170).</p>
-          {errors.alturaCm && <p className="mb-3 text-xs text-coral">{errors.alturaCm.message}</p>}
+          <p id="alturaCm-dica" className="mb-3 text-xs text-text-muted">
+            Em centímetros, não em metros (ex: 170).
+          </p>
+          <FieldError id="alturaCm-erro" className="mb-3">
+            {errors.alturaCm?.message}
+          </FieldError>
 
           {/* Idade não é coletada aqui — vem da data de nascimento cadastrada
               pela instituição na planilha de integrantes (ver "Dados pessoais

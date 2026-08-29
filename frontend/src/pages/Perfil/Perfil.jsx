@@ -5,11 +5,13 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { FieldError } from "../../components/FieldError";
 import { PasswordInput } from "../../components/PasswordInput";
 import { useConsentimentoStore } from "../../features/consentimento/store";
 import { useRankingPrefsStore } from "../../features/ranking/store";
 import { useToast } from "../../features/ui/ToastProvider";
 import { calcularIdade, formatarDataNascimento } from "../../lib/dataNascimento";
+import { fieldErrorProps } from "../../lib/fieldA11y";
 import {
   ALTURA_CM_MAX,
   ALTURA_CM_MIN,
@@ -120,8 +122,11 @@ export default function Perfil() {
             max={PESO_KG_MAX}
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("pesoKg")}
+            {...fieldErrorProps(errors.pesoKg, "pesoKg")}
           />
-          {errors.pesoKg && <p className="mb-3 text-xs text-coral">{errors.pesoKg.message}</p>}
+          <FieldError id="pesoKg-erro" className="mb-3">
+            {errors.pesoKg?.message}
+          </FieldError>
 
           <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="alturaCm">
             Altura (cm)
@@ -133,9 +138,15 @@ export default function Perfil() {
             max={ALTURA_CM_MAX}
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("alturaCm")}
+            aria-invalid={errors.alturaCm ? true : undefined}
+            aria-describedby={`alturaCm-dica${errors.alturaCm ? " alturaCm-erro" : ""}`}
           />
-          <p className="mb-1 text-xs text-text-muted">Em centímetros, não em metros (ex: 170).</p>
-          {errors.alturaCm && <p className="mb-4 text-xs text-coral">{errors.alturaCm.message}</p>}
+          <p id="alturaCm-dica" className="mb-1 text-xs text-text-muted">
+            Em centímetros, não em metros (ex: 170).
+          </p>
+          <FieldError id="alturaCm-erro" className="mb-4">
+            {errors.alturaCm?.message}
+          </FieldError>
 
           <button
             type="submit"
@@ -162,10 +173,11 @@ export default function Perfil() {
             autoComplete="current-password"
             className="mb-1"
             {...registerSenha("senhaAtual")}
+            {...fieldErrorProps(errosSenha.senhaAtual, "senhaAtual")}
           />
-          {errosSenha.senhaAtual && (
-            <p className="mb-3 text-xs text-coral">{errosSenha.senhaAtual.message}</p>
-          )}
+          <FieldError id="senhaAtual-erro" className="mb-3">
+            {errosSenha.senhaAtual?.message}
+          </FieldError>
 
           <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="novaSenha">
             Nova senha
@@ -175,11 +187,13 @@ export default function Perfil() {
             autoComplete="new-password"
             className="mb-1"
             {...registerSenha("novaSenha")}
+            aria-invalid={errosSenha.novaSenha ? true : undefined}
+            aria-describedby={`novaSenha-dica${errosSenha.novaSenha ? " novaSenha-erro" : ""}`}
           />
-          {errosSenha.novaSenha && (
-            <p className="mb-1 text-xs text-coral">{errosSenha.novaSenha.message}</p>
-          )}
-          <p className="mb-3 text-xs text-text-muted">
+          <FieldError id="novaSenha-erro" className="mb-1">
+            {errosSenha.novaSenha?.message}
+          </FieldError>
+          <p id="novaSenha-dica" className="mb-3 text-xs text-text-muted">
             Mínimo 8 caracteres, 1 maiúscula, 1 número e 1 símbolo.
           </p>
 
@@ -194,10 +208,11 @@ export default function Perfil() {
             autoComplete="new-password"
             className="mb-1"
             {...registerSenha("confirmarNovaSenha")}
+            {...fieldErrorProps(errosSenha.confirmarNovaSenha, "confirmarNovaSenha")}
           />
-          {errosSenha.confirmarNovaSenha && (
-            <p className="mb-3 text-xs text-coral">{errosSenha.confirmarNovaSenha.message}</p>
-          )}
+          <FieldError id="confirmarNovaSenha-erro" className="mb-3">
+            {errosSenha.confirmarNovaSenha?.message}
+          </FieldError>
 
           <button
             type="submit"

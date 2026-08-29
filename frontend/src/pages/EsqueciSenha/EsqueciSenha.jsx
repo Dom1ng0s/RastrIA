@@ -5,7 +5,9 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { FieldError } from "../../components/FieldError";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
+import { fieldErrorProps } from "../../lib/fieldA11y";
 
 const schema = z.object({
   email: z.string().min(1, "Informe seu e-mail").email("E-mail inválido"),
@@ -74,8 +76,11 @@ export default function EsqueciSenha() {
                   autoComplete="email"
                   className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                   {...register("email")}
+                  {...fieldErrorProps(errors.email, "email")}
                 />
-                {errors.email && <p className="mb-3 text-xs text-coral">{errors.email.message}</p>}
+                <FieldError id="email-erro" className="mb-3">
+                  {errors.email?.message}
+                </FieldError>
 
                 <button
                   type="submit"

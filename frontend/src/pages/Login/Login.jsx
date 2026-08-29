@@ -5,11 +5,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { FieldError } from "../../components/FieldError";
 import { PasswordInput } from "../../components/PasswordInput";
 import { useAuthStore } from "../../features/auth/store";
 import { ROLES } from "../../features/auth/roles";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { formatarCpf, validarCpf } from "../../lib/cpf";
+import { fieldErrorProps } from "../../lib/fieldA11y";
 
 // Telas do fluxo de acesso alcançáveis só por URL enquanto não há backend.
 // Os tokens são os mocks aceitos por PrimeiroAcesso/RedefinirSenha.
@@ -85,14 +87,25 @@ export default function Login() {
               {...register("cpf", {
                 onChange: (event) => setValue("cpf", formatarCpf(event.target.value)),
               })}
+              {...fieldErrorProps(errors.cpf, "cpf")}
             />
-            {errors.cpf && <p className="mb-3 text-xs text-coral">{errors.cpf.message}</p>}
+            <FieldError id="cpf-erro" className="mb-3">
+              {errors.cpf?.message}
+            </FieldError>
 
             <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="senha">
               Senha
             </label>
-            <PasswordInput id="senha" autoComplete="current-password" className="mb-1" {...register("senha")} />
-            {errors.senha && <p className="mb-1 text-xs text-coral">{errors.senha.message}</p>}
+            <PasswordInput
+              id="senha"
+              autoComplete="current-password"
+              className="mb-1"
+              {...register("senha")}
+              {...fieldErrorProps(errors.senha, "senha")}
+            />
+            <FieldError id="senha-erro" className="mb-1">
+              {errors.senha?.message}
+            </FieldError>
             <Link to="/esqueci-senha" className="mb-6 mt-1 block text-right text-xs font-medium text-primary">
               Esqueci minha senha
             </Link>

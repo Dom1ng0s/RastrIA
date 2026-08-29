@@ -5,11 +5,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { FieldError } from "../../components/FieldError";
 import { PasswordInput } from "../../components/PasswordInput";
 import { TermoConsentimentoLGPD } from "../../components/TermoConsentimentoLGPD";
 import { useConsentimentoStore } from "../../features/consentimento/store";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { mascararCpf } from "../../lib/cpf";
+import { fieldErrorProps } from "../../lib/fieldA11y";
 import { senhaForteSchema } from "../../lib/senha";
 
 const schema = z
@@ -136,8 +138,16 @@ export default function PrimeiroAcesso() {
                 <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="senha">
                   Nova senha
                 </label>
-                <PasswordInput id="senha" autoComplete="new-password" className="mb-1" {...register("senha")} />
-                {errors.senha && <p className="mb-3 text-xs text-coral">{errors.senha.message}</p>}
+                <PasswordInput
+                  id="senha"
+                  autoComplete="new-password"
+                  className="mb-1"
+                  {...register("senha")}
+                  {...fieldErrorProps(errors.senha, "senha")}
+                />
+                <FieldError id="senha-erro" className="mb-3">
+                  {errors.senha?.message}
+                </FieldError>
                 <p className="mb-4 text-xs text-text-muted">
                   Mínimo 8 caracteres, 1 maiúscula, 1 número e 1 símbolo.
                 </p>
@@ -150,10 +160,11 @@ export default function PrimeiroAcesso() {
                   autoComplete="new-password"
                   className="mb-1"
                   {...register("confirmarSenha")}
+                  {...fieldErrorProps(errors.confirmarSenha, "confirmarSenha")}
                 />
-                {errors.confirmarSenha && (
-                  <p className="mb-3 text-xs text-coral">{errors.confirmarSenha.message}</p>
-                )}
+                <FieldError id="confirmarSenha-erro" className="mb-3">
+                  {errors.confirmarSenha?.message}
+                </FieldError>
 
                 <button
                   type="submit"
