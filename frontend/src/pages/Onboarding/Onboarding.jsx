@@ -1,15 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { z } from "zod";
 
 import { Logo } from "../../components/Logo";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
-
-const onboardingSchema = z.object({
-  pesoKg: z.coerce.number({ invalid_type_error: "Informe um número" }).positive("Informe um peso válido"),
-  alturaCm: z.coerce.number({ invalid_type_error: "Informe um número" }).positive("Informe uma altura válida"),
-});
+import {
+  ALTURA_CM_MAX,
+  ALTURA_CM_MIN,
+  medidasCorporaisSchema,
+  PESO_KG_MAX,
+  PESO_KG_MIN,
+} from "../../lib/medidasCorporais";
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function Onboarding() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({ resolver: zodResolver(onboardingSchema) });
+  } = useForm({ resolver: zodResolver(medidasCorporaisSchema) });
 
   const onSubmit = async (dados) => {
     // TODO: substituir por mutation do TanStack Query (endpoint de perfil do
@@ -46,6 +47,8 @@ export default function Onboarding() {
             id="pesoKg"
             type="number"
             step="0.1"
+            min={PESO_KG_MIN}
+            max={PESO_KG_MAX}
             placeholder="70"
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("pesoKg")}
@@ -58,10 +61,13 @@ export default function Onboarding() {
           <input
             id="alturaCm"
             type="number"
+            min={ALTURA_CM_MIN}
+            max={ALTURA_CM_MAX}
             placeholder="170"
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("alturaCm")}
           />
+          <p className="mb-3 text-xs text-text-muted">Em centímetros, não em metros (ex: 170).</p>
           {errors.alturaCm && <p className="mb-3 text-xs text-coral">{errors.alturaCm.message}</p>}
 
           {/* Idade não é coletada aqui — vem da data de nascimento cadastrada

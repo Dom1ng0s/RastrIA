@@ -10,6 +10,13 @@ import { useConsentimentoStore } from "../../features/consentimento/store";
 import { useRankingPrefsStore } from "../../features/ranking/store";
 import { useToast } from "../../features/ui/ToastProvider";
 import { calcularIdade, formatarDataNascimento } from "../../lib/dataNascimento";
+import {
+  ALTURA_CM_MAX,
+  ALTURA_CM_MIN,
+  medidasCorporaisSchema,
+  PESO_KG_MAX,
+  PESO_KG_MIN,
+} from "../../lib/medidasCorporais";
 import { senhaForteSchema } from "../../lib/senha";
 
 // TODO: navItems assume o contexto de "usuário individual". Quando existir
@@ -20,10 +27,9 @@ const navItems = [
   { to: "/usuario/solicitar", label: "Solicitar Acompanhamento", icon: Stethoscope },
 ];
 
-const perfilSchema = z.object({
-  pesoKg: z.coerce.number({ invalid_type_error: "Informe um número" }).positive("Informe um peso válido"),
-  alturaCm: z.coerce.number({ invalid_type_error: "Informe um número" }).positive("Informe uma altura válida"),
-});
+// Peso/altura validam faixa e unidade via `medidasCorporaisSchema`
+// (lib/medidasCorporais.js), compartilhado com o Onboarding.
+const perfilSchema = medidasCorporaisSchema;
 
 // `senhaForteSchema` (lib/senha.js) é a mesma regra do primeiro acesso e da
 // redefinição por token — reaproveitada aqui para a troca voluntária de senha.
@@ -110,6 +116,8 @@ export default function Perfil() {
             id="pesoKg"
             type="number"
             step="0.1"
+            min={PESO_KG_MIN}
+            max={PESO_KG_MAX}
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("pesoKg")}
           />
@@ -121,9 +129,12 @@ export default function Perfil() {
           <input
             id="alturaCm"
             type="number"
+            min={ALTURA_CM_MIN}
+            max={ALTURA_CM_MAX}
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("alturaCm")}
           />
+          <p className="mb-1 text-xs text-text-muted">Em centímetros, não em metros (ex: 170).</p>
           {errors.alturaCm && <p className="mb-4 text-xs text-coral">{errors.alturaCm.message}</p>}
 
           <button
