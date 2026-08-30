@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+import { clearTokens } from "../../lib/authTokens";
+
 // TODO: `usuario` deve vir do backend (payload do JWT ou GET /api/usuarios/me)
 // quando a autenticação real existir. Por ora, é preenchido pelo atalho de
 // desenvolvimento em pages/Login/Login.jsx, incluindo `instituicaoId` — usado
@@ -32,7 +34,7 @@ function lerUsuarioSalvo() {
 }
 
 function limparEstadoDoUsuario() {
-  localStorage.removeItem("rastria_access_token");
+  clearTokens(); // access + refresh, centralizados em lib/authTokens.js (issue #65)
   localStorage.removeItem(STORAGE_KEY_USUARIO);
   CHAVES_PREFERENCIA_USUARIO.forEach((chave) => localStorage.removeItem(chave));
   Object.keys(localStorage)
