@@ -49,6 +49,12 @@ export default function Login() {
     // dashboard, mesmo que a pessoa tenha chegado direto pelo /login (ex: link
     // de ativação perdido). Esse redirecionamento não está implementado aqui,
     // só a tela — depende do backend existir para saber o que responder.
+    //
+    // Enquanto não há backend de auth, o formulário entra como usuário
+    // individual (papel mais comum do login por CPF). Sem popular o store, a
+    // proteção de rota (features/auth/RotaProtegida.jsx, issue #61) barraria o
+    // /usuario logo em seguida.
+    setUsuario({ papel: "usuario", instituicaoId: 1 });
     navigate("/usuario");
   };
 
