@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LayoutDashboard, Stethoscope, ToggleLeft, ToggleRight } from "lucide-react";
+import { ToggleLeft, ToggleRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { z } from "zod";
@@ -7,6 +7,8 @@ import { z } from "zod";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { FieldError } from "../../components/FieldError";
 import { PasswordInput } from "../../components/PasswordInput";
+import { useAuthStore } from "../../features/auth/store";
+import { navItemsDoPapel, PAPEL_PADRAO } from "../../features/auth/navPorPapel";
 import { useConsentimentoStore } from "../../features/consentimento/store";
 import { useRankingPrefsStore } from "../../features/ranking/store";
 import { useToast } from "../../features/ui/ToastProvider";
@@ -21,13 +23,10 @@ import {
 } from "../../lib/medidasCorporais";
 import { senhaForteSchema } from "../../lib/senha";
 
-// TODO: navItems assume o contexto de "usuário individual". Quando existir
-// autenticação real, derivar dinamicamente pelo papel logado — Perfil é
-// acessado por todos os papéis (médico, educador físico, gerente, usuário).
-const navItems = [
-  { to: "/usuario", label: "Meu Histórico", icon: LayoutDashboard },
-  { to: "/usuario/solicitar", label: "Solicitar Acompanhamento", icon: Stethoscope },
-];
+// O menu lateral e as seções de dado individual (medidas corporais, opt-out do
+// ranking) são derivados do papel logado — Perfil é a única tela alcançável por
+// todos os papéis (médico, educador físico, comando, usuário), sem guarda de
+// papel na rota. Ver `features/auth/navPorPapel.js`.
 
 // Peso/altura validam faixa e unidade via `medidasCorporaisSchema`
 // (lib/medidasCorporais.js), compartilhado com o Onboarding.
@@ -80,6 +79,12 @@ export default function Perfil() {
   const consentimento = useConsentimentoStore((state) => state.consentimento);
   const { showToast } = useToast();
 
+  const papel = useAuthStore((state) => state.usuario?.papel) ?? PAPEL_PADRAO;
+  const navItems = navItemsDoPapel(papel);
+  // Medidas corporais e ranking de desempenho físico só existem para o usuário
+  // individual; para médico/educador físico/comando o Perfil é só e-mail e senha.
+  const ehUsuarioIndividual = papel === "usuario";
+
   const onSubmit = async (dados) => {
     // TODO: substituir por mutation do TanStack Query (PATCH /api/usuarios/me).
     console.log("perfil atualizado", dados);
@@ -103,59 +108,63 @@ export default function Perfil() {
     <DashboardLayout title="Perfil" navItems={navItems}>
       <div className="max-w-[400px] rounded-2xl border border-line bg-white p-7">
         <label className="mb-1.5 block text-xs font-medium text-text-dark">E-mail</label>
-        <p className="mb-5 text-sm text-text-muted">{dadosMock.email}</p>
+        <p className={`text-sm text-text-muted ${ehUsuarioIndividual ? "mb-5" : ""}`}>{dadosMock.email}</p>
 
-        <label className="mb-1.5 block text-xs font-medium text-text-dark">Data de nascimento</label>
-        <p className="mb-5 text-sm text-text-muted">
-          {formatarDataNascimento(dadosMock.dataNascimento)} · {calcularIdade(dadosMock.dataNascimento)} anos
-        </p>
+        {ehUsuarioIndividual && (
+          <>
+            <label className="mb-1.5 block text-xs font-medium text-text-dark">Data de nascimento</label>
+            <p className="mb-5 text-sm text-text-muted">
+              {formatarDataNascimento(dadosMock.dataNascimento)} · {calcularIdade(dadosMock.dataNascimento)} anos
+            </p>
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="pesoKg">
-            Peso (kg)
-          </label>
-          <input
-            id="pesoKg"
-            type="number"
-            step="0.1"
-            min={PESO_KG_MIN}
-            max={PESO_KG_MAX}
-            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-            {...register("pesoKg")}
-            {...fieldErrorProps(errors.pesoKg, "pesoKg")}
-          />
-          <FieldError id="pesoKg-erro" className="mb-3">
-            {errors.pesoKg?.message}
-          </FieldError>
+            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+              <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="pesoKg">
+                Peso (kg)
+              </label>
+              <input
+                id="pesoKg"
+                type="number"
+                step="0.1"
+                min={PESO_KG_MIN}
+                max={PESO_KG_MAX}
+                className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+                {...register("pesoKg")}
+                {...fieldErrorProps(errors.pesoKg, "pesoKg")}
+              />
+              <FieldError id="pesoKg-erro" className="mb-3">
+                {errors.pesoKg?.message}
+              </FieldError>
 
-          <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="alturaCm">
-            Altura (cm)
-          </label>
-          <input
-            id="alturaCm"
-            type="number"
-            min={ALTURA_CM_MIN}
-            max={ALTURA_CM_MAX}
-            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-            {...register("alturaCm")}
-            aria-invalid={errors.alturaCm ? true : undefined}
-            aria-describedby={`alturaCm-dica${errors.alturaCm ? " alturaCm-erro" : ""}`}
-          />
-          <p id="alturaCm-dica" className="mb-1 text-xs text-text-muted">
-            Em centímetros, não em metros (ex: 170).
-          </p>
-          <FieldError id="alturaCm-erro" className="mb-4">
-            {errors.alturaCm?.message}
-          </FieldError>
+              <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="alturaCm">
+                Altura (cm)
+              </label>
+              <input
+                id="alturaCm"
+                type="number"
+                min={ALTURA_CM_MIN}
+                max={ALTURA_CM_MAX}
+                className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+                {...register("alturaCm")}
+                aria-invalid={errors.alturaCm ? true : undefined}
+                aria-describedby={`alturaCm-dica${errors.alturaCm ? " alturaCm-erro" : ""}`}
+              />
+              <p id="alturaCm-dica" className="mb-1 text-xs text-text-muted">
+                Em centímetros, não em metros (ex: 170).
+              </p>
+              <FieldError id="alturaCm-erro" className="mb-4">
+                {errors.alturaCm?.message}
+              </FieldError>
 
-          <button
-            type="submit"
-            disabled={isSubmitting || !isDirty}
-            className="btn-primary mt-3 w-full rounded-lg py-2.5 text-sm font-semibold disabled:opacity-40"
-          >
-            {isSubmitting ? "Salvando..." : "Salvar alterações"}
-          </button>
-        </form>
+              <button
+                type="submit"
+                disabled={isSubmitting || !isDirty}
+                className="btn-primary mt-3 w-full rounded-lg py-2.5 text-sm font-semibold disabled:opacity-40"
+              >
+                {isSubmitting ? "Salvando..." : "Salvar alterações"}
+              </button>
+            </form>
+          </>
+        )}
       </div>
 
       <div className="mt-6 max-w-[400px] rounded-2xl border border-line bg-white p-7">
@@ -224,25 +233,27 @@ export default function Perfil() {
         </form>
       </div>
 
-      <div className="mt-6 max-w-[400px] rounded-2xl border border-line bg-white p-7">
-        <h2 className="mb-1 text-sm font-semibold text-text-dark">Ranking de desempenho físico</h2>
-        <p className="mb-4 text-xs text-text-muted">
-          O ranking mostra seu nome, restrito a integrantes da sua instituição. Você pode optar por
-          não aparecer nele a qualquer momento.
-        </p>
-        <button
-          type="button"
-          onClick={toggleOptOutDoRanking}
-          className="flex w-full items-center justify-between rounded-lg border border-line px-4 py-3 text-sm font-medium hover:bg-bg-tint"
-        >
-          <span>Aparecer no ranking</span>
-          {optedOutDoRanking ? (
-            <ToggleLeft size={28} className="text-text-muted" />
-          ) : (
-            <ToggleRight size={28} className="text-seafoam" />
-          )}
-        </button>
-      </div>
+      {ehUsuarioIndividual && (
+        <div className="mt-6 max-w-[400px] rounded-2xl border border-line bg-white p-7">
+          <h2 className="mb-1 text-sm font-semibold text-text-dark">Ranking de desempenho físico</h2>
+          <p className="mb-4 text-xs text-text-muted">
+            O ranking mostra seu nome, restrito a integrantes da sua instituição. Você pode optar por
+            não aparecer nele a qualquer momento.
+          </p>
+          <button
+            type="button"
+            onClick={toggleOptOutDoRanking}
+            className="flex w-full items-center justify-between rounded-lg border border-line px-4 py-3 text-sm font-medium hover:bg-bg-tint"
+          >
+            <span>Aparecer no ranking</span>
+            {optedOutDoRanking ? (
+              <ToggleLeft size={28} className="text-text-muted" />
+            ) : (
+              <ToggleRight size={28} className="text-seafoam" />
+            )}
+          </button>
+        </div>
+      )}
 
       <div className="mt-6 max-w-[400px] rounded-2xl border border-line bg-white p-7">
         <h2 className="mb-1 text-sm font-semibold text-text-dark">Consentimento LGPD</h2>
