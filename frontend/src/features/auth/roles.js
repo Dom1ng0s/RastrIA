@@ -9,3 +9,11 @@ export const ROLES = [
   { id: "educador-fisico", label: "Responsável Educador Físico", path: "/educador-fisico", instituicaoId: 1 },
   { id: "usuario", label: "Usuário", path: "/usuario", instituicaoId: 1 },
 ];
+
+// Tela inicial de cada papel — destino pós-login e para onde a proteção de rota
+// (features/auth/RotaProtegida.jsx, issue #61) manda quem tenta abrir uma rota
+// de outro papel. Fallback pro /login se o papel for desconhecido.
+// TODO: com o login real, o destino vem da resposta do backend, não deste mapa.
+export function caminhoInicialDoPapel(papel) {
+  return ROLES.find((role) => role.id === papel)?.path ?? "/login";
+}
