@@ -7,6 +7,7 @@ import { DashboardLayout } from "../../components/DashboardLayout";
 import { EmptyState } from "../../components/EmptyState";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
+import { useToast } from "../../features/ui/ToastProvider";
 
 const navItems = [
   { to: "/educador-fisico", label: "Painel do Educador Físico", icon: LayoutDashboard, tour: "nav-painel" },
@@ -28,18 +29,39 @@ const tourSteps = [
 ];
 
 // TODO: substituir por dados reais via TanStack Query quando os endpoints existirem.
-const solicitacoes = [{ id: 1, usuario: "Diego Martins", data: "18 ago 2026" }];
+const solicitacoesIniciais = [{ id: 1, usuario: "Diego Martins", data: "18 ago 2026" }];
 
-const alunos = [
+const alunosIniciais = [
   { id: 1, nome: "Diego Martins", ultimaAvaliacao: "12 ago 2026" },
   { id: 2, nome: "Juliana Prado", ultimaAvaliacao: "08 ago 2026" },
 ];
 
 export default function DashboardEducadorFisico() {
   const { run, handleCallback, restart } = useGuidedTour("educador-fisico");
+  const { showToast } = useToast();
   const [buscaAluno, setBuscaAluno] = useState("");
+  // Estado local para o mock reagir a confirmar/recusar (issue #73) — sem
+  // endpoint ainda, a mudança some no reload. TODO: PATCH /api/solicitacoes/:id
+  // (fluxo é sempre solicitação → confirmação) + refetch de "Meus alunos".
+  const [solicitacoes, setSolicitacoes] = useState(solicitacoesIniciais);
+  const [alunos, setAlunos] = useState(alunosIniciais);
 
   const alunosFiltrados = alunos.filter((aluno) => aluno.nome.toLowerCase().includes(buscaAluno.toLowerCase()));
+
+  function confirmarSolicitacao(solicitacao) {
+    setSolicitacoes((atual) => atual.filter((item) => item.id !== solicitacao.id));
+    setAlunos((atual) =>
+      atual.some((aluno) => aluno.nome === solicitacao.usuario)
+        ? atual
+        : [{ id: `sol-${solicitacao.id}`, nome: solicitacao.usuario, ultimaAvaliacao: "—" }, ...atual],
+    );
+    showToast("Solicitação confirmada");
+  }
+
+  function recusarSolicitacao(solicitacao) {
+    setSolicitacoes((atual) => atual.filter((item) => item.id !== solicitacao.id));
+    showToast("Solicitação recusada");
+  }
 
   return (
     <DashboardLayout title="Painel do Educador Físico" navItems={navItems} onHelp={restart}>
@@ -61,8 +83,20 @@ export default function DashboardEducadorFisico() {
             >
               <p className="min-w-0 flex-1 truncate text-sm font-medium">{solicitacao.usuario}</p>
               <div className="flex shrink-0 gap-2">
-                <button className="btn-primary rounded-lg px-3 py-1.5 text-xs font-semibold">Confirmar</button>
-                <button className="btn-outline rounded-lg px-3 py-1.5 text-xs font-semibold">Recusar</button>
+                <button
+                  type="button"
+                  onClick={() => confirmarSolicitacao(solicitacao)}
+                  className="btn-primary rounded-lg px-3 py-1.5 text-xs font-semibold"
+                >
+                  Confirmar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => recusarSolicitacao(solicitacao)}
+                  className="btn-outline rounded-lg px-3 py-1.5 text-xs font-semibold"
+                >
+                  Recusar
+                </button>
               </div>
             </div>
           ))}

@@ -7,6 +7,7 @@ import { DashboardLayout } from "../../components/DashboardLayout";
 import { EmptyState } from "../../components/EmptyState";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
+import { useToast } from "../../features/ui/ToastProvider";
 
 const navItems = [
   { to: "/medico", label: "Painel do Médico", icon: LayoutDashboard, tour: "nav-painel" },
@@ -29,23 +30,45 @@ const tourSteps = [
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/solicitacoes,
 // GET /api/vinculos-cuidado) quando os endpoints estiverem prontos.
-const solicitacoes = [
+const solicitacoesIniciais = [
   { id: 1, paciente: "Ana Souza", especialidade: "Clínico geral", data: "18 ago 2026" },
   { id: 2, paciente: "Carlos Lima", especialidade: "Cardiologia", data: "17 ago 2026" },
 ];
 
-const pacientes = [
+const pacientesIniciais = [
   { id: 1, nome: "Bruno Alves", ultimoExame: "10 ago 2026" },
   { id: 2, nome: "Fernanda Dias", ultimoExame: "05 ago 2026" },
 ];
 
 export default function DashboardMedico() {
   const { run, handleCallback, restart } = useGuidedTour("medico");
+  const { showToast } = useToast();
   const [buscaPaciente, setBuscaPaciente] = useState("");
+  // Solicitações e pacientes viram estado local para o mock reagir a
+  // confirmar/recusar (issue #73) — sem endpoint ainda, a mudança some no
+  // reload. TODO: PATCH /api/solicitacoes/:id (fluxo é sempre solicitação →
+  // confirmação, nunca aceite automático) + refetch de "Meus pacientes".
+  const [solicitacoes, setSolicitacoes] = useState(solicitacoesIniciais);
+  const [pacientes, setPacientes] = useState(pacientesIniciais);
 
   const pacientesFiltrados = pacientes.filter((paciente) =>
     paciente.nome.toLowerCase().includes(buscaPaciente.toLowerCase()),
   );
+
+  function confirmarSolicitacao(solicitacao) {
+    setSolicitacoes((atual) => atual.filter((item) => item.id !== solicitacao.id));
+    setPacientes((atual) =>
+      atual.some((paciente) => paciente.nome === solicitacao.paciente)
+        ? atual
+        : [{ id: `sol-${solicitacao.id}`, nome: solicitacao.paciente, ultimoExame: "—" }, ...atual],
+    );
+    showToast("Solicitação confirmada");
+  }
+
+  function recusarSolicitacao(solicitacao) {
+    setSolicitacoes((atual) => atual.filter((item) => item.id !== solicitacao.id));
+    showToast("Solicitação recusada");
+  }
 
   return (
     <DashboardLayout title="Painel do Médico" navItems={navItems} onHelp={restart}>
@@ -68,10 +91,20 @@ export default function DashboardMedico() {
                 </p>
               </div>
               <div className="flex shrink-0 gap-2">
-                {/* TODO: confirmar/recusar via mutation (PATCH /api/solicitacoes/:id) —
-                    fluxo é sempre solicitação → confirmação, nunca aceite automático */}
-                <button className="btn-primary rounded-lg px-3 py-1.5 text-xs font-semibold">Confirmar</button>
-                <button className="btn-outline rounded-lg px-3 py-1.5 text-xs font-semibold">Recusar</button>
+                <button
+                  type="button"
+                  onClick={() => confirmarSolicitacao(solicitacao)}
+                  className="btn-primary rounded-lg px-3 py-1.5 text-xs font-semibold"
+                >
+                  Confirmar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => recusarSolicitacao(solicitacao)}
+                  className="btn-outline rounded-lg px-3 py-1.5 text-xs font-semibold"
+                >
+                  Recusar
+                </button>
               </div>
             </div>
           ))}
