@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 
 import { RotaProtegida } from "../features/auth/RotaProtegida";
+import { SessaoInativa } from "../features/auth/SessaoInativa";
 import AlterarSenha from "../pages/AlterarSenha/AlterarSenha";
 import CadastroExercicioFisico from "../pages/CadastroExercicioFisico/CadastroExercicioFisico";
 import CadastroInformacoes from "../pages/CadastroInformacoes/CadastroInformacoes";
@@ -46,7 +47,10 @@ const USUARIO = ["usuario"];
 
 export function AppRoutes() {
   return (
-    <Routes>
+    <>
+      {/* Encerra a sessão após inatividade (issue #92) — inócuo sem usuário logado. */}
+      <SessaoInativa />
+      <Routes>
       {/* Públicas — sem login */}
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
@@ -97,6 +101,7 @@ export function AppRoutes() {
       </Route>
 
       <Route path="*" element={<NotFound />} />
-    </Routes>
+      </Routes>
+    </>
   );
 }
