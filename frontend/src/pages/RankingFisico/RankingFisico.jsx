@@ -22,49 +22,51 @@ const atividades = [
   { id: "ciclismo-20km", label: "Ciclismo · 20km" },
 ];
 
-// Batalhão de cada pessoa (consistente entre atividades) — permite o filtro
-// "meu batalhão" (issue #10). Hierarquia Batalhão > Companhia já é decisão de
-// design assumida (ver "Instituicao" em agents/claude.md).
-const batalhaoPorPessoa = {
-  1: "1º Batalhão",
-  2: "2º Batalhão",
-  3: "1º Batalhão",
-  4: "1º Batalhão", // Você
-  5: "3º Batalhão",
-  6: "2º Batalhão",
-  7: "3º Batalhão",
+// Fonte única de verdade de cada integrante: batalhão + companhia consistentes
+// entre todas as atividades. O ranking referencia só `id` + `tempo`; nome e
+// unidade vêm daqui. Antes cada linha carregava `unidade: "Nª Companhia"` solta,
+// que não reconciliava com o filtro "meu batalhão" (issue #76). Hierarquia
+// Batalhão > Companhia já é decisão de design assumida (ver "Instituicao").
+const pessoas = {
+  1: { nome: "Sgt. Almeida", batalhao: "1º Batalhão", companhia: "1ª Companhia" },
+  2: { nome: "Cb. Ferreira", batalhao: "2º Batalhão", companhia: "1ª Companhia" },
+  3: { nome: "Sd. Rocha", batalhao: "1º Batalhão", companhia: "2ª Companhia" },
+  4: { nome: "Você", batalhao: "1º Batalhão", companhia: "2ª Companhia" },
+  5: { nome: "Cb. Nunes", batalhao: "3º Batalhão", companhia: "1ª Companhia" },
+  6: { nome: "Sd. Barros", batalhao: "2º Batalhão", companhia: "2ª Companhia" },
+  7: { nome: "Sgt. Lima", batalhao: "3º Batalhão", companhia: "2ª Companhia" },
 };
 
 const rankingsPorAtividade = {
   "corrida-5km": [
-    { id: 1, nome: "Sgt. Almeida", unidade: "1ª Companhia", tempo: "21:04" },
-    { id: 2, nome: "Cb. Ferreira", unidade: "2ª Companhia", tempo: "21:47" },
-    { id: 3, nome: "Sd. Rocha", unidade: "1ª Companhia", tempo: "22:12" },
-    { id: 4, nome: "Você", unidade: "1ª Companhia", tempo: "22:58" },
-    { id: 5, nome: "Cb. Nunes", unidade: "3ª Companhia", tempo: "23:20" },
-    { id: 6, nome: "Sd. Barros", unidade: "2ª Companhia", tempo: "24:05" },
-    { id: 7, nome: "Sgt. Lima", unidade: "3ª Companhia", tempo: "24:41" },
+    { id: 1, tempo: "21:04" },
+    { id: 2, tempo: "21:47" },
+    { id: 3, tempo: "22:12" },
+    { id: 4, tempo: "22:58" },
+    { id: 5, tempo: "23:20" },
+    { id: 6, tempo: "24:05" },
+    { id: 7, tempo: "24:41" },
   ],
   "corrida-10km": [
-    { id: 2, nome: "Cb. Ferreira", unidade: "2ª Companhia", tempo: "45:10" },
-    { id: 3, nome: "Sd. Rocha", unidade: "1ª Companhia", tempo: "46:32" },
-    { id: 1, nome: "Sgt. Almeida", unidade: "1ª Companhia", tempo: "47:01" },
-    { id: 6, nome: "Sd. Barros", unidade: "2ª Companhia", tempo: "49:18" },
-    { id: 4, nome: "Você", unidade: "1ª Companhia", tempo: "51:47" },
-    { id: 5, nome: "Cb. Nunes", unidade: "3ª Companhia", tempo: "53:02" },
+    { id: 2, tempo: "45:10" },
+    { id: 3, tempo: "46:32" },
+    { id: 1, tempo: "47:01" },
+    { id: 6, tempo: "49:18" },
+    { id: 4, tempo: "51:47" },
+    { id: 5, tempo: "53:02" },
   ],
   "natacao-500m": [
-    { id: 4, nome: "Você", unidade: "1ª Companhia", tempo: "9:12" },
-    { id: 7, nome: "Sgt. Lima", unidade: "3ª Companhia", tempo: "9:30" },
-    { id: 3, nome: "Sd. Rocha", unidade: "1ª Companhia", tempo: "9:58" },
-    { id: 2, nome: "Cb. Ferreira", unidade: "2ª Companhia", tempo: "10:21" },
+    { id: 4, tempo: "9:12" },
+    { id: 7, tempo: "9:30" },
+    { id: 3, tempo: "9:58" },
+    { id: 2, tempo: "10:21" },
   ],
   "ciclismo-20km": [
-    { id: 5, nome: "Cb. Nunes", unidade: "3ª Companhia", tempo: "38:15" },
-    { id: 1, nome: "Sgt. Almeida", unidade: "1ª Companhia", tempo: "39:40" },
-    { id: 4, nome: "Você", unidade: "1ª Companhia", tempo: "41:22" },
-    { id: 6, nome: "Sd. Barros", unidade: "2ª Companhia", tempo: "43:07" },
-    { id: 3, nome: "Sd. Rocha", unidade: "1ª Companhia", tempo: "44:50" },
+    { id: 5, tempo: "38:15" },
+    { id: 1, tempo: "39:40" },
+    { id: 4, tempo: "41:22" },
+    { id: 6, tempo: "43:07" },
+    { id: 3, tempo: "44:50" },
   ],
 };
 
@@ -85,19 +87,23 @@ export default function RankingFisico() {
   const [busca, setBusca] = useState("");
   const optedOut = useRankingPrefsStore((state) => state.optedOut);
 
-  const meuBatalhao = batalhaoPorPessoa[usuarioAtualId];
+  const meuBatalhao = pessoas[usuarioAtualId].batalhao;
 
   const classificacao = useMemo(() => {
     const listaBase = rankingsPorAtividade[atividadeId];
     const listaNoEscopo =
       escopoId === "batalhao"
-        ? listaBase.filter((entrada) => batalhaoPorPessoa[entrada.id] === meuBatalhao)
+        ? listaBase.filter((entrada) => pessoas[entrada.id].batalhao === meuBatalhao)
         : listaBase;
     const listaVisivel = optedOut
       ? listaNoEscopo.filter((entrada) => entrada.id !== usuarioAtualId)
       : listaNoEscopo;
 
-    return listaVisivel.map((entrada, index) => ({ ...entrada, posicao: index + 1 }));
+    return listaVisivel.map((entrada, index) => ({
+      ...entrada,
+      ...pessoas[entrada.id],
+      posicao: index + 1,
+    }));
   }, [atividadeId, escopoId, meuBatalhao, optedOut]);
 
   // Busca por nome é aplicada por cima da classificação já calculada — não
@@ -144,6 +150,12 @@ export default function RankingFisico() {
         ))}
       </div>
 
+      {escopoId === "batalhao" && (
+        <p className="mb-4 -mt-2 text-xs text-text-muted">
+          Mostrando só integrantes do <strong>{meuBatalhao}</strong>.
+        </p>
+      )}
+
       <div className="mb-6">
         <CampoBusca valor={busca} aoMudar={setBusca} placeholder="Buscar colega por nome..." />
       </div>
@@ -188,7 +200,9 @@ export default function RankingFisico() {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{entrada.nome}</p>
-                <p className="truncate text-xs text-text-muted">{entrada.unidade}</p>
+                <p className="truncate text-xs text-text-muted">
+                  {entrada.batalhao} · {entrada.companhia}
+                </p>
               </div>
             </div>
             <span className="shrink-0 text-sm font-semibold text-primary">{entrada.tempo}</span>
