@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 
 import { RotaProtegida } from "../features/auth/RotaProtegida";
+import AlterarSenha from "../pages/AlterarSenha/AlterarSenha";
 import CadastroExercicioFisico from "../pages/CadastroExercicioFisico/CadastroExercicioFisico";
 import CadastroInformacoes from "../pages/CadastroInformacoes/CadastroInformacoes";
 import CadastroTAF from "../pages/CadastroTAF/CadastroTAF";
@@ -56,9 +57,11 @@ export function AppRoutes() {
       <Route path="/termos-de-uso" element={<TermosDeUso />} />
       <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
 
-      {/* Perfil — qualquer papel autenticado (ver issue #72) */}
+      {/* Configurações — qualquer papel autenticado (ver issues #72 e #88).
+          A rota continua sendo /perfil; o menu lateral a chama de "Configurações". */}
       <Route element={<RotaProtegida />}>
         <Route path="/perfil" element={<Perfil />} />
+        <Route path="/perfil/alterar-senha" element={<AlterarSenha />} />
         <Route path="/perfil/termo-consentimento" element={<TermoConsentimento />} />
       </Route>
 

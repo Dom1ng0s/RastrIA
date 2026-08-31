@@ -1,11 +1,76 @@
-import { HelpCircle, LogOut, Menu, User, X } from "lucide-react";
-import { useState } from "react";
+import { HelpCircle, ListChecks, LogOut, Menu, Settings, Compass, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { useAuthStore } from "../features/auth/store";
 import { ThemeToggle } from "../features/theme/ThemeToggle";
 
 import { Logo } from "./Logo";
+
+// Ícone de ajuda expandido (issue #91): além de reabrir o tour guiado, oferece
+// um atalho para as perguntas frequentes (seção pública `/#faq` da Landing).
+function HelpMenu({ onRever }) {
+  const [aberto, setAberto] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!aberto) return undefined;
+    const aoClicarFora = (evento) => {
+      if (ref.current && !ref.current.contains(evento.target)) setAberto(false);
+    };
+    const aoTeclar = (evento) => {
+      if (evento.key === "Escape") setAberto(false);
+    };
+    document.addEventListener("mousedown", aoClicarFora);
+    document.addEventListener("keydown", aoTeclar);
+    return () => {
+      document.removeEventListener("mousedown", aoClicarFora);
+      document.removeEventListener("keydown", aoTeclar);
+    };
+  }, [aberto]);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        aria-label="Ajuda"
+        title="Ajuda"
+        aria-haspopup="menu"
+        aria-expanded={aberto}
+        onClick={() => setAberto((v) => !v)}
+        className="text-text-muted hover:text-primary"
+      >
+        <HelpCircle size={20} />
+      </button>
+      {aberto && (
+        <div
+          role="menu"
+          className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-lg border border-line bg-white py-1 shadow-lg"
+        >
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setAberto(false);
+              onRever?.();
+            }}
+            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-text-dark hover:bg-bg-tint"
+          >
+            <Compass size={15} /> Rever tour guiado
+          </button>
+          <a
+            role="menuitem"
+            href="/#faq"
+            onClick={() => setAberto(false)}
+            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-text-dark hover:bg-bg-tint"
+          >
+            <ListChecks size={15} /> Ver perguntas frequentes
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function SidebarContent({ navItems, location, onNavigate }) {
   const logout = useAuthStore((state) => state.logout);
@@ -45,12 +110,13 @@ function SidebarContent({ navItems, location, onNavigate }) {
         <Link
           to="/perfil"
           onClick={onNavigate}
+          data-tour="nav-configuracoes"
           className={`nav-item flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${
-            location.pathname === "/perfil" ? "active" : ""
+            location.pathname.startsWith("/perfil") ? "active" : ""
           }`}
         >
-          <User size={18} />
-          Perfil
+          <Settings size={18} />
+          Configurações
         </Link>
         <button
           type="button"
@@ -116,17 +182,7 @@ export function DashboardLayout({ title, navItems, children, onHelp }) {
           <h1 className="text-xl font-semibold text-primary">{title}</h1>
           <div className="ml-auto flex items-center gap-3">
             <ThemeToggle />
-            {onHelp && (
-              <button
-                type="button"
-                aria-label="Ver tour guiado"
-                title="Ver tour guiado"
-                onClick={onHelp}
-                className="text-text-muted hover:text-primary"
-              >
-                <HelpCircle size={20} />
-              </button>
-            )}
+            {onHelp && <HelpMenu onRever={onHelp} />}
           </div>
         </header>
         <main className="mx-auto max-w-6xl p-5 md:p-8">{children}</main>
