@@ -4,11 +4,14 @@ import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
+import { FaqAccordion } from "../../components/FaqAccordion";
 import { Logo } from "../../components/Logo";
+import { PERGUNTAS_FREQUENTES } from "../../features/faq/perguntas";
 
 const LINKS_NAV = [
   { href: "#como-funciona", label: "Como funciona" },
   { href: "#instituicoes", label: "Para instituições" },
+  { href: "#faq", label: "Perguntas frequentes" },
   { href: "#contato", label: "Contato" },
 ];
 
@@ -111,6 +114,8 @@ function Hero() {
   return (
     <section className="relative mx-auto grid max-w-[1180px] items-center gap-12 overflow-hidden px-6 pb-20 pt-16 md:grid-cols-2 md:pt-24">
       <svg
+        data-decorativo
+        aria-hidden="true"
         className="pointer-events-none absolute -z-10 opacity-[0.07]"
         width="500"
         height="500"
@@ -277,6 +282,18 @@ function Institucional() {
   );
 }
 
+function Faq() {
+  return (
+    <section id="faq" className="mx-auto max-w-[760px] px-6 py-24">
+      <div className="mx-auto mb-14 max-w-[560px] text-center">
+        <span className="text-xs font-semibold text-seafoam">PERGUNTAS FREQUENTES</span>
+        <h2 className="mt-2 text-3xl font-semibold text-primary">Dúvidas comuns</h2>
+      </div>
+      <FaqAccordion itens={PERGUNTAS_FREQUENTES} />
+    </section>
+  );
+}
+
 function CtaFinal() {
   return (
     <section id="comecar" className="mx-auto max-w-[1180px] px-6 pb-24">
@@ -347,6 +364,7 @@ export default function Landing() {
       <TrustStrip />
       <ComoFunciona />
       <Institucional />
+      <Faq />
       <CtaFinal />
       <Footer />
     </div>

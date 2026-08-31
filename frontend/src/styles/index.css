@@ -33,6 +33,33 @@
 }
 
 /*
+ * Acessibilidade — preferências de exibição (issue #95). As classes são
+ * alternadas no <html> por features/acessibilidade/store.js. Ficam fora de
+ * @layer (como os overrides de tema escuro acima) para terem prioridade sobre
+ * as utilities do Tailwind.
+ *
+ * `.fonte-grande` aumenta a escala tipográfica base: todo o app dimensiona em
+ * rem/Tailwind, então textos, campos e espaçamentos crescem juntos.
+ *
+ * `.modo-simplificado` é a versão conservadora inicial — esconde elementos
+ * puramente decorativos (marcados com [data-decorativo]) e reforça o contraste
+ * do texto secundário. O escopo exato ainda será refinado com a equipe antes
+ * de expandir (ver issue #95).
+ */
+html.fonte-grande {
+  font-size: 18.5px;
+}
+html.modo-simplificado [data-decorativo] {
+  display: none !important;
+}
+html.modo-simplificado .text-text-muted {
+  color: #3f4c49;
+}
+html.modo-simplificado.dark .text-text-muted {
+  color: theme("colors.dark-text");
+}
+
+/*
  * Modo escuro (issue #9): as telas do produto reaproveitam um conjunto pequeno
  * e consistente de classes utilitárias (bg-white, bg-bg-tint, text-text-dark,
  * text-text-muted, border-line, text-primary) em vez de cor hardcoded — ver

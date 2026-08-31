@@ -6,6 +6,8 @@ export function AuthBrandPanel({ heading, subtitle }) {
   return (
     <div className="relative hidden flex-col justify-between overflow-hidden bg-primary p-10 md:flex">
       <svg
+        data-decorativo
+        aria-hidden="true"
         className="pulse-motif absolute inset-0 h-full w-full"
         viewBox="0 0 500 560"
         preserveAspectRatio="xMidYMid slice"

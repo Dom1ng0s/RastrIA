@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ToggleLeft, ToggleRight } from "lucide-react";
+import { Bell, KeyRound, ToggleLeft, ToggleRight } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import { z } from "zod";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { BaixarHistoricoMenu } from "../../components/BaixarHistoricoMenu";
 import { FieldError } from "../../components/FieldError";
-import { PasswordInput } from "../../components/PasswordInput";
+import { useAcessibilidadeStore } from "../../features/acessibilidade/store";
 import { useAuthStore } from "../../features/auth/store";
 import { navItemsDoPapel, PAPEL_PADRAO } from "../../features/auth/navPorPapel";
 import { useConsentimentoStore } from "../../features/consentimento/store";
@@ -21,37 +21,26 @@ import {
   PESO_KG_MAX,
   PESO_KG_MIN,
 } from "../../lib/medidasCorporais";
-import { senhaForteSchema } from "../../lib/senha";
 
+// Configurações (issue #88) — antes era o "Perfil", uma página única e longa com
+// tudo empilhado. Agora é uma tela com seções navegáveis por abas:
+//   Editar perfil · Meus dados · Ranking · Notificações · Acessibilidade
+// O menu lateral chama esta rota de "Configurações" (ver DashboardLayout.jsx).
+//
+// A seção ativa é espelhada em `?secao=` para permitir link direto (ex.: uma
+// futura chamada "abrir acessibilidade"). A troca de senha saiu daqui para tela
+// própria (`/perfil/alterar-senha`, pages/AlterarSenha).
+//
 // O menu lateral e as seções de dado individual (medidas corporais, opt-out do
-// ranking) são derivados do papel logado — Perfil é a única tela alcançável por
-// todos os papéis (médico, educador físico, comando, usuário), sem guarda de
-// papel na rota. Ver `features/auth/navPorPapel.js`.
+// ranking, baixar histórico) são derivados do papel logado — Configurações é a
+// única tela alcançável por todos os papéis, sem guarda de papel na rota.
 
 // Peso/altura validam faixa e unidade via `medidasCorporaisSchema`
 // (lib/medidasCorporais.js), compartilhado com o Onboarding.
 const perfilSchema = medidasCorporaisSchema;
 
-// `senhaForteSchema` (lib/senha.js) é a mesma regra do primeiro acesso e da
-// redefinição por token — reaproveitada aqui para a troca voluntária de senha.
-const trocarSenhaSchema = z
-  .object({
-    senhaAtual: z.string().min(1, "Informe sua senha atual"),
-    novaSenha: senhaForteSchema,
-    confirmarNovaSenha: z.string().min(1, "Confirme a nova senha"),
-  })
-  .refine((dados) => dados.novaSenha === dados.confirmarNovaSenha, {
-    message: "As senhas não coincidem",
-    path: ["confirmarNovaSenha"],
-  })
-  .refine((dados) => dados.novaSenha !== dados.senhaAtual, {
-    message: "A nova senha deve ser diferente da atual",
-    path: ["novaSenha"],
-  });
-
 // A idade deriva da data de nascimento (fonte da verdade: planilha de
-// integrantes da instituição), nunca de um número digitado à mão que
-// desatualiza a cada aniversário. Cálculo e formatação em lib/dataNascimento.
+// integrantes da instituição), nunca de um número digitado à mão.
 
 // TODO: substituir por dado real via TanStack Query (GET /api/usuarios/me) quando
 // o endpoint existir. `dataNascimento` vem da planilha de integrantes importada
@@ -59,7 +48,29 @@ const trocarSenhaSchema = z
 // não é preenchida pelo usuário, por isso não aparece no formulário abaixo.
 const dadosMock = { email: "usuario@rastria.app", dataNascimento: "1996-03-15", pesoKg: 70, alturaCm: 170 };
 
-export default function Perfil() {
+function ToggleLinha({ rotulo, descricao, ativo, onToggle }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={ativo}
+      className="flex w-full items-center justify-between gap-4 rounded-lg border border-line px-4 py-3 text-left text-sm font-medium hover:bg-bg-tint"
+    >
+      <span>
+        {rotulo}
+        {descricao && <span className="mt-0.5 block text-xs font-normal text-text-muted">{descricao}</span>}
+      </span>
+      {ativo ? (
+        <ToggleRight size={28} className="shrink-0 text-seafoam" />
+      ) : (
+        <ToggleLeft size={28} className="shrink-0 text-text-muted" />
+      )}
+    </button>
+  );
+}
+
+function SecaoEditarPerfil({ ehUsuarioIndividual }) {
+  const { showToast } = useToast();
   const {
     register,
     handleSubmit,
@@ -67,195 +78,103 @@ export default function Perfil() {
     formState: { errors, isSubmitting, isDirty },
   } = useForm({ resolver: zodResolver(perfilSchema), defaultValues: dadosMock });
 
-  const {
-    register: registerSenha,
-    handleSubmit: handleSubmitSenha,
-    reset: resetSenha,
-    formState: { errors: errosSenha, isSubmitting: enviandoSenha },
-  } = useForm({ resolver: zodResolver(trocarSenhaSchema) });
-
-  const optedOutDoRanking = useRankingPrefsStore((state) => state.optedOut);
-  const toggleOptOutDoRanking = useRankingPrefsStore((state) => state.toggleOptOut);
-  const consentimento = useConsentimentoStore((state) => state.consentimento);
-  const { showToast } = useToast();
-
-  const papel = useAuthStore((state) => state.usuario?.papel) ?? PAPEL_PADRAO;
-  const navItems = navItemsDoPapel(papel);
-  // Medidas corporais e ranking de desempenho físico só existem para o usuário
-  // individual; para médico/educador físico/comando o Perfil é só e-mail e senha.
-  const ehUsuarioIndividual = papel === "usuario";
-
   const onSubmit = async (dados) => {
     // TODO: substituir por mutation do TanStack Query (PATCH /api/usuarios/me).
-    console.log("perfil atualizado", dados);
     showToast("Alterações salvas");
-    // Zera o isDirty: os valores salvos passam a ser o novo baseline do form.
-    reset(dados);
-  };
-
-  const onTrocarSenha = async () => {
-    // TODO: substituir por mutation do TanStack Query, enviando
-    // { senha_atual, nova_senha } para POST /api/auth/trocar-senha/. O endpoint
-    // ainda não existe no backend (ver apps/usuarios/views.py) — o mecanismo de
-    // troca é o mesmo do primeiro acesso/redefinição, só que autenticado e
-    // exigindo a senha atual. Em caso de 400 (senha atual incorreta), reportar
-    // no próprio campo "Senha atual" (react-hook-form setError), não num toast.
-    showToast("Senha alterada");
-    resetSenha();
+    reset(dados); // zera o isDirty: os valores salvos viram o novo baseline.
   };
 
   return (
-    <DashboardLayout title="Perfil" navItems={navItems}>
-      <div className="max-w-[400px] rounded-2xl border border-line bg-white p-7">
-        <label className="mb-1.5 block text-xs font-medium text-text-dark">E-mail</label>
-        <p className={`text-sm text-text-muted ${ehUsuarioIndividual ? "mb-5" : ""}`}>{dadosMock.email}</p>
-
-        {ehUsuarioIndividual && (
-          <>
-            <label className="mb-1.5 block text-xs font-medium text-text-dark">Data de nascimento</label>
-            <p className="mb-5 text-sm text-text-muted">
-              {formatarDataNascimento(dadosMock.dataNascimento)} · {calcularIdade(dadosMock.dataNascimento)} anos
-            </p>
-
-            <form onSubmit={handleSubmit(onSubmit)} noValidate>
-              <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="pesoKg">
-                Peso (kg)
-              </label>
-              <input
-                id="pesoKg"
-                type="number"
-                step="0.1"
-                min={PESO_KG_MIN}
-                max={PESO_KG_MAX}
-                className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-                {...register("pesoKg")}
-                {...fieldErrorProps(errors.pesoKg, "pesoKg")}
-              />
-              <FieldError id="pesoKg-erro" className="mb-3">
-                {errors.pesoKg?.message}
-              </FieldError>
-
-              <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="alturaCm">
-                Altura (cm)
-              </label>
-              <input
-                id="alturaCm"
-                type="number"
-                min={ALTURA_CM_MIN}
-                max={ALTURA_CM_MAX}
-                className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-                {...register("alturaCm")}
-                aria-invalid={errors.alturaCm ? true : undefined}
-                aria-describedby={`alturaCm-dica${errors.alturaCm ? " alturaCm-erro" : ""}`}
-              />
-              <p id="alturaCm-dica" className="mb-1 text-xs text-text-muted">
-                Em centímetros, não em metros (ex: 170).
-              </p>
-              <FieldError id="alturaCm-erro" className="mb-4">
-                {errors.alturaCm?.message}
-              </FieldError>
-
-              <button
-                type="submit"
-                disabled={isSubmitting || !isDirty}
-                className="btn-primary mt-3 w-full rounded-lg py-2.5 text-sm font-semibold disabled:opacity-40"
-              >
-                {isSubmitting ? "Salvando..." : "Salvar alterações"}
-              </button>
-            </form>
-          </>
-        )}
-      </div>
-
-      <div className="mt-6 max-w-[400px] rounded-2xl border border-line bg-white p-7">
-        <h2 className="mb-1 text-sm font-semibold text-text-dark">Trocar senha</h2>
-        <p className="mb-4 text-xs text-text-muted">
-          Escolha uma senha forte para proteger sua conta. Você continuará conectado neste dispositivo.
-        </p>
-
-        <form onSubmit={handleSubmitSenha(onTrocarSenha)} noValidate>
-          <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="senhaAtual">
-            Senha atual
-          </label>
-          <PasswordInput
-            id="senhaAtual"
-            autoComplete="current-password"
-            className="mb-1"
-            {...registerSenha("senhaAtual")}
-            {...fieldErrorProps(errosSenha.senhaAtual, "senhaAtual")}
-          />
-          <FieldError id="senhaAtual-erro" className="mb-3">
-            {errosSenha.senhaAtual?.message}
-          </FieldError>
-
-          <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="novaSenha">
-            Nova senha
-          </label>
-          <PasswordInput
-            id="novaSenha"
-            autoComplete="new-password"
-            className="mb-1"
-            {...registerSenha("novaSenha")}
-            aria-invalid={errosSenha.novaSenha ? true : undefined}
-            aria-describedby={`novaSenha-dica${errosSenha.novaSenha ? " novaSenha-erro" : ""}`}
-          />
-          <FieldError id="novaSenha-erro" className="mb-1">
-            {errosSenha.novaSenha?.message}
-          </FieldError>
-          <p id="novaSenha-dica" className="mb-3 text-xs text-text-muted">
-            Mínimo 8 caracteres, 1 maiúscula, 1 número e 1 símbolo.
-          </p>
-
-          <label
-            className="mb-1.5 block text-xs font-medium text-text-dark"
-            htmlFor="confirmarNovaSenha"
-          >
-            Confirmar nova senha
-          </label>
-          <PasswordInput
-            id="confirmarNovaSenha"
-            autoComplete="new-password"
-            className="mb-1"
-            {...registerSenha("confirmarNovaSenha")}
-            {...fieldErrorProps(errosSenha.confirmarNovaSenha, "confirmarNovaSenha")}
-          />
-          <FieldError id="confirmarNovaSenha-erro" className="mb-3">
-            {errosSenha.confirmarNovaSenha?.message}
-          </FieldError>
-
-          <button
-            type="submit"
-            disabled={enviandoSenha}
-            className="btn-primary mt-3 w-full rounded-lg py-2.5 text-sm font-semibold disabled:opacity-40"
-          >
-            {enviandoSenha ? "Salvando..." : "Trocar senha"}
-          </button>
-        </form>
-      </div>
+    <div className="max-w-[400px] rounded-2xl border border-line bg-white p-7">
+      <label className="mb-1.5 block text-xs font-medium text-text-dark">E-mail</label>
+      <p className="mb-5 text-sm text-text-muted">{dadosMock.email}</p>
 
       {ehUsuarioIndividual && (
-        <div className="mt-6 max-w-[400px] rounded-2xl border border-line bg-white p-7">
-          <h2 className="mb-1 text-sm font-semibold text-text-dark">Ranking de desempenho físico</h2>
-          <p className="mb-4 text-xs text-text-muted">
-            O ranking mostra seu nome, restrito a integrantes da sua instituição. Você pode optar por
-            não aparecer nele a qualquer momento.
+        <>
+          <label className="mb-1.5 block text-xs font-medium text-text-dark">Data de nascimento</label>
+          <p className="mb-5 text-sm text-text-muted">
+            {formatarDataNascimento(dadosMock.dataNascimento)} · {calcularIdade(dadosMock.dataNascimento)} anos
           </p>
-          <button
-            type="button"
-            onClick={toggleOptOutDoRanking}
-            className="flex w-full items-center justify-between rounded-lg border border-line px-4 py-3 text-sm font-medium hover:bg-bg-tint"
-          >
-            <span>Aparecer no ranking</span>
-            {optedOutDoRanking ? (
-              <ToggleLeft size={28} className="text-text-muted" />
-            ) : (
-              <ToggleRight size={28} className="text-seafoam" />
-            )}
-          </button>
+
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="pesoKg">
+              Peso (kg)
+            </label>
+            <input
+              id="pesoKg"
+              type="number"
+              step="0.1"
+              min={PESO_KG_MIN}
+              max={PESO_KG_MAX}
+              className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+              {...register("pesoKg")}
+              {...fieldErrorProps(errors.pesoKg, "pesoKg")}
+            />
+            <FieldError id="pesoKg-erro" className="mb-3">
+              {errors.pesoKg?.message}
+            </FieldError>
+
+            <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="alturaCm">
+              Altura (cm)
+            </label>
+            <input
+              id="alturaCm"
+              type="number"
+              min={ALTURA_CM_MIN}
+              max={ALTURA_CM_MAX}
+              className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+              {...register("alturaCm")}
+              aria-invalid={errors.alturaCm ? true : undefined}
+              aria-describedby={`alturaCm-dica${errors.alturaCm ? " alturaCm-erro" : ""}`}
+            />
+            <p id="alturaCm-dica" className="mb-1 text-xs text-text-muted">
+              Em centímetros, não em metros (ex: 170).
+            </p>
+            <FieldError id="alturaCm-erro" className="mb-4">
+              {errors.alturaCm?.message}
+            </FieldError>
+
+            <button
+              type="submit"
+              disabled={isSubmitting || !isDirty}
+              className="btn-primary mt-3 w-full rounded-lg py-2.5 text-sm font-semibold disabled:opacity-40"
+            >
+              {isSubmitting ? "Salvando..." : "Salvar alterações"}
+            </button>
+          </form>
+        </>
+      )}
+
+      {/* Decisão pendente da issue #29 (tipo sanguíneo, contato de emergência):
+          quando fechada, os campos entram nesta seção. */}
+
+      <Link
+        to="/perfil/alterar-senha"
+        className="btn-outline mt-6 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold"
+      >
+        <KeyRound size={16} /> Alterar senha
+      </Link>
+    </div>
+  );
+}
+
+function SecaoMeusDados({ ehUsuarioIndividual }) {
+  const consentimento = useConsentimentoStore((state) => state.consentimento);
+
+  return (
+    <div className="space-y-6">
+      {ehUsuarioIndividual && (
+        <div className="max-w-[520px] rounded-2xl border border-line bg-white p-7">
+          <h2 className="mb-1 text-sm font-semibold text-text-dark">Baixar histórico</h2>
+          <p className="mb-4 text-xs text-text-muted">
+            Seu histórico é seu. Baixe uma cópia completa dos seus exames, índices e do seu último TAF em
+            CSV ou PDF a qualquer momento — direito de portabilidade da LGPD.
+          </p>
+          <BaixarHistoricoMenu />
         </div>
       )}
 
-      <div className="mt-6 max-w-[400px] rounded-2xl border border-line bg-white p-7">
+      <div className="max-w-[520px] rounded-2xl border border-line bg-white p-7">
         <h2 className="mb-1 text-sm font-semibold text-text-dark">Consentimento LGPD</h2>
         <p className="mb-4 text-xs text-text-muted">
           {consentimento
@@ -264,11 +183,125 @@ export default function Perfil() {
         </p>
         <Link
           to="/perfil/termo-consentimento"
-          className="btn-outline block w-full rounded-lg py-2.5 text-center text-sm font-semibold"
+          className="btn-outline block w-full max-w-[280px] rounded-lg py-2.5 text-center text-sm font-semibold"
         >
           Consultar termo aceito
         </Link>
       </div>
+    </div>
+  );
+}
+
+function SecaoRanking() {
+  const optedOut = useRankingPrefsStore((state) => state.optedOut);
+  const toggleOptOut = useRankingPrefsStore((state) => state.toggleOptOut);
+
+  return (
+    <div className="max-w-[520px] rounded-2xl border border-line bg-white p-7">
+      <h2 className="mb-1 text-sm font-semibold text-text-dark">Ranking de desempenho físico</h2>
+      <p className="mb-4 text-xs text-text-muted">
+        O ranking mostra seu nome, restrito a integrantes da sua instituição. Você pode optar por não
+        aparecer nele a qualquer momento.
+      </p>
+      <ToggleLinha rotulo="Aparecer no ranking" ativo={!optedOut} onToggle={toggleOptOut} />
+    </div>
+  );
+}
+
+function SecaoNotificacoes() {
+  return (
+    <div className="max-w-[520px] rounded-2xl border border-line bg-white p-7">
+      <div className="mb-3 flex items-center gap-2 text-text-muted">
+        <Bell size={18} />
+        <h2 className="text-sm font-semibold text-text-dark">Notificações</h2>
+      </div>
+      <p className="text-xs text-text-muted">
+        Em breve: preferências de notificações in-app (avisos de exame pendente, confirmação de
+        acompanhamento, novidades do sistema). Ainda não há nada para configurar aqui.
+      </p>
+    </div>
+  );
+}
+
+function SecaoAcessibilidade() {
+  const fonteGrande = useAcessibilidadeStore((state) => state.fonteGrande);
+  const modoSimplificado = useAcessibilidadeStore((state) => state.modoSimplificado);
+  const toggleFonteGrande = useAcessibilidadeStore((state) => state.toggleFonteGrande);
+  const toggleModoSimplificado = useAcessibilidadeStore((state) => state.toggleModoSimplificado);
+
+  return (
+    <div className="max-w-[520px] space-y-3 rounded-2xl border border-line bg-white p-7">
+      <h2 className="text-sm font-semibold text-text-dark">Exibição</h2>
+      <p className="mb-2 text-xs text-text-muted">
+        Ajustes de exibição para deixar o sistema mais confortável de usar. As preferências ficam
+        salvas neste navegador.
+      </p>
+      <ToggleLinha
+        rotulo="Fonte grande"
+        descricao="Aumenta o tamanho do texto em todo o sistema."
+        ativo={fonteGrande}
+        onToggle={toggleFonteGrande}
+      />
+      <ToggleLinha
+        rotulo="Modo simplificado"
+        descricao="Esconde elementos decorativos e reforça o contraste do texto."
+        ativo={modoSimplificado}
+        onToggle={toggleModoSimplificado}
+      />
+    </div>
+  );
+}
+
+export default function Perfil() {
+  const papel = useAuthStore((state) => state.usuario?.papel) ?? PAPEL_PADRAO;
+  const navItems = navItemsDoPapel(papel);
+  // Medidas corporais, ranking de desempenho físico e baixar histórico só
+  // existem para o usuário individual; para médico/educador físico/comando as
+  // Configurações são e-mail, senha, consentimento, notificações e acessibilidade.
+  const ehUsuarioIndividual = papel === "usuario";
+
+  const secoes = [
+    { id: "editar", rotulo: "Editar perfil", render: () => <SecaoEditarPerfil ehUsuarioIndividual={ehUsuarioIndividual} /> },
+    { id: "dados", rotulo: "Meus dados", render: () => <SecaoMeusDados ehUsuarioIndividual={ehUsuarioIndividual} /> },
+    ...(ehUsuarioIndividual
+      ? [{ id: "ranking", rotulo: "Ranking", render: () => <SecaoRanking /> }]
+      : []),
+    { id: "notificacoes", rotulo: "Notificações", render: () => <SecaoNotificacoes /> },
+    { id: "acessibilidade", rotulo: "Acessibilidade", render: () => <SecaoAcessibilidade /> },
+  ];
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const secaoParam = searchParams.get("secao");
+  const secaoAtiva = secoes.some((s) => s.id === secaoParam) ? secaoParam : secoes[0].id;
+
+  const irPara = (id) => {
+    setSearchParams(id === secoes[0].id ? {} : { secao: id }, { replace: true });
+  };
+
+  return (
+    <DashboardLayout title="Configurações" navItems={navItems}>
+      <nav
+        aria-label="Seções de configurações"
+        className="mb-6 flex flex-wrap gap-1 border-b border-line"
+      >
+        {secoes.map((secao) => (
+          <button
+            key={secao.id}
+            type="button"
+            onClick={() => irPara(secao.id)}
+            aria-current={secao.id === secaoAtiva ? "page" : undefined}
+            className={`-mb-px border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+              secao.id === secaoAtiva
+                ? "border-primary text-primary"
+                : "border-transparent text-text-muted hover:text-text-dark"
+            }`}
+          >
+            {secao.rotulo}
+          </button>
+        ))}
+      </nav>
+
+      {secoes.find((s) => s.id === secaoAtiva).render()}
     </DashboardLayout>
   );
 }
