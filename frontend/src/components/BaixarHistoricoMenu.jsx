@@ -15,14 +15,52 @@ const badgeTexto = { normal: "Normal", atencao: "Atenção", alterado: "Alterado
 const resultadoTafTexto = { apto: "Apto", inapto: "Inapto" };
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/registros-saude
-// e GET /api/taf/ultimo) quando os endpoints existirem — hoje o export cobre os
-// mesmos registros mockados que o DashboardUsuario mostra. Quando a API existir,
-// `montarDadosHistorico` deve montar as seções a partir da resposta completa,
-// não de um mock local, para o arquivo ser de fato o histórico inteiro.
-const registrosMock = [
-  { id: 1, indice: "Pressão arterial", valor: "12/8", data: "10 ago 2026", status: "normal" },
-  { id: 2, indice: "Glicemia em jejum", valor: "112 mg/dL", data: "14 ago 2026", status: "atencao" },
-  { id: 3, indice: "IMC", valor: "23.4", data: "14 ago 2026", status: "normal" },
+// e GET /api/taf/ultimo) quando os endpoints existirem — hoje o export cobre um
+// histórico mockado (várias medições por índice ao longo do tempo, para o
+// gráfico de evolução do PDF ter o que mostrar — issue #90). Quando a API
+// existir, `montarDadosHistorico` deve montar as seções e os gráficos a partir
+// da resposta completa, não deste mock local.
+const historicoMock = [
+  {
+    indice: "Peso",
+    unidade: "kg",
+    medicoes: [
+      { data: "05 mai 2026", valor: 82.4, status: "normal" },
+      { data: "10 jun 2026", valor: 81.1, status: "normal" },
+      { data: "12 jul 2026", valor: 80.3, status: "normal" },
+      { data: "14 ago 2026", valor: 79.6, status: "normal" },
+    ],
+  },
+  {
+    indice: "Glicemia em jejum",
+    unidade: "mg/dL",
+    medicoes: [
+      { data: "05 mai 2026", valor: 118, status: "atencao" },
+      { data: "10 jun 2026", valor: 109, status: "normal" },
+      { data: "12 jul 2026", valor: 104, status: "normal" },
+      { data: "14 ago 2026", valor: 112, status: "atencao" },
+    ],
+  },
+  {
+    indice: "Pressão sistólica",
+    unidade: "mmHg",
+    medicoes: [
+      { data: "05 mai 2026", valor: 134, status: "atencao" },
+      { data: "10 jun 2026", valor: 128, status: "normal" },
+      { data: "12 jul 2026", valor: 124, status: "normal" },
+      { data: "14 ago 2026", valor: 121, status: "normal" },
+    ],
+  },
+  {
+    indice: "IMC",
+    unidade: "",
+    medicoes: [
+      { data: "05 mai 2026", valor: 24.6, status: "normal" },
+      { data: "10 jun 2026", valor: 24.2, status: "normal" },
+      { data: "12 jul 2026", valor: 23.9, status: "normal" },
+      { data: "14 ago 2026", valor: 23.4, status: "normal" },
+    ],
+  },
 ];
 
 const ultimoTafMock = {
@@ -34,14 +72,40 @@ const ultimoTafMock = {
   resultado: "apto",
 };
 
-function montarDadosHistorico(registros, taf) {
+// Rótulo curto do eixo X do gráfico: "05 mai 2026" -> "mai/26".
+function rotuloCurtoData(data) {
+  const partes = data.split(" ");
+  return partes.length === 3 ? `${partes[1]}/${partes[2].slice(-2)}` : data;
+}
+
+function montarDadosHistorico(historico, taf) {
+  const linhasExames = historico.flatMap((item) =>
+    item.medicoes.map((medicao) => [
+      item.indice,
+      `${medicao.valor}${item.unidade ? ` ${item.unidade}` : ""}`,
+      medicao.data,
+      badgeTexto[medicao.status],
+    ]),
+  );
+
   const secoes = [
     {
       titulo: "Exames e índices",
       colunas: ["Índice", "Valor", "Data", "Status"],
-      linhas: registros.map((r) => [r.indice, r.valor, r.data, badgeTexto[r.status]]),
+      linhas: linhasExames,
     },
   ];
+
+  const graficos = historico
+    .filter((item) => item.medicoes.length >= 2)
+    .map((item) => ({
+      titulo: item.indice,
+      unidade: item.unidade,
+      pontos: item.medicoes.map((medicao) => ({
+        rotulo: rotuloCurtoData(medicao.data),
+        valor: medicao.valor,
+      })),
+    }));
 
   if (taf) {
     secoes.push({
@@ -58,7 +122,7 @@ function montarDadosHistorico(registros, taf) {
     });
   }
 
-  return { geradoEm: new Date(), secoes };
+  return { geradoEm: new Date(), secoes, graficos };
 }
 
 export function BaixarHistoricoMenu() {
@@ -88,7 +152,7 @@ export function BaixarHistoricoMenu() {
       // import dinâmico: o jsPDF (e o resto do módulo) só entra no bundle quando
       // o usuário de fato baixa algo.
       const { baixarHistorico } = await import("../lib/exportarHistorico");
-      baixarHistorico(montarDadosHistorico(registrosMock, ultimoTafMock), formato);
+      baixarHistorico(montarDadosHistorico(historicoMock, ultimoTafMock), formato);
       showToast(`Histórico baixado em ${formato.toUpperCase()}`);
     } catch {
       showToast("Não foi possível gerar o arquivo", "erro");

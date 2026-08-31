@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { FieldError } from "../../components/FieldError";
+import { ForcaSenha } from "../../components/ForcaSenha";
 import { PasswordInput } from "../../components/PasswordInput";
 import { useAuthStore } from "../../features/auth/store";
 import { navItemsDoPapel, PAPEL_PADRAO } from "../../features/auth/navPorPapel";
@@ -43,8 +44,11 @@ export default function AlterarSenha() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(trocarSenhaSchema) });
+
+  const novaSenhaDigitada = watch("novaSenha") ?? "";
 
   const onSubmit = async () => {
     // TODO: substituir por mutation do TanStack Query, enviando
@@ -100,9 +104,7 @@ export default function AlterarSenha() {
           <FieldError id="novaSenha-erro" className="mb-1">
             {errors.novaSenha?.message}
           </FieldError>
-          <p id="novaSenha-dica" className="mb-3 text-xs text-text-muted">
-            Mínimo 8 caracteres, 1 maiúscula, 1 número e 1 símbolo.
-          </p>
+          <ForcaSenha senha={novaSenhaDigitada} id="novaSenha-dica" />
 
           <label
             className="mb-1.5 block text-xs font-medium text-text-dark"

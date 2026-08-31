@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
 import { FieldError } from "../../components/FieldError";
+import { ForcaSenha } from "../../components/ForcaSenha";
 import { PasswordInput } from "../../components/PasswordInput";
 import { TermoConsentimentoLGPD } from "../../components/TermoConsentimentoLGPD";
 import { useConsentimentoStore } from "../../features/consentimento/store";
@@ -51,8 +52,11 @@ export default function PrimeiroAcesso() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(schema) });
+
+  const senhaDigitada = watch("senha") ?? "";
 
   const onSubmitSenha = async () => {
     // TODO: substituir por mutation do TanStack Query (POST /api/auth/primeiro-acesso/:token/)
@@ -143,14 +147,13 @@ export default function PrimeiroAcesso() {
                   autoComplete="new-password"
                   className="mb-1"
                   {...register("senha")}
-                  {...fieldErrorProps(errors.senha, "senha")}
+                  aria-invalid={errors.senha ? true : undefined}
+                  aria-describedby={`senha-dica${errors.senha ? " senha-erro" : ""}`}
                 />
-                <FieldError id="senha-erro" className="mb-3">
+                <FieldError id="senha-erro" className="mb-1">
                   {errors.senha?.message}
                 </FieldError>
-                <p className="mb-4 text-xs text-text-muted">
-                  Mínimo 8 caracteres, 1 maiúscula, 1 número e 1 símbolo.
-                </p>
+                <ForcaSenha senha={senhaDigitada} id="senha-dica" />
 
                 <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="confirmarSenha">
                   Confirmar senha

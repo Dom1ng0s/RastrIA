@@ -1,5 +1,7 @@
 import { useState } from "react";
 import {
+  AlertTriangle,
+  CheckCircle2,
   ClipboardList,
   FileText,
   LayoutDashboard,
@@ -91,13 +93,45 @@ const resultadoTafTexto = { apto: "Apto", inapto: "Inapto" };
 // O botão "Baixar histórico" foi movido para Configurações → Meus dados
 // (issue #88), sob a ótica de LGPD/portabilidade — ver components/BaixarHistoricoMenu.jsx.
 
+// Resumo rápido derivado só do que já está carregado na tela (registros + TAF),
+// sem novo dado da API — issue #94. Uma pendência é um índice em "atenção"/
+// "alterado" ou um TAF "inapto".
+function resumirSituacao(registros, taf) {
+  const indicesPendentes = registros.filter((registro) => registro.status !== "normal");
+  const tafInapto = taf.resultado === "inapto";
+  const rotulos = [...indicesPendentes.map((registro) => registro.indice), ...(tafInapto ? ["TAF"] : [])];
+  return { total: rotulos.length, rotulos };
+}
+
 export default function DashboardUsuario() {
   const [registros] = useState(registrosIniciais);
-  const { run, handleCallback, restart } = useGuidedTour("usuario");
+  const { run, handleCallback, restart } = useGuidedTour();
+
+  const { total: totalPendencias, rotulos: rotulosPendencias } = resumirSituacao(registros, ultimoTaf);
 
   return (
     <DashboardLayout title="Meu Histórico" navItems={navItems} onHelp={restart}>
       <GuidedTour run={run} steps={tourSteps} callback={handleCallback} />
+
+      {totalPendencias === 0 ? (
+        <div className="mb-6 flex items-center gap-3 rounded-xl badge-normal p-4">
+          <CheckCircle2 size={20} className="shrink-0" />
+          <div>
+            <p className="text-sm font-semibold">Tudo em dia</p>
+            <p className="text-xs opacity-80">Nenhum índice em atenção ou alterado.</p>
+          </div>
+        </div>
+      ) : (
+        <div className="mb-6 flex items-center gap-3 rounded-xl badge-atencao p-4">
+          <AlertTriangle size={20} className="shrink-0" />
+          <div>
+            <p className="text-sm font-semibold">
+              {totalPendencias} {totalPendencias === 1 ? "pendência" : "pendências"}
+            </p>
+            <p className="text-xs opacity-80">Vale revisar: {rotulosPendencias.join(", ")}.</p>
+          </div>
+        </div>
+      )}
 
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-text-muted">Seus exames e índices mais recentes.</p>

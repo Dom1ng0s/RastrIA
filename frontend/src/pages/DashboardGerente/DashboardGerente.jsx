@@ -80,7 +80,7 @@ export const unidades = [
 ];
 
 export default function DashboardGerente() {
-  const { run, handleCallback, restart } = useGuidedTour("gerente");
+  const { run, handleCallback, restart } = useGuidedTour();
 
   return (
     <DashboardLayout title="Painel do Comando" navItems={navItems} onHelp={restart}>
