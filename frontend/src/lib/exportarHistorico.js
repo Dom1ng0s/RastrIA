@@ -7,9 +7,16 @@ import { jsPDF } from "jspdf";
 // o próprio dado, alinhado ao direito de portabilidade da LGPD.
 //
 // `dados` tem o formato:
-//   { geradoEm: Date, secoes: [{ titulo, colunas: string[], linhas: string[][] }] }
+//   {
+//     geradoEm: Date,
+//     secoes: [{ titulo, colunas: string[], linhas: string[][] }],
+//     graficos?: [{ titulo, unidade, pontos: [{ rotulo, valor: number }] }],
+//   }
 // Cada seção vira um bloco no CSV e uma tabela no PDF, para que exames, TAF e
 // (quando o backend expuser) desempenho físico saiam todos no mesmo arquivo.
+// `graficos` é opcional e só afeta o PDF: um gráfico de linha da evolução de
+// cada índice ao longo do tempo (issue #90), desenhado em vetor pelo próprio
+// jsPDF — sem lib de chart nem backend.
 
 // Excel e Google Sheets interpretam uma célula que começa com = + - @ (ou TAB/CR)
 // como fórmula — um valor vindo do usuário poderia virar injeção de fórmula ao
@@ -41,9 +48,78 @@ export function gerarCsvHistorico(dados) {
 }
 
 const COR_PRIMARY = [12, 74, 68];
+const COR_SEAFOAM = [20, 184, 146];
 const COR_TEXTO = [27, 44, 41];
 const COR_MUTED = [91, 107, 103];
 const COR_LINHA = [228, 228, 228];
+
+function formatarNumero(valor) {
+  return Number.isInteger(valor) ? String(valor) : valor.toFixed(1);
+}
+
+// Gráfico de linha da evolução de um índice, desenhado em vetor no PDF
+// (issue #90). `area` em pontos: { x, y (topo da área de plot), largura, altura }.
+function desenharGraficoEvolucao(doc, grafico, area) {
+  const { x, y, largura, altura } = area;
+  const padEsquerda = 42;
+  const padBaixo = 14;
+  const padTopo = 8; // espaço para o rótulo do valor máximo não encostar no título
+  const plotX = x + padEsquerda;
+  const plotY = y + padTopo;
+  const plotLargura = largura - padEsquerda;
+  const plotAltura = altura - padBaixo - padTopo;
+
+  const valores = grafico.pontos.map((ponto) => ponto.valor);
+  let minimo = Math.min(...valores);
+  let maximo = Math.max(...valores);
+  if (minimo === maximo) {
+    minimo -= 1;
+    maximo += 1;
+  }
+  const folga = (maximo - minimo) * 0.12;
+  minimo -= folga;
+  maximo += folga;
+
+  const posX = (indice) =>
+    grafico.pontos.length === 1
+      ? plotX + plotLargura / 2
+      : plotX + (plotLargura * indice) / (grafico.pontos.length - 1);
+  const posY = (valor) => plotY + plotAltura - ((valor - minimo) / (maximo - minimo)) * plotAltura;
+
+  // Título do gráfico
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.setTextColor(...COR_TEXTO);
+  doc.text(`${grafico.titulo}${grafico.unidade ? ` (${grafico.unidade})` : ""}`, x, y - 5);
+
+  // Linhas-guia horizontais + rótulos do eixo Y (mínimo, meio, máximo)
+  doc.setFontSize(7);
+  doc.setTextColor(...COR_MUTED);
+  doc.setDrawColor(...COR_LINHA);
+  for (let nivel = 0; nivel <= 2; nivel += 1) {
+    const valor = minimo + ((maximo - minimo) * nivel) / 2;
+    const linhaY = posY(valor);
+    doc.line(plotX, linhaY, plotX + plotLargura, linhaY);
+    doc.text(formatarNumero(valor), plotX - 5, linhaY + 2, { align: "right" });
+  }
+
+  // Série
+  doc.setDrawColor(...COR_PRIMARY);
+  doc.setLineWidth(1.4);
+  for (let i = 1; i < grafico.pontos.length; i += 1) {
+    doc.line(posX(i - 1), posY(valores[i - 1]), posX(i), posY(valores[i]));
+  }
+  doc.setLineWidth(1);
+
+  // Pontos + rótulos do eixo X
+  grafico.pontos.forEach((ponto, i) => {
+    doc.setFillColor(...(i === grafico.pontos.length - 1 ? COR_SEAFOAM : COR_PRIMARY));
+    doc.circle(posX(i), posY(ponto.valor), 2, "F");
+    doc.setTextColor(...COR_MUTED);
+    doc.setFontSize(7);
+    doc.text(String(ponto.rotulo), posX(i), plotY + plotAltura + 10, { align: "center" });
+  });
+}
 
 export function gerarPdfHistorico(dados) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
@@ -110,6 +186,30 @@ export function gerarPdfHistorico(dados) {
     }
     y += 20;
   });
+
+  const graficos = (dados.graficos ?? []).filter((grafico) => grafico.pontos.length >= 2);
+  if (graficos.length > 0) {
+    const alturaGrafico = 92;
+    quebrarPaginaSePreciso(40);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.setTextColor(...COR_TEXTO);
+    doc.text("Evolução", margem, y);
+    y += 8;
+
+    graficos.forEach((grafico) => {
+      quebrarPaginaSePreciso(alturaGrafico + 30);
+      y += 22;
+      desenharGraficoEvolucao(doc, grafico, {
+        x: margem,
+        y,
+        largura: larguraUtil,
+        altura: alturaGrafico,
+      });
+      y += alturaGrafico + 12;
+    });
+    y += 8;
+  }
 
   const totalPaginas = doc.getNumberOfPages();
   for (let pagina = 1; pagina <= totalPaginas; pagina += 1) {
