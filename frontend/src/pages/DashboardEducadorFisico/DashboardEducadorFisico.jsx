@@ -37,7 +37,7 @@ const alunosIniciais = [
 ];
 
 export default function DashboardEducadorFisico() {
-  const { run, handleCallback, restart } = useGuidedTour("educador-fisico");
+  const { run, handleCallback, restart } = useGuidedTour();
   const { showToast } = useToast();
   const [buscaAluno, setBuscaAluno] = useState("");
   // Estado local para o mock reagir a confirmar/recusar (issue #73) — sem

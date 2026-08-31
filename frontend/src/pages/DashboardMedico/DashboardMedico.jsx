@@ -41,7 +41,7 @@ const pacientesIniciais = [
 ];
 
 export default function DashboardMedico() {
-  const { run, handleCallback, restart } = useGuidedTour("medico");
+  const { run, handleCallback, restart } = useGuidedTour();
   const { showToast } = useToast();
   const [buscaPaciente, setBuscaPaciente] = useState("");
   // Solicitações e pacientes viram estado local para o mock reagir a

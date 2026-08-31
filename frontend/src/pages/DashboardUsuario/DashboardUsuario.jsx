@@ -105,7 +105,7 @@ function resumirSituacao(registros, taf) {
 
 export default function DashboardUsuario() {
   const [registros] = useState(registrosIniciais);
-  const { run, handleCallback, restart } = useGuidedTour("usuario");
+  const { run, handleCallback, restart } = useGuidedTour();
 
   const { total: totalPendencias, rotulos: rotulosPendencias } = resumirSituacao(registros, ultimoTaf);
 
