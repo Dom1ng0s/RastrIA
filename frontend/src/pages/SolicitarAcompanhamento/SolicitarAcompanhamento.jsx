@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Stethoscope, Dumbbell, Check, Clock } from "lucide-react";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
@@ -31,6 +31,12 @@ const profissionaisMock = [
 // TODO: substituir por GET /api/instituicoes/:id quando o endpoint existir.
 const INSTITUICOES_MOCK = { 1: "Batalhão PMAL", 2: "Outra instituição" };
 
+// Enquanto não há backend, o profissional "confirma" a solicitação sozinho
+// depois de alguns segundos — só para o fluxo solicitação → confirmação →
+// vínculo contínuo (o que diferencia o modelo do matching instantâneo,
+// Parecer CFM nº 15/2026) ser demonstrável na tela. Ver issue #75.
+const MS_ATE_CONFIRMACAO_SIMULADA = 4000;
+
 const tipos = [
   { id: "medico", label: "Médico", icon: Stethoscope },
   { id: "educador_fisico", label: "Educador Físico", icon: Dumbbell },
@@ -45,58 +51,106 @@ export default function SolicitarAcompanhamento() {
   const instituicaoId = usuario?.instituicaoId ?? 1;
 
   const [tipoSelecionado, setTipoSelecionado] = useState("medico");
-  // TODO: vínculo de cuidado ativo viria da API, já escopado à mesma
-  // instituição do usuário — aqui simulado como null (usuário ainda sem
-  // profissional vinculado) para ilustrar o fluxo completo.
+  // TODO: vínculo de cuidado ativo viria da API (GET /api/vinculos-cuidado/meu),
+  // já escopado à mesma instituição do usuário. Aqui começa null e é preenchido
+  // quando a solicitação pendente é "confirmada" pelo profissional (simulado).
   const [vinculoAtivo, setVinculoAtivo] = useState(null);
   const [solicitacaoPendente, setSolicitacaoPendente] = useState(null);
+  const timerConfirmacao = useRef(null);
 
   const profissionaisFiltrados = profissionaisMock.filter(
     (p) => p.tipo === tipoSelecionado && p.instituicaoId === instituicaoId,
   );
+
+  function limparTimer() {
+    if (timerConfirmacao.current) {
+      clearTimeout(timerConfirmacao.current);
+      timerConfirmacao.current = null;
+    }
+  }
+
+  // Limpa o timer de confirmação simulada se a pessoa sair da tela antes dele.
+  useEffect(() => limparTimer, []);
 
   function solicitar(profissional) {
     // TODO: chamar useSolicitarAtendimento() (POST /api/atendimentos/solicitar)
     // quando o endpoint existir. O backend deve validar que o profissional
     // pertence à mesma instituição do usuário antes de criar a solicitação —
     // essa regra não pode depender só do filtro do frontend. Por ora, simula
-    // localmente a criação da solicitação e o vínculo pendente de confirmação.
+    // localmente a criação da solicitação, a confirmação do profissional e o
+    // vínculo de cuidado contínuo resultante.
+    limparTimer();
     setSolicitacaoPendente(profissional);
     showToast(`Solicitação enviada para ${profissional.nome}`);
+    timerConfirmacao.current = setTimeout(() => {
+      setSolicitacaoPendente(null);
+      setVinculoAtivo(profissional);
+      timerConfirmacao.current = null;
+      showToast(`${profissional.nome} confirmou seu acompanhamento`);
+    }, MS_ATE_CONFIRMACAO_SIMULADA);
+  }
+
+  function cancelarSolicitacao() {
+    limparTimer();
+    setSolicitacaoPendente(null);
+    showToast("Solicitação cancelada");
+  }
+
+  function encerrarVinculo() {
+    setVinculoAtivo(null);
+    showToast("Acompanhamento encerrado");
   }
 
   return (
     <DashboardLayout title="Solicitar Acompanhamento" navItems={navItems}>
       {/* Vínculo de cuidado já ativo — próxima solicitação vai direto para o mesmo profissional */}
       {vinculoAtivo && !solicitacaoPendente && (
-        <div className="mb-6 flex items-center justify-between rounded-xl border border-line bg-white p-4">
-          <div className="min-w-0 flex-1">
-            <span className="text-xs font-medium text-text-muted">Seu acompanhamento contínuo</span>
-            <p className="truncate text-sm font-semibold text-primary">{vinculoAtivo.nome}</p>
-            <span className="truncate text-xs text-text-muted">{vinculoAtivo.especialidade}</span>
+        <div className="mb-6 rounded-xl border border-line bg-white p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <span className="text-xs font-medium text-text-muted">Seu acompanhamento contínuo</span>
+              <p className="truncate text-sm font-semibold text-primary">{vinculoAtivo.nome}</p>
+              <span className="truncate text-xs text-text-muted">{vinculoAtivo.especialidade}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => solicitar(vinculoAtivo)}
+              className="btn-primary shrink-0 rounded-lg px-4 py-2 text-sm font-semibold"
+            >
+              Nova solicitação
+            </button>
           </div>
           <button
             type="button"
-            onClick={() => solicitar(vinculoAtivo)}
-            className="btn-primary shrink-0 rounded-lg px-4 py-2 text-sm font-semibold"
+            onClick={encerrarVinculo}
+            className="mt-3 text-xs font-medium text-text-muted underline hover:text-primary"
           >
-            Nova solicitação
+            Encerrar acompanhamento
           </button>
         </div>
       )}
 
       {/* Confirmação de solicitação enviada */}
       {solicitacaoPendente && (
-        <div className="mb-6 flex items-center gap-3 rounded-xl border border-line bg-white p-4">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full badge-atencao">
-            <Clock size={16} />
+        <div className="mb-6 rounded-xl border border-line bg-white p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full badge-atencao">
+              <Clock size={16} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium">
+                Solicitação enviada para <strong>{solicitacaoPendente.nome}</strong>
+              </p>
+              <span className="text-xs text-text-muted">Aguardando confirmação do profissional.</span>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-medium">
-              Solicitação enviada para <strong>{solicitacaoPendente.nome}</strong>
-            </p>
-            <span className="text-xs text-text-muted">Aguardando confirmação do profissional.</span>
-          </div>
+          <button
+            type="button"
+            onClick={cancelarSolicitacao}
+            className="btn-outline mt-3 rounded-lg px-4 py-2 text-sm font-semibold"
+          >
+            Cancelar solicitação
+          </button>
         </div>
       )}
 
