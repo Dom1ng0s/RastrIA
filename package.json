@@ -7,6 +7,9 @@
     "build": "npm install --prefix frontend && npm run build --prefix frontend",
     "start": "serve -s frontend/dist -l $PORT"
   },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "dependencies": {
     "serve": "^14.2.3"
   }
