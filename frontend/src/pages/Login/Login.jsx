@@ -54,6 +54,12 @@ export default function Login() {
     // individual (papel mais comum do login por CPF). Sem popular o store, a
     // proteção de rota (features/auth/RotaProtegida.jsx, issue #61) barraria o
     // /usuario logo em seguida.
+    //
+    // Ao implementar o redirect "voltar pra rota tentada antes de logar"
+    // (location.state.from, guardado pela RotaProtegida), passar o `from` por
+    // `rotaInternaSegura` (lib/rotaInterna.js) antes de navegar — um `from`
+    // manipulado com "//" ou "/\" redirecionaria pra domínio externo
+    // (open redirect, issue #107).
     setUsuario({ papel: "usuario", instituicaoId: 1 });
     navigate("/usuario");
   };
