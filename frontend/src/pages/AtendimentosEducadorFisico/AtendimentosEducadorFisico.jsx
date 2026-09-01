@@ -9,6 +9,11 @@ const navItems = [
 
 export default function AtendimentosEducadorFisico() {
   return (
-    <AtendimentosRealizados navItems={navItems} tituloPagina="Painel do Educador Físico" escopo="fisico" />
+    <AtendimentosRealizados
+      navItems={navItems}
+      tituloPagina="Painel do Educador Físico"
+      escopo="fisico"
+      detalheBase="/educador-fisico/aluno"
+    />
   );
 }

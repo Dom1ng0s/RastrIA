@@ -8,5 +8,12 @@ const navItems = [
 ];
 
 export default function AtendimentosMedico() {
-  return <AtendimentosRealizados navItems={navItems} tituloPagina="Painel do Médico" escopo="clinico" />;
+  return (
+    <AtendimentosRealizados
+      navItems={navItems}
+      tituloPagina="Painel do Médico"
+      escopo="clinico"
+      detalheBase="/medico/paciente"
+    />
+  );
 }
