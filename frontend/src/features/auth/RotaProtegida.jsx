@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
+import { rotaInternaSegura } from "../../lib/rotaInterna";
 import { caminhoInicialDoPapel } from "./roles";
 import { useAuthStore } from "./store";
 
@@ -8,7 +9,10 @@ import { useAuthStore } from "./store";
 // store.js), então a proteção sobrevive a um reload. Ver issue #61.
 //
 // - sem usuário logado → manda pro /login, guardando a rota tentada em
-//   `location.state.from` (para um futuro "voltar pra onde ia depois de logar")
+//   `location.state.from` (para um futuro "voltar pra onde ia depois de logar").
+//   O `from` já passa por `rotaInternaSegura` aqui, mas quem for consumi-lo no
+//   redirect pós-login deve sanitizar de novo (defesa em profundidade contra
+//   open redirect — issue #107).
 // - logado, mas com papel fora de `papeis` → manda pra tela inicial do papel
 //   dele; não é 404 nem "acesso negado", é levar a pessoa pra onde ela pode estar
 // - `papeis` omitido → basta estar logado (ex: /perfil, comum a todos os papéis)
@@ -20,7 +24,8 @@ export function RotaProtegida({ papeis, children }) {
   const location = useLocation();
 
   if (!usuario) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+    const from = rotaInternaSegura(`${location.pathname}${location.search}`, "/");
+    return <Navigate to="/login" replace state={{ from }} />;
   }
 
   if (papeis && !papeis.includes(usuario.papel)) {
