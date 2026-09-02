@@ -7,6 +7,7 @@ import { z } from "zod";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { BaixarHistoricoMenu } from "../../components/BaixarHistoricoMenu";
 import { FieldError } from "../../components/FieldError";
+import { LogAcessoProntuario } from "../../components/LogAcessoProntuario";
 import { useAcessibilidadeStore } from "../../features/acessibilidade/store";
 import { useAuthStore } from "../../features/auth/store";
 import { navItemsDoPapel, PAPEL_PADRAO } from "../../features/auth/navPorPapel";
@@ -252,6 +253,8 @@ function SecaoMeusDados({ ehUsuarioIndividual }) {
           <BaixarHistoricoMenu />
         </div>
       )}
+
+      {ehUsuarioIndividual && <LogAcessoProntuario />}
 
       <div className="max-w-[520px] rounded-2xl border border-line bg-white p-7">
         <h2 className="mb-1 text-sm font-semibold text-text-dark">Consentimento LGPD</h2>
