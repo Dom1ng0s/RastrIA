@@ -1,12 +1,20 @@
-import { Landmark, Lock, Menu, ShieldCheck, X } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Landmark, Lock, Mail, Menu, ShieldCheck, X } from "lucide-react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { z } from "zod";
 
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
+import { useToast } from "../../features/ui/ToastProvider";
 import { FaqAccordion } from "../../components/FaqAccordion";
+import { FieldError } from "../../components/FieldError";
 import { Logo } from "../../components/Logo";
 import { PERGUNTAS_FREQUENTES } from "../../features/faq/perguntas";
+import { fieldErrorProps } from "../../lib/fieldA11y";
+
+const EMAIL_CONTATO = "contato@rastria.app";
 
 const LINKS_NAV = [
   { href: "#como-funciona", label: "Como funciona" },
@@ -312,9 +320,132 @@ function CtaFinal() {
   );
 }
 
+// "Fale com o time" (issue #52) — os 4 CTAs "Fale com o time" espalhados pela
+// página (menu mobile, header, hero, CTA final) só faziam um scroll até o
+// rodapé, que mostrava apenas "Maceió, Alagoas" — sem nenhum jeito real de
+// entrar em contato. Vira um formulário de verdade (envio mockado, como o
+// resto dos formulários do app nesta fase) + um e-mail direto como
+// alternativa imediata para quem não quer preencher formulário.
+const faleComTimeSchema = z.object({
+  nome: z.string().trim().min(1, "Informe seu nome"),
+  instituicao: z.string().trim().min(1, "Informe o nome da instituição"),
+  email: z.string().trim().min(1, "Informe seu e-mail").email("E-mail inválido"),
+  mensagem: z.string().trim().min(10, "Conte um pouco mais (mínimo 10 caracteres)"),
+});
+
+function FaleComTime() {
+  const { showToast } = useToast();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({ resolver: zodResolver(faleComTimeSchema) });
+
+  const onSubmit = async () => {
+    // TODO: substituir por mutation do TanStack Query (POST /api/contato-institucional)
+    // quando o endpoint existir. Até lá, mockado como o resto dos formulários
+    // do app nesta fase — sem persistência real, só confirmação visual.
+    showToast("Mensagem enviada! Nosso time responde em até 2 dias úteis.");
+    reset();
+  };
+
+  return (
+    <section id="contato" className="bg-bg-tint py-20">
+      <div className="mx-auto grid max-w-[1180px] gap-10 px-6 md:grid-cols-2 md:items-start">
+        <div>
+          <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-seafoam">Contato</span>
+          <h2 className="mb-3 text-3xl font-semibold text-primary">Fale com o time</h2>
+          <p className="max-w-[420px] text-sm text-text-muted">
+            Sua empresa, academia ou corporação quer levar a Rastria para o efetivo/colaboradores?
+            Conte um pouco sobre a instituição e entramos em contato.
+          </p>
+          <a
+            href={`mailto:${EMAIL_CONTATO}`}
+            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+          >
+            <Mail size={16} /> {EMAIL_CONTATO}
+          </a>
+        </div>
+
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          className="rounded-2xl border border-line bg-white p-6 shadow-sm"
+        >
+          <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="nome">
+            Nome
+          </label>
+          <input
+            id="nome"
+            type="text"
+            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+            {...register("nome")}
+            {...fieldErrorProps(errors.nome, "nome")}
+          />
+          <FieldError id="nome-erro" className="mb-3">
+            {errors.nome?.message}
+          </FieldError>
+
+          <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="instituicao">
+            Instituição
+          </label>
+          <input
+            id="instituicao"
+            type="text"
+            placeholder="Ex: Polícia Militar de Alagoas"
+            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+            {...register("instituicao")}
+            {...fieldErrorProps(errors.instituicao, "instituicao")}
+          />
+          <FieldError id="instituicao-erro" className="mb-3">
+            {errors.instituicao?.message}
+          </FieldError>
+
+          <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="email">
+            E-mail
+          </label>
+          <input
+            id="email"
+            type="email"
+            className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+            {...register("email")}
+            {...fieldErrorProps(errors.email, "email")}
+          />
+          <FieldError id="email-erro" className="mb-3">
+            {errors.email?.message}
+          </FieldError>
+
+          <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="mensagem">
+            Mensagem
+          </label>
+          <textarea
+            id="mensagem"
+            rows={3}
+            className="mb-1 w-full resize-none rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+            {...register("mensagem")}
+            {...fieldErrorProps(errors.mensagem, "mensagem")}
+          />
+          <FieldError id="mensagem-erro" className="mb-4">
+            {errors.mensagem?.message}
+          </FieldError>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="btn-primary w-full rounded-lg py-2.5 text-sm font-semibold disabled:opacity-60"
+          >
+            {isSubmitting ? "Enviando..." : "Enviar mensagem"}
+          </button>
+        </form>
+      </div>
+    </section>
+  );
+}
+
 function Footer() {
   return (
-    <footer id="contato" className="bg-primary">
+    <footer className="bg-primary">
       <div className="mx-auto grid max-w-[1180px] gap-10 px-6 py-14 sm:grid-cols-2 md:grid-cols-4">
         <div>
           <Logo reverse className="mb-3" />
@@ -349,7 +480,15 @@ function Footer() {
         </div>
         <div>
           <span className="mb-3 block text-xs font-semibold text-[#9FCFC4]">CONTATO</span>
-          <p className="text-sm text-[#CFEAE3]">Maceió, Alagoas</p>
+          <div className="space-y-2 text-sm text-[#CFEAE3]">
+            <a href={`mailto:${EMAIL_CONTATO}`} className="block hover:text-white">
+              {EMAIL_CONTATO}
+            </a>
+            <a href="#contato" className="block hover:text-white">
+              Fale com o time
+            </a>
+            <p>Maceió, Alagoas</p>
+          </div>
         </div>
       </div>
     </footer>
@@ -366,6 +505,7 @@ export default function Landing() {
       <Institucional />
       <Faq />
       <CtaFinal />
+      <FaleComTime />
       <Footer />
     </div>
   );
