@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 
 import { CampoBusca } from "../../components/CampoBusca";
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { DemoToggle } from "../../components/DemoToggle";
+import { EmptyState } from "../../components/EmptyState";
 import { useRankingPrefsStore } from "../../features/ranking/store";
 import { navItems } from "../DashboardUsuario/DashboardUsuario";
 
@@ -85,11 +87,16 @@ export default function RankingFisico() {
   const [atividadeId, setAtividadeId] = useState(atividades[0].id);
   const [escopoId, setEscopoId] = useState(escopos[0].id);
   const [busca, setBusca] = useState("");
+  // Modo demo (issue #80) — o ranking mockado nunca fica vazio sozinho
+  // (sempre há tempos registrados), então este toggle simula "conta nova sem
+  // nenhuma atividade registrada ainda" para poder demonstrar o estado vazio.
+  const [contaNova, setContaNova] = useState(false);
   const optedOut = useRankingPrefsStore((state) => state.optedOut);
 
   const meuBatalhao = pessoas[usuarioAtualId].batalhao;
 
   const classificacao = useMemo(() => {
+    if (contaNova) return [];
     const listaBase = rankingsPorAtividade[atividadeId];
     const listaNoEscopo =
       escopoId === "batalhao"
@@ -104,7 +111,7 @@ export default function RankingFisico() {
       ...pessoas[entrada.id],
       posicao: index + 1,
     }));
-  }, [atividadeId, escopoId, meuBatalhao, optedOut]);
+  }, [atividadeId, escopoId, meuBatalhao, optedOut, contaNova]);
 
   // Busca por nome é aplicada por cima da classificação já calculada — não
   // recalcula posição (a posição reflete o escopo escolhido, não a busca;
@@ -118,6 +125,8 @@ export default function RankingFisico() {
 
   return (
     <DashboardLayout title="Ranking" navItems={navItems}>
+      <DemoToggle contaNova={contaNova} onToggle={() => setContaNova((atual) => !atual)} />
+
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-text-muted">Compare seus tempos com outros integrantes da sua corporação.</p>
         <select
@@ -210,15 +219,15 @@ export default function RankingFisico() {
         ))}
 
         {classificacao.length === 0 && (
-          <div className="rounded-xl border border-dashed border-line p-8 text-center text-sm text-text-muted">
-            Nenhum resultado registrado nesse escopo ainda.
-          </div>
+          <EmptyState
+            icon={Trophy}
+            title="Nenhum resultado registrado nesse escopo ainda"
+            description="Assim que colegas da sua instituição registrarem tempos nessa atividade, o ranking aparece aqui."
+          />
         )}
 
         {classificacao.length > 0 && classificacaoFiltrada.length === 0 && (
-          <div className="rounded-xl border border-dashed border-line p-8 text-center text-sm text-text-muted">
-            Nenhum colega encontrado com esse nome, nesse escopo.
-          </div>
+          <EmptyState icon={Trophy} title="Nenhum colega encontrado com esse nome, nesse escopo" />
         )}
       </div>
     </DashboardLayout>

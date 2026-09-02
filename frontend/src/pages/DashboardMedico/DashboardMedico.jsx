@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import { CampoBusca } from "../../components/CampoBusca";
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { DemoToggle } from "../../components/DemoToggle";
 import { EmptyState } from "../../components/EmptyState";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
@@ -50,8 +51,14 @@ export default function DashboardMedico() {
   // confirmação, nunca aceite automático) + refetch de "Meus pacientes".
   const [solicitacoes, setSolicitacoes] = useState(solicitacoesIniciais);
   const [pacientes, setPacientes] = useState(pacientesIniciais);
+  // Modo demo (issue #80) — solicitações/pacientes mockados nunca ficam
+  // vazios sozinhos; este toggle simula "nenhum paciente/solicitação ainda"
+  // sem descartar o estado real do mock (volta ao normal ao desligar).
+  const [contaNova, setContaNova] = useState(false);
+  const solicitacoesExibidas = contaNova ? [] : solicitacoes;
+  const pacientesExibidos = contaNova ? [] : pacientes;
 
-  const pacientesFiltrados = pacientes.filter((paciente) =>
+  const pacientesFiltrados = pacientesExibidos.filter((paciente) =>
     paciente.nome.toLowerCase().includes(buscaPaciente.toLowerCase()),
   );
 
@@ -74,12 +81,14 @@ export default function DashboardMedico() {
     <DashboardLayout title="Painel do Médico" navItems={navItems} onHelp={restart}>
       <GuidedTour run={run} steps={tourSteps} callback={handleCallback} />
 
+      <DemoToggle contaNova={contaNova} onToggle={() => setContaNova((atual) => !atual)} />
+
       <section className="mb-10" data-tour="solicitacoes-pendentes">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">
           Solicitações pendentes
         </h2>
         <div className="space-y-3">
-          {solicitacoes.map((solicitacao) => (
+          {solicitacoesExibidas.map((solicitacao) => (
             <div
               key={solicitacao.id}
               className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm"
@@ -109,7 +118,7 @@ export default function DashboardMedico() {
             </div>
           ))}
 
-          {solicitacoes.length === 0 && (
+          {solicitacoesExibidas.length === 0 && (
             <EmptyState icon={AlertCircle} title="Nenhuma solicitação pendente no momento" />
           )}
         </div>
@@ -130,7 +139,7 @@ export default function DashboardMedico() {
             </Link>
           ))}
 
-          {pacientes.length === 0 && (
+          {pacientesExibidos.length === 0 && (
             <EmptyState
               icon={Users}
               title="Nenhum paciente sob sua responsabilidade ainda"
@@ -138,7 +147,7 @@ export default function DashboardMedico() {
             />
           )}
 
-          {pacientes.length > 0 && pacientesFiltrados.length === 0 && (
+          {pacientesExibidos.length > 0 && pacientesFiltrados.length === 0 && (
             <p className="py-6 text-center text-sm text-text-muted">
               Nenhum paciente encontrado com esse nome.
             </p>

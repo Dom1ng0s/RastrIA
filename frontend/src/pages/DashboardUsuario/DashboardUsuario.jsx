@@ -11,6 +11,7 @@ import {
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { DemoToggle } from "../../components/DemoToggle";
 import { EmptyState } from "../../components/EmptyState";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
@@ -104,14 +105,21 @@ function resumirSituacao(registros, taf) {
 }
 
 export default function DashboardUsuario() {
-  const [registros] = useState(registrosIniciais);
+  // Modo demo (issue #80) — ver components/DemoToggle.jsx. Alterna entre os
+  // mocks normais e listas vazias, só para poder demonstrar/testar visualmente
+  // o estado de "conta nova sem nenhum registro ainda".
+  const [contaNova, setContaNova] = useState(false);
+  const registros = contaNova ? [] : registrosIniciais;
+  const taf = contaNova ? null : ultimoTaf;
   const { run, handleCallback, restart } = useGuidedTour();
 
-  const { total: totalPendencias, rotulos: rotulosPendencias } = resumirSituacao(registros, ultimoTaf);
+  const { total: totalPendencias, rotulos: rotulosPendencias } = resumirSituacao(registros, taf ?? { resultado: "apto" });
 
   return (
     <DashboardLayout title="Meu Histórico" navItems={navItems} onHelp={restart}>
       <GuidedTour run={run} steps={tourSteps} callback={handleCallback} />
+
+      <DemoToggle contaNova={contaNova} onToggle={() => setContaNova((atual) => !atual)} />
 
       {totalPendencias === 0 ? (
         <div className="mb-6 flex items-center gap-3 rounded-xl badge-normal p-4">
@@ -151,26 +159,34 @@ export default function DashboardUsuario() {
 
       <section className="mb-8" data-tour="ultimo-taf">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meu último TAF</h2>
-        <div className="rounded-xl bg-white p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Resultado</span>
-            <span
-              className={`${resultadoTafClasse[ultimoTaf.resultado]} rounded-full px-2 py-0.5 text-[11px] font-semibold`}
-            >
-              {resultadoTafTexto[ultimoTaf.resultado]}
-            </span>
+        {taf ? (
+          <div className="rounded-xl bg-white p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Resultado</span>
+              <span
+                className={`${resultadoTafClasse[taf.resultado]} rounded-full px-2 py-0.5 text-[11px] font-semibold`}
+              >
+                {resultadoTafTexto[taf.resultado]}
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-text-muted">{taf.data}</p>
+            <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-text-muted sm:grid-cols-4">
+              <span>Corrida · {taf.corrida}</span>
+              <span>Flexão · {taf.flexoes}</span>
+              <span>Abdominal · {taf.abdominais}</span>
+              <span>Barra · {taf.barra}</span>
+            </div>
+            <p className="mt-3 text-xs text-text-muted">
+              Cadastrado pelo educador físico responsável — não pode ser editado por aqui.
+            </p>
           </div>
-          <p className="mt-1 text-xs text-text-muted">{ultimoTaf.data}</p>
-          <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-text-muted sm:grid-cols-4">
-            <span>Corrida · {ultimoTaf.corrida}</span>
-            <span>Flexão · {ultimoTaf.flexoes}</span>
-            <span>Abdominal · {ultimoTaf.abdominais}</span>
-            <span>Barra · {ultimoTaf.barra}</span>
-          </div>
-          <p className="mt-3 text-xs text-text-muted">
-            Cadastrado pelo educador físico responsável — não pode ser editado por aqui.
-          </p>
-        </div>
+        ) : (
+          <EmptyState
+            icon={Trophy}
+            title="Você ainda não fez nenhum TAF"
+            description="O Teste de Aptidão Física é cadastrado pelo educador físico responsável da sua instituição."
+          />
+        )}
       </section>
 
       <div className="space-y-3">

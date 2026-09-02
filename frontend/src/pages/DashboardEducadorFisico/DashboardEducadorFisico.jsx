@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import { CampoBusca } from "../../components/CampoBusca";
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { DemoToggle } from "../../components/DemoToggle";
 import { EmptyState } from "../../components/EmptyState";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
@@ -45,8 +46,14 @@ export default function DashboardEducadorFisico() {
   // (fluxo é sempre solicitação → confirmação) + refetch de "Meus alunos".
   const [solicitacoes, setSolicitacoes] = useState(solicitacoesIniciais);
   const [alunos, setAlunos] = useState(alunosIniciais);
+  // Modo demo (issue #80) — ver components/DemoToggle.jsx.
+  const [contaNova, setContaNova] = useState(false);
+  const solicitacoesExibidas = contaNova ? [] : solicitacoes;
+  const alunosExibidos = contaNova ? [] : alunos;
 
-  const alunosFiltrados = alunos.filter((aluno) => aluno.nome.toLowerCase().includes(buscaAluno.toLowerCase()));
+  const alunosFiltrados = alunosExibidos.filter((aluno) =>
+    aluno.nome.toLowerCase().includes(buscaAluno.toLowerCase()),
+  );
 
   function confirmarSolicitacao(solicitacao) {
     setSolicitacoes((atual) => atual.filter((item) => item.id !== solicitacao.id));
@@ -67,6 +74,8 @@ export default function DashboardEducadorFisico() {
     <DashboardLayout title="Painel do Educador Físico" navItems={navItems} onHelp={restart}>
       <GuidedTour run={run} steps={tourSteps} callback={handleCallback} />
 
+      <DemoToggle contaNova={contaNova} onToggle={() => setContaNova((atual) => !atual)} />
+
       <p className="mb-6 text-sm text-text-muted">
         Escopo restrito a desempenho físico — sem acesso a dado clínico.
       </p>
@@ -76,7 +85,7 @@ export default function DashboardEducadorFisico() {
           Solicitações pendentes
         </h2>
         <div className="space-y-3">
-          {solicitacoes.map((solicitacao) => (
+          {solicitacoesExibidas.map((solicitacao) => (
             <div
               key={solicitacao.id}
               className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm"
@@ -101,7 +110,7 @@ export default function DashboardEducadorFisico() {
             </div>
           ))}
 
-          {solicitacoes.length === 0 && (
+          {solicitacoesExibidas.length === 0 && (
             <EmptyState icon={AlertCircle} title="Nenhuma solicitação pendente no momento" />
           )}
         </div>
@@ -122,7 +131,7 @@ export default function DashboardEducadorFisico() {
             </Link>
           ))}
 
-          {alunos.length === 0 && (
+          {alunosExibidos.length === 0 && (
             <EmptyState
               icon={Users}
               title="Nenhum aluno sob sua responsabilidade ainda"
@@ -130,7 +139,7 @@ export default function DashboardEducadorFisico() {
             />
           )}
 
-          {alunos.length > 0 && alunosFiltrados.length === 0 && (
+          {alunosExibidos.length > 0 && alunosFiltrados.length === 0 && (
             <p className="py-6 text-center text-sm text-text-muted">Nenhum aluno encontrado com esse nome.</p>
           )}
         </div>
