@@ -3,10 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { useAuthStore } from "../features/auth/store";
+import { PAPEL_PADRAO } from "../features/auth/navPorPapel";
 import { useToast } from "../features/ui/ToastProvider";
 import { ThemeToggle } from "../features/theme/ThemeToggle";
 
 import { Logo } from "./Logo";
+import { NotificacoesMenu } from "./NotificacoesMenu";
 import { ReportarProblemaModal } from "./ReportarProblemaModal";
 
 // Ícone de ajuda expandido (issue #91): além de reabrir o tour guiado, oferece
@@ -149,6 +151,7 @@ export function DashboardLayout({ title, navItems, children, onHelp }) {
   const [menuAberto, setMenuAberto] = useState(false);
   const [reportarAberto, setReportarAberto] = useState(false);
   const { showToast } = useToast();
+  const papel = useAuthStore((state) => state.usuario?.papel) ?? PAPEL_PADRAO;
 
   return (
     <div className="flex min-h-screen">
@@ -202,6 +205,7 @@ export function DashboardLayout({ title, navItems, children, onHelp }) {
           <h1 className="text-xl font-semibold text-primary">{title}</h1>
           <div className="ml-auto flex items-center gap-3">
             <ThemeToggle />
+            <NotificacoesMenu papel={papel} />
             {onHelp && <HelpMenu onRever={onHelp} />}
           </div>
         </header>
