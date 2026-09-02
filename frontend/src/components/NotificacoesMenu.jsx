@@ -49,7 +49,7 @@ export function NotificacoesMenu({ papel }) {
         aria-haspopup="menu"
         aria-expanded={aberto}
         onClick={() => setAberto((v) => !v)}
-        className="relative text-text-muted hover:text-primary"
+        className="relative inline-flex h-5 w-5 items-center justify-center text-text-muted hover:text-primary"
       >
         <Bell size={20} />
         {naoLidas > 0 && (

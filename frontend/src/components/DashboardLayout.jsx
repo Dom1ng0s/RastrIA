@@ -42,7 +42,7 @@ function HelpMenu({ onRever }) {
         aria-haspopup="menu"
         aria-expanded={aberto}
         onClick={() => setAberto((v) => !v)}
-        className="text-text-muted hover:text-primary"
+        className="inline-flex h-5 w-5 items-center justify-center text-text-muted hover:text-primary"
       >
         <HelpCircle size={20} />
       </button>
