@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Bell, KeyRound, ToggleLeft, ToggleRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link, useSearchParams } from "react-router-dom";
+import { z } from "zod";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { BaixarHistoricoMenu } from "../../components/BaixarHistoricoMenu";
@@ -13,6 +14,13 @@ import { useConsentimentoStore } from "../../features/consentimento/store";
 import { useRankingPrefsStore } from "../../features/ranking/store";
 import { useToast } from "../../features/ui/ToastProvider";
 import { calcularIdade, formatarDataNascimento } from "../../lib/dataNascimento";
+import {
+  contatoEmergenciaNomeSchema,
+  contatoEmergenciaTelefoneSchema,
+  TIPOS_SANGUINEOS,
+  tipoSanguineoSchema,
+  validarContatoEmergencia,
+} from "../../lib/dadosComplementares";
 import { fieldErrorProps } from "../../lib/fieldA11y";
 import {
   ALTURA_CM_MAX,
@@ -36,8 +44,17 @@ import {
 // única tela alcançável por todos os papéis, sem guarda de papel na rota.
 
 // Peso/altura validam faixa e unidade via `medidasCorporaisSchema`
-// (lib/medidasCorporais.js), compartilhado com o Onboarding.
-const perfilSchema = medidasCorporaisSchema;
+// (lib/medidasCorporais.js), compartilhado com o Onboarding. Tipo sanguíneo e
+// contato de emergência (issue #29) são dado complementar preenchido aqui, não
+// no Onboarding — ver lib/dadosComplementares.js.
+const perfilSchema = z
+  .object({
+    ...medidasCorporaisSchema.shape,
+    tipoSanguineo: tipoSanguineoSchema,
+    contatoEmergenciaNome: contatoEmergenciaNomeSchema,
+    contatoEmergenciaTelefone: contatoEmergenciaTelefoneSchema,
+  })
+  .superRefine(validarContatoEmergencia);
 
 // A idade deriva da data de nascimento (fonte da verdade: planilha de
 // integrantes da instituição), nunca de um número digitado à mão.
@@ -46,7 +63,17 @@ const perfilSchema = medidasCorporaisSchema;
 // o endpoint existir. `dataNascimento` vem da planilha de integrantes importada
 // pela instituição (ver "Dados pessoais complementares" em agents/claude.md) —
 // não é preenchida pelo usuário, por isso não aparece no formulário abaixo.
-const dadosMock = { email: "usuario@rastria.app", dataNascimento: "1996-03-15", pesoKg: 70, alturaCm: 170 };
+// `tipoSanguineo`/`contatoEmergencia*` também vêm de `GET /api/usuarios/me`
+// quando existir (issue #29); PATCH usa os mesmos nomes de campo do form.
+const dadosMock = {
+  email: "usuario@rastria.app",
+  dataNascimento: "1996-03-15",
+  pesoKg: 70,
+  alturaCm: 170,
+  tipoSanguineo: "",
+  contatoEmergenciaNome: "",
+  contatoEmergenciaTelefone: "",
+};
 
 function ToggleLinha({ rotulo, descricao, ativo, onToggle }) {
   return (
@@ -134,6 +161,61 @@ function SecaoEditarPerfil({ ehUsuarioIndividual }) {
               {errors.alturaCm?.message}
             </FieldError>
 
+            <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="tipoSanguineo">
+              Tipo sanguíneo
+            </label>
+            <select
+              id="tipoSanguineo"
+              className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+              {...register("tipoSanguineo")}
+              {...fieldErrorProps(errors.tipoSanguineo, "tipoSanguineo")}
+            >
+              <option value="">Não informado</option>
+              {TIPOS_SANGUINEOS.map((tipo) => (
+                <option key={tipo} value={tipo}>
+                  {tipo}
+                </option>
+              ))}
+            </select>
+            <FieldError id="tipoSanguineo-erro" className="mb-3">
+              {errors.tipoSanguineo?.message}
+            </FieldError>
+
+            <p className="mb-1.5 mt-4 text-xs font-medium text-text-dark">Contato de emergência</p>
+            <p className="mb-2 text-xs text-text-muted">
+              Preenchimento opcional — usado só em caso de emergência, não aparece para outros papéis.
+            </p>
+
+            <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="contatoEmergenciaNome">
+              Nome
+            </label>
+            <input
+              id="contatoEmergenciaNome"
+              type="text"
+              placeholder="Nome completo"
+              className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+              {...register("contatoEmergenciaNome")}
+              {...fieldErrorProps(errors.contatoEmergenciaNome, "contatoEmergenciaNome")}
+            />
+            <FieldError id="contatoEmergenciaNome-erro" className="mb-3">
+              {errors.contatoEmergenciaNome?.message}
+            </FieldError>
+
+            <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="contatoEmergenciaTelefone">
+              Telefone
+            </label>
+            <input
+              id="contatoEmergenciaTelefone"
+              type="tel"
+              placeholder="(82) 99999-9999"
+              className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+              {...register("contatoEmergenciaTelefone")}
+              {...fieldErrorProps(errors.contatoEmergenciaTelefone, "contatoEmergenciaTelefone")}
+            />
+            <FieldError id="contatoEmergenciaTelefone-erro" className="mb-4">
+              {errors.contatoEmergenciaTelefone?.message}
+            </FieldError>
+
             <button
               type="submit"
               disabled={isSubmitting || !isDirty}
@@ -144,9 +226,6 @@ function SecaoEditarPerfil({ ehUsuarioIndividual }) {
           </form>
         </>
       )}
-
-      {/* Decisão pendente da issue #29 (tipo sanguíneo, contato de emergência):
-          quando fechada, os campos entram nesta seção. */}
 
       <Link
         to="/perfil/alterar-senha"
