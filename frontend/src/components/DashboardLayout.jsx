@@ -49,7 +49,7 @@ function HelpMenu({ onRever }) {
       {aberto && (
         <div
           role="menu"
-          className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-lg border border-line bg-white py-1 shadow-lg"
+          className="absolute right-0 top-full z-20 mt-2 w-56 max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-line bg-white py-1 shadow-lg"
         >
           <button
             type="button"

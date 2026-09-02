@@ -62,7 +62,7 @@ export function NotificacoesMenu({ papel }) {
       {aberto && (
         <div
           role="menu"
-          className="absolute right-0 z-20 mt-2 w-80 overflow-hidden rounded-lg border border-line bg-white shadow-lg"
+          className="absolute right-0 top-full z-20 mt-2 w-80 max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-line bg-white shadow-lg"
         >
           <div className="flex items-center justify-between border-b border-line px-3 py-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">Notificações</span>
