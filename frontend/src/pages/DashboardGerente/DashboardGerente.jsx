@@ -1,12 +1,14 @@
-import { AlertTriangle, LayoutDashboard } from "lucide-react";
+import { AlertTriangle, LayoutDashboard, Settings2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
+import { useHierarquiaStore } from "../../features/hierarquia/store";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
 
 export const navItems = [
   { to: "/gerente", label: "Painel Agregado", icon: LayoutDashboard, tour: "nav-agregado" },
+  { to: "/gerente/hierarquia", label: "Configurar Unidades", icon: Settings2 },
 ];
 
 const tourSteps = [
@@ -44,42 +46,14 @@ const examesAtrasados = [
   { id: 3, nome: "Sd. Marcos Lima", unidade: "3º Batalhão", exame: "TAF", diasAtraso: 20 },
 ];
 
-// TODO: substituir por dados reais via TanStack Query (GET /api/instituicoes/:id/agregado)
-// quando o endpoint existir. Hierarquia multinível (Batalhão/Companhia/Pelotão) ainda
-// depende de confirmação do piloto institucional — ver agents/claude.md.
-export const unidades = [
-  {
-    id: 1,
-    nome: "1º Batalhão",
-    percentual: 94,
-    subunidades: [
-      { nome: "1ª Companhia", percentual: 96 },
-      { nome: "2ª Companhia", percentual: 91 },
-      { nome: "3ª Companhia", percentual: 95 },
-    ],
-  },
-  {
-    id: 2,
-    nome: "2º Batalhão",
-    percentual: 88,
-    subunidades: [
-      { nome: "1ª Companhia", percentual: 85 },
-      { nome: "2ª Companhia", percentual: 90 },
-    ],
-  },
-  {
-    id: 3,
-    nome: "3º Batalhão",
-    percentual: 95,
-    subunidades: [
-      { nome: "1ª Companhia", percentual: 97 },
-      { nome: "2ª Companhia", percentual: 94 },
-      { nome: "3ª Companhia", percentual: 95 },
-    ],
-  },
-];
-
+// Percentual agregado ("% com exames em dia") por unidade continua sendo
+// mock — só o backend pode calcular isso de verdade. TODO: substituir por
+// dado real via TanStack Query (GET /api/instituicoes/:id/agregado) quando o
+// endpoint existir. A estrutura da hierarquia em si (quais batalhões/
+// companhias existem) já não é mais fixa aqui — vem de
+// features/hierarquia/store.js, editável pelo Gerente (issue #98).
 export default function DashboardGerente() {
+  const unidades = useHierarquiaStore((state) => state.unidades);
   const { run, handleCallback, restart } = useGuidedTour();
 
   return (
@@ -143,10 +117,20 @@ export default function DashboardGerente() {
           >
             <span className="min-w-0 flex-1 truncate text-sm font-medium">{unidade.nome}</span>
             <span className="shrink-0 badge-normal rounded-full px-2 py-0.5 text-[11px] font-semibold">
-              {unidade.percentual}% em dia
+              {unidade.percentual === null ? "Sem dado ainda" : `${unidade.percentual}% em dia`}
             </span>
           </Link>
         ))}
+
+        {unidades.length === 0 && (
+          <div className="rounded-xl border border-dashed border-line p-8 text-center text-sm text-text-muted">
+            Nenhuma unidade cadastrada ainda.{" "}
+            <Link to="/gerente/hierarquia" className="font-medium text-primary underline">
+              Configurar unidades
+            </Link>
+            .
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

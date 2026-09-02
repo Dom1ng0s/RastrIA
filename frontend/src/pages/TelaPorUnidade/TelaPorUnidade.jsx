@@ -3,10 +3,12 @@ import { Link, useParams } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { EmptyState } from "../../components/EmptyState";
-import { navItems, unidades } from "../DashboardGerente/DashboardGerente";
+import { useHierarquiaStore } from "../../features/hierarquia/store";
+import { navItems } from "../DashboardGerente/DashboardGerente";
 
 export default function TelaPorUnidade() {
   const { id } = useParams();
+  const unidades = useHierarquiaStore((state) => state.unidades);
   const unidade = unidades.find((item) => String(item.id) === id);
 
   if (!unidade) {
@@ -29,7 +31,8 @@ export default function TelaPorUnidade() {
       <div className="mb-8 rounded-2xl bg-primary p-6">
         <span className="text-xs font-medium text-white/70">Efetivo da unidade</span>
         <div className="mt-1 text-4xl font-semibold text-white">
-          {unidade.percentual}% <span className="font-body text-base font-normal text-white/70">com exames em dia</span>
+          {unidade.percentual === null ? "—" : `${unidade.percentual}%`}{" "}
+          <span className="font-body text-base font-normal text-white/70">com exames em dia</span>
         </div>
       </div>
 
@@ -40,10 +43,10 @@ export default function TelaPorUnidade() {
       <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Por subunidade</h2>
       <div className="space-y-2">
         {unidade.subunidades.map((sub) => (
-          <div key={sub.nome} className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm">
+          <div key={sub.id} className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm">
             <span className="min-w-0 flex-1 truncate text-sm font-medium">{sub.nome}</span>
             <span className="shrink-0 badge-normal rounded-full px-2 py-0.5 text-[11px] font-semibold">
-              {sub.percentual}% em dia
+              {sub.percentual === null ? "Sem dado ainda" : `${sub.percentual}% em dia`}
             </span>
           </div>
         ))}
