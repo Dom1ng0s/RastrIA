@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { ConfirmarAlteradoModal } from "../../components/ConfirmarAlteradoModal";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { DemoToggle } from "../../components/DemoToggle";
 import { EmptyState } from "../../components/EmptyState";
@@ -113,6 +114,13 @@ export default function DashboardUsuario() {
   const taf = contaNova ? null : ultimoTaf;
   const { run, handleCallback, restart } = useGuidedTour();
 
+  // Confirmação explícita ao visualizar um resultado "Alterado" (issue #97) —
+  // um badge na lista não garante que a pessoa notou/entendeu a gravidade.
+  // `confirmados` só vive nesta sessão (não persiste) — quando o backend
+  // existir, isso deve virar parte do próprio registro (ex: `visualizadoEm`).
+  const [registroAberto, setRegistroAberto] = useState(null);
+  const [confirmados, setConfirmados] = useState(() => new Set());
+
   const { total: totalPendencias, rotulos: rotulosPendencias } = resumirSituacao(registros, taf ?? { resultado: "apto" });
 
   return (
@@ -190,22 +198,29 @@ export default function DashboardUsuario() {
       </section>
 
       <div className="space-y-3">
-        {registros.map((registro) => (
-          <div
-            key={registro.id}
-            className={`card-registro ${registro.status !== "normal" ? "atencao" : ""} rounded-xl bg-white p-4 shadow-sm transition-shadow hover:shadow-md`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="min-w-0 flex-1 truncate text-sm font-medium">{registro.indice}</span>
-              <span className={`${badgeClasse[registro.status]} shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold transition-colors`}>
-                {badgeTexto[registro.status]}
-              </span>
-            </div>
-            <p className="mt-1 text-xs text-text-muted">
-              {registro.data} · {registro.valor}
-            </p>
-          </div>
-        ))}
+        {registros.map((registro) => {
+          const ehAlterado = registro.status === "alterado";
+          const Tag = ehAlterado ? "button" : "div";
+          return (
+            <Tag
+              key={registro.id}
+              type={ehAlterado ? "button" : undefined}
+              onClick={ehAlterado ? () => setRegistroAberto(registro) : undefined}
+              className={`card-registro ${registro.status !== "normal" ? "atencao" : ""} w-full rounded-xl bg-white p-4 text-left shadow-sm transition-shadow hover:shadow-md`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">{registro.indice}</span>
+                <span className={`${badgeClasse[registro.status]} shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold transition-colors`}>
+                  {badgeTexto[registro.status]}
+                  {ehAlterado && confirmados.has(registro.id) ? " · visto" : ""}
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-text-muted">
+                {registro.data} · {registro.valor}
+              </p>
+            </Tag>
+          );
+        })}
 
         {registros.length === 0 && (
           <EmptyState
@@ -217,6 +232,17 @@ export default function DashboardUsuario() {
           />
         )}
       </div>
+
+      {registroAberto && (
+        <ConfirmarAlteradoModal
+          registro={registroAberto}
+          confirmado={confirmados.has(registroAberto.id)}
+          onConfirmar={() =>
+            setConfirmados((atual) => new Set(atual).add(registroAberto.id))
+          }
+          onClose={() => setRegistroAberto(null)}
+        />
+      )}
     </DashboardLayout>
   );
 }
