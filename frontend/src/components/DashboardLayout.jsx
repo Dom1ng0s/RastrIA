@@ -1,11 +1,13 @@
-import { HelpCircle, ListChecks, LogOut, Menu, Settings, Compass, X } from "lucide-react";
+import { Flag, HelpCircle, ListChecks, LogOut, Menu, Settings, Compass, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { useAuthStore } from "../features/auth/store";
+import { useToast } from "../features/ui/ToastProvider";
 import { ThemeToggle } from "../features/theme/ThemeToggle";
 
 import { Logo } from "./Logo";
+import { ReportarProblemaModal } from "./ReportarProblemaModal";
 
 // Ícone de ajuda expandido (issue #91): além de reabrir o tour guiado, oferece
 // um atalho para as perguntas frequentes (seção pública `/#faq` da Landing).
@@ -72,7 +74,7 @@ function HelpMenu({ onRever }) {
   );
 }
 
-function SidebarContent({ navItems, location, onNavigate }) {
+function SidebarContent({ navItems, location, onNavigate, onReportarProblema }) {
   const logout = useAuthStore((state) => state.logout);
 
   const sair = () => {
@@ -120,6 +122,17 @@ function SidebarContent({ navItems, location, onNavigate }) {
         </Link>
         <button
           type="button"
+          onClick={() => {
+            onNavigate?.();
+            onReportarProblema?.();
+          }}
+          className="nav-item flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium"
+        >
+          <Flag size={18} />
+          Reportar problema
+        </button>
+        <button
+          type="button"
           onClick={sair}
           className="nav-item flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium"
         >
@@ -134,12 +147,18 @@ function SidebarContent({ navItems, location, onNavigate }) {
 export function DashboardLayout({ title, navItems, children, onHelp }) {
   const location = useLocation();
   const [menuAberto, setMenuAberto] = useState(false);
+  const [reportarAberto, setReportarAberto] = useState(false);
+  const { showToast } = useToast();
 
   return (
     <div className="flex min-h-screen">
       {/* Sidebar fixa — telas médias/grandes */}
       <aside className="hidden w-64 flex-shrink-0 flex-col justify-between bg-primary p-6 md:flex">
-        <SidebarContent navItems={navItems} location={location} />
+        <SidebarContent
+          navItems={navItems}
+          location={location}
+          onReportarProblema={() => setReportarAberto(true)}
+        />
       </aside>
 
       {/* Gaveta mobile */}
@@ -164,6 +183,7 @@ export function DashboardLayout({ title, navItems, children, onHelp }) {
               navItems={navItems}
               location={location}
               onNavigate={() => setMenuAberto(false)}
+              onReportarProblema={() => setReportarAberto(true)}
             />
           </aside>
         </div>
@@ -187,6 +207,14 @@ export function DashboardLayout({ title, navItems, children, onHelp }) {
         </header>
         <main className="mx-auto max-w-6xl p-5 md:p-8">{children}</main>
       </div>
+
+      {reportarAberto && (
+        <ReportarProblemaModal
+          telaAtual={title}
+          onClose={() => setReportarAberto(false)}
+          onEnviado={() => showToast("Problema reportado. Obrigado pelo retorno!")}
+        />
+      )}
     </div>
   );
 }
