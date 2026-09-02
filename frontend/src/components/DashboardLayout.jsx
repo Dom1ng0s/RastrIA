@@ -34,7 +34,7 @@ function HelpMenu({ onRever }) {
   }, [aberto]);
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative inline-flex items-center" ref={ref}>
       <button
         type="button"
         aria-label="Ajuda"

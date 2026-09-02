@@ -41,7 +41,7 @@ export function NotificacoesMenu({ papel }) {
   }, [aberto]);
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative inline-flex items-center" ref={ref}>
       <button
         type="button"
         aria-label={`Notificações${naoLidas > 0 ? ` (${naoLidas} não lidas)` : ""}`}
