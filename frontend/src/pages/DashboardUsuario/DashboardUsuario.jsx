@@ -5,6 +5,7 @@ import {
   ClipboardList,
   FileText,
   LayoutDashboard,
+  Paperclip,
   Stethoscope,
   Trophy,
 } from "lucide-react";
@@ -67,9 +68,20 @@ const tourSteps = [
 
 // TODO: substituir por dados reais via TanStack Query (GET /api/registros-saude)
 // quando o endpoint estiver pronto.
+// `anexo` (issue #99) é opcional — mock aponta pra um PNG estático em
+// public/mock/ só pra demonstrar os botões "Visualizar"/"Baixar"; quando o
+// upload real existir (CadastrarExameModal.jsx), a URL vem de um blob local
+// (nesta sessão) ou, depois, de uma URL assinada do backend.
 const registrosIniciais = [
   { id: 1, indice: "Pressão arterial", valor: "12/8", data: "10 ago 2026", status: "normal" },
-  { id: 2, indice: "Glicemia em jejum", valor: "112 mg/dL", data: "14 ago 2026", status: "atencao" },
+  {
+    id: 2,
+    indice: "Glicemia em jejum",
+    valor: "112 mg/dL",
+    data: "14 ago 2026",
+    status: "atencao",
+    anexo: { nome: "glicemia-14-08.png", url: "/mock/exame-anexo-exemplo.png" },
+  },
   { id: 3, indice: "IMC", valor: "23.4", data: "14 ago 2026", status: "normal" },
 ];
 
@@ -200,12 +212,18 @@ export default function DashboardUsuario() {
       <div className="space-y-3">
         {registros.map((registro) => {
           const ehAlterado = registro.status === "alterado";
-          const Tag = ehAlterado ? "button" : "div";
+          // Card inteiro só vira <button> quando não tem anexo — com anexo,
+          // os botões "Visualizar"/"Baixar" (issue #99) também são elementos
+          // interativos, e <button>/<a> aninhado dentro de <button> é HTML
+          // inválido. Nesse caso o "ver detalhes" do Alterado (#97) some pra
+          // um botão próprio, separado da linha do anexo.
+          const cardEhBotao = ehAlterado && !registro.anexo;
+          const Tag = cardEhBotao ? "button" : "div";
           return (
             <Tag
               key={registro.id}
-              type={ehAlterado ? "button" : undefined}
-              onClick={ehAlterado ? () => setRegistroAberto(registro) : undefined}
+              type={cardEhBotao ? "button" : undefined}
+              onClick={cardEhBotao ? () => setRegistroAberto(registro) : undefined}
               className={`card-registro ${registro.status !== "normal" ? "atencao" : ""} w-full rounded-xl bg-white p-4 text-left shadow-sm transition-shadow hover:shadow-md`}
             >
               <div className="flex items-center justify-between">
@@ -218,6 +236,39 @@ export default function DashboardUsuario() {
               <p className="mt-1 text-xs text-text-muted">
                 {registro.data} · {registro.valor}
               </p>
+
+              {(registro.anexo || (ehAlterado && !cardEhBotao)) && (
+                <div className="mt-2 flex flex-wrap items-center gap-3 border-t border-line pt-2">
+                  {ehAlterado && !cardEhBotao && (
+                    <button
+                      type="button"
+                      onClick={() => setRegistroAberto(registro)}
+                      className="text-xs font-semibold text-primary hover:underline"
+                    >
+                      Ver detalhes
+                    </button>
+                  )}
+                  {registro.anexo && (
+                    <>
+                      <a
+                        href={registro.anexo.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-1 text-xs font-medium text-text-muted hover:text-primary"
+                      >
+                        <Paperclip size={13} /> Visualizar anexo
+                      </a>
+                      <a
+                        href={registro.anexo.url}
+                        download={registro.anexo.nome}
+                        className="text-xs font-medium text-text-muted hover:text-primary"
+                      >
+                        Baixar
+                      </a>
+                    </>
+                  )}
+                </div>
+              )}
             </Tag>
           );
         })}
