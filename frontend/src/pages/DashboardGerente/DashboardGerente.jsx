@@ -1,4 +1,4 @@
-import { AlertTriangle, LayoutDashboard, Settings2 } from "lucide-react";
+import { AlertTriangle, LayoutDashboard, Settings2, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
@@ -8,6 +8,7 @@ import { useGuidedTour } from "../../features/tour/useGuidedTour";
 
 export const navItems = [
   { to: "/gerente", label: "Painel Agregado", icon: LayoutDashboard, tour: "nav-agregado" },
+  { to: "/gerente/importar-integrantes", label: "Importar Integrantes", icon: Upload },
   { to: "/gerente/hierarquia", label: "Configurar Unidades", icon: Settings2 },
 ];
 

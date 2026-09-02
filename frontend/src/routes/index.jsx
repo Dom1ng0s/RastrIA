@@ -7,6 +7,7 @@ import CadastroExercicioFisico from "../pages/CadastroExercicioFisico/CadastroEx
 import CadastroInformacoes from "../pages/CadastroInformacoes/CadastroInformacoes";
 import CadastroTAF from "../pages/CadastroTAF/CadastroTAF";
 import ConfigurarHierarquia from "../pages/ConfigurarHierarquia/ConfigurarHierarquia";
+import ImportarIntegrantes from "../pages/ImportarIntegrantes/ImportarIntegrantes";
 import AtendimentosEducadorFisico from "../pages/AtendimentosEducadorFisico/AtendimentosEducadorFisico";
 import AtendimentosMedico from "../pages/AtendimentosMedico/AtendimentosMedico";
 import DashboardEducadorFisico from "../pages/DashboardEducadorFisico/DashboardEducadorFisico";
@@ -76,6 +77,7 @@ export function AppRoutes() {
         <Route path="/gerente" element={<DashboardGerente />} />
         <Route path="/gerente/unidade/:id" element={<TelaPorUnidade />} />
         <Route path="/gerente/hierarquia" element={<ConfigurarHierarquia />} />
+        <Route path="/gerente/importar-integrantes" element={<ImportarIntegrantes />} />
       </Route>
 
       {/* Médico */}
