@@ -14,7 +14,7 @@ import { Logo } from "../../components/Logo";
 import { PERGUNTAS_FREQUENTES } from "../../features/faq/perguntas";
 import { fieldErrorProps } from "../../lib/fieldA11y";
 
-const EMAIL_CONTATO = "contato@rastria.app";
+const EMAIL_CONTATO = "domingoslabs@gmail.com";
 
 const LINKS_NAV = [
   { href: "#como-funciona", label: "Como funciona" },
