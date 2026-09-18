@@ -6,18 +6,28 @@ import {
   FileText,
   LayoutDashboard,
   Paperclip,
+  Pencil,
   Stethoscope,
+  Trash2,
   Trophy,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { CadastrarExameModal } from "../../components/CadastrarExameModal";
 import { ConfirmarAlteradoModal } from "../../components/ConfirmarAlteradoModal";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { DemoToggle } from "../../components/DemoToggle";
 import { EmptyState } from "../../components/EmptyState";
 import { EstadoErro } from "../../components/EstadoErro";
 import { Skeleton, SkeletonLista } from "../../components/Skeleton";
-import { useRegistrosSaude, useUltimoTaf } from "../../features/saude/queries";
+import {
+  useEditarRegistro,
+  useExcluirRegistro,
+  useRegistrosSaude,
+  useUltimoTaf,
+} from "../../features/saude/queries";
+import { useToast } from "../../features/ui/ToastProvider";
+import { dataFormularioParaExibicao } from "../../lib/dataRegistro";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
 
@@ -114,6 +124,52 @@ export default function DashboardUsuario() {
   const [registroAberto, setRegistroAberto] = useState(null);
   const [confirmados, setConfirmados] = useState(() => new Set());
 
+  // Editar e excluir registros do próprio usuário (issue #130).
+  const [registroEditando, setRegistroEditando] = useState(null);
+  const editar = useEditarRegistro();
+  const excluir = useExcluirRegistro();
+  const { showToast } = useToast();
+
+  function salvarEdicao(dados) {
+    const id = registroEditando.id;
+    editar.mutate(
+      {
+        id,
+        dados: {
+          indice: dados.tipo,
+          valor: dados.valor,
+          data: dataFormularioParaExibicao(dados.data),
+          anexo: dados.anexo ?? undefined,
+        },
+      },
+      {
+        onSuccess: () => {
+          // O que a pessoa confirmou ter visto (issue #97) foi o valor antigo;
+          // editar o registro derruba essa confirmação.
+          setConfirmados((atual) => {
+            if (!atual.has(id)) return atual;
+            const proximo = new Set(atual);
+            proximo.delete(id);
+            return proximo;
+          });
+          showToast("Registro atualizado");
+        },
+        onError: () => showToast("Não foi possível salvar as alterações"),
+      },
+    );
+  }
+
+  function excluirRegistro(registro) {
+    if (!window.confirm(`Excluir o registro "${registro.indice}" de ${registro.data}?`)) return;
+    excluir.mutate(
+      { id: registro.id },
+      {
+        onSuccess: () => showToast("Registro excluído"),
+        onError: () => showToast("Não foi possível excluir o registro"),
+      },
+    );
+  }
+
   const { total: totalPendencias, rotulos: rotulosPendencias } = resumirSituacao(registros, taf ?? { resultado: "apto" });
 
   return (
@@ -209,18 +265,15 @@ export default function DashboardUsuario() {
 
         {registros.map((registro) => {
           const ehAlterado = registro.status === "alterado";
-          // Card inteiro só vira <button> quando não tem anexo — com anexo,
-          // os botões "Visualizar"/"Baixar" (issue #99) também são elementos
-          // interativos, e <button>/<a> aninhado dentro de <button> é HTML
-          // inválido. Nesse caso o "ver detalhes" do Alterado (#97) some pra
-          // um botão próprio, separado da linha do anexo.
-          const cardEhBotao = ehAlterado && !registro.anexo;
-          const Tag = cardEhBotao ? "button" : "div";
+          // Registro lançado por um profissional (médico, educador físico) não
+          // é editável nem excluível pelo usuário — o dado pertence a quem o
+          // lançou. Ver `origem` em features/saude/queries.js (issue #130).
+          const ehDoUsuario = registro.origem === "usuario";
+          const temAcoes = ehAlterado || registro.anexo || ehDoUsuario;
+
           return (
-            <Tag
+            <div
               key={registro.id}
-              type={cardEhBotao ? "button" : undefined}
-              onClick={cardEhBotao ? () => setRegistroAberto(registro) : undefined}
               className={`card-registro ${registro.status !== "normal" ? "atencao" : ""} w-full rounded-xl bg-white p-4 text-left shadow-sm transition-shadow hover:shadow-md`}
             >
               <div className="flex items-center justify-between">
@@ -233,10 +286,15 @@ export default function DashboardUsuario() {
               <p className="mt-1 text-xs text-text-muted">
                 {registro.data} · {registro.valor}
               </p>
+              {!ehDoUsuario && (
+                <p className="mt-0.5 text-[11px] text-text-muted">
+                  Lançado pelo profissional responsável — não pode ser editado por aqui.
+                </p>
+              )}
 
-              {(registro.anexo || (ehAlterado && !cardEhBotao)) && (
+              {temAcoes && (
                 <div className="mt-2 flex flex-wrap items-center gap-3 border-t border-line pt-2">
-                  {ehAlterado && !cardEhBotao && (
+                  {ehAlterado && (
                     <button
                       type="button"
                       onClick={() => setRegistroAberto(registro)}
@@ -264,9 +322,28 @@ export default function DashboardUsuario() {
                       </a>
                     </>
                   )}
+                  {ehDoUsuario && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setRegistroEditando(registro)}
+                        className="ml-auto flex items-center gap-1 text-xs font-medium text-text-muted hover:text-primary"
+                      >
+                        <Pencil size={13} /> Editar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => excluirRegistro(registro)}
+                        disabled={excluir.isPending}
+                        className="flex items-center gap-1 text-xs font-medium text-text-muted hover:text-coral disabled:opacity-60"
+                      >
+                        <Trash2 size={13} /> Excluir
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
-            </Tag>
+            </div>
           );
         })}
 
@@ -280,6 +357,14 @@ export default function DashboardUsuario() {
           />
         )}
       </div>
+
+      {registroEditando && (
+        <CadastrarExameModal
+          registro={registroEditando}
+          onClose={() => setRegistroEditando(null)}
+          onSalvar={salvarEdicao}
+        />
+      )}
 
       {registroAberto && (
         <ConfirmarAlteradoModal

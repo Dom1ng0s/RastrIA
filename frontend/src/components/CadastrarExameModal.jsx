@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { dataRegistroSchema } from "../lib/dataRegistro";
+import { dataExibicaoParaFormulario, dataRegistroSchema } from "../lib/dataRegistro";
 import { fieldErrorProps } from "../lib/fieldA11y";
 import { FieldError } from "./FieldError";
 import { Modal } from "./Modal";
@@ -23,14 +23,30 @@ const cadastroExameSchema = z.object({
   data: dataRegistroSchema,
 });
 
-export function CadastrarExameModal({ onClose, onSalvar }) {
-  const [anexo, setAnexo] = useState(null);
+/**
+ * Cadastro e edição de registro (issues #99 e #130). Recebendo `registro`, o
+ * mesmo formulário serve para editar: campos preenchidos, título e rótulo do
+ * botão trocados. O anexo existente aparece já anexado e pode ser trocado ou
+ * removido.
+ */
+export function CadastrarExameModal({ onClose, onSalvar, registro }) {
+  const editando = Boolean(registro);
+  const [anexo, setAnexo] = useState(registro?.anexo ?? null);
   const [erroAnexo, setErroAnexo] = useState("");
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({ resolver: zodResolver(cadastroExameSchema) });
+  } = useForm({
+    resolver: zodResolver(cadastroExameSchema),
+    defaultValues: registro
+      ? {
+          tipo: registro.indice,
+          valor: registro.valor,
+          data: dataExibicaoParaFormulario(registro.data),
+        }
+      : undefined,
+  });
 
   function aoSelecionarAnexo(evento) {
     const arquivo = evento.target.files?.[0];
@@ -61,10 +77,10 @@ export function CadastrarExameModal({ onClose, onSalvar }) {
   }
 
   const onSubmit = async (dados) => {
-    // TODO: substituir por mutation do TanStack Query (POST /api/registros-saude).
     // A verificação automática (comparação com a tabela de referência clínica)
     // acontece no backend — a resposta da mutation deve trazer o status
     // (normal/atencao/alterado) já calculado, para exibir imediatamente aqui.
+    // Quem chama decide o que fazer com isto (cadastrar ou editar).
     onSalvar?.({ ...dados, anexo });
     onClose();
   };
@@ -77,7 +93,7 @@ export function CadastrarExameModal({ onClose, onSalvar }) {
     >
       <div className="mb-5 flex items-center justify-between">
         <h3 id="cadastrar-exame-titulo" className="text-xl font-semibold text-primary">
-          Novo registro
+          {editando ? "Editar registro" : "Novo registro"}
         </h3>
         <button type="button" onClick={onClose} aria-label="Fechar" className="text-text-muted hover:text-text-dark">
           <X size={20} />
@@ -90,7 +106,7 @@ export function CadastrarExameModal({ onClose, onSalvar }) {
         </label>
         <select
           id="tipo"
-          defaultValue=""
+          defaultValue={registro?.indice ?? ""}
           className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
           {...register("tipo")}
           {...fieldErrorProps(errors.tipo, "tipo")}
@@ -161,6 +177,18 @@ export function CadastrarExameModal({ onClose, onSalvar }) {
           className="sr-only"
           aria-describedby={erroAnexo ? "anexo-erro" : undefined}
         />
+        {anexo && (
+          <button
+            type="button"
+            onClick={() => {
+              setAnexo(null);
+              setErroAnexo("");
+            }}
+            className="mt-1.5 text-xs font-medium text-text-muted underline hover:text-coral"
+          >
+            Remover anexo
+          </button>
+        )}
         <FieldError id="anexo-erro" className="mb-1 mt-1">
           {erroAnexo}
         </FieldError>
@@ -178,7 +206,7 @@ export function CadastrarExameModal({ onClose, onSalvar }) {
             disabled={isSubmitting}
             className="btn-primary flex-1 rounded-lg py-2.5 text-sm font-semibold disabled:opacity-60"
           >
-            {isSubmitting ? "Salvando..." : "Salvar registro"}
+            {isSubmitting ? "Salvando..." : editando ? "Salvar alterações" : "Salvar registro"}
           </button>
         </div>
       </form>
