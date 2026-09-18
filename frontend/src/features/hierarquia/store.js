@@ -7,10 +7,15 @@ import { create } from "zustand";
 //
 // Estado local (Zustand, sem persistência) por enquanto — a estrutura real
 // depende de modelagem de backend ainda não definida, e possivelmente de
-// confirmação da PM sobre a hierarquia real (companhia/pelotão). `percentual`
-// (indicador agregado "% com exames em dia") continua sendo dado que só o
-// backend pode calcular de verdade; uma unidade nova nasce sem indicador
-// (`percentual: null`) até existir dado real por trás dela.
+// confirmação da PM sobre a hierarquia real (companhia/pelotão).
+//
+// Este store guarda só a ESTRUTURA (quais unidades existem e como se aninham),
+// que é o que a instituição define sobre si mesma. O indicador agregado
+// ("% com exames em dia") saiu daqui na issue #125: é dado que só o backend
+// pode calcular, vem de `useAgregadoInstituicao()` em
+// features/instituicoes/queries.js e é cruzado com esta estrutura pelo id da
+// unidade. Unidade sem número lá é unidade sem dado real ainda — nasce assim
+// quando o Gerente cria uma nova.
 //
 // TODO: substituir por dado real via TanStack Query (GET/POST/PATCH/DELETE
 // /api/instituicoes/:id/unidades) quando o endpoint existir.
@@ -21,30 +26,27 @@ const unidadesIniciais = [
   {
     id: 1,
     nome: "1º Batalhão",
-    percentual: 94,
     subunidades: [
-      { id: 1, nome: "1ª Companhia", percentual: 96 },
-      { id: 2, nome: "2ª Companhia", percentual: 91 },
-      { id: 3, nome: "3ª Companhia", percentual: 95 },
+      { id: 1, nome: "1ª Companhia" },
+      { id: 2, nome: "2ª Companhia" },
+      { id: 3, nome: "3ª Companhia" },
     ],
   },
   {
     id: 2,
     nome: "2º Batalhão",
-    percentual: 88,
     subunidades: [
-      { id: 4, nome: "1ª Companhia", percentual: 85 },
-      { id: 5, nome: "2ª Companhia", percentual: 90 },
+      { id: 4, nome: "1ª Companhia" },
+      { id: 5, nome: "2ª Companhia" },
     ],
   },
   {
     id: 3,
     nome: "3º Batalhão",
-    percentual: 95,
     subunidades: [
-      { id: 6, nome: "1ª Companhia", percentual: 97 },
-      { id: 7, nome: "2ª Companhia", percentual: 94 },
-      { id: 8, nome: "3ª Companhia", percentual: 95 },
+      { id: 6, nome: "1ª Companhia" },
+      { id: 7, nome: "2ª Companhia" },
+      { id: 8, nome: "3ª Companhia" },
     ],
   },
 ];
@@ -56,7 +58,7 @@ export const useHierarquiaStore = create((set) => ({
     set((state) => ({
       unidades: [
         ...state.unidades,
-        { id: proximoIdBatalhao++, nome, percentual: null, subunidades: [] },
+        { id: proximoIdBatalhao++, nome, subunidades: [] },
       ],
     })),
 
@@ -74,7 +76,7 @@ export const useHierarquiaStore = create((set) => ({
         unidade.id === batalhaoId
           ? {
               ...unidade,
-              subunidades: [...unidade.subunidades, { id: proximoIdCompanhia++, nome, percentual: null }],
+              subunidades: [...unidade.subunidades, { id: proximoIdCompanhia++, nome }],
             }
           : unidade,
       ),

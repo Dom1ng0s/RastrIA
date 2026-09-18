@@ -6,14 +6,12 @@ import { z } from "zod";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { FieldError } from "../../components/FieldError";
+import { useIntegrante } from "../../features/integrantes/queries";
 import { useToast } from "../../features/ui/ToastProvider";
 import { dataRegistroSchema } from "../../lib/dataRegistro";
 import { fieldErrorProps } from "../../lib/fieldA11y";
 
 const navItems = [{ to: "/educador-fisico", label: "Painel do Educador Físico", icon: LayoutDashboard }];
-
-// TODO: buscar nome real via GET /api/integrantes/:id quando o endpoint existir.
-const NOMES_MOCK = { 1: "Diego Martins", 2: "Juliana Prado" };
 
 // TAF é modelado como tipo estruturado de RegistroSaude com múltiplos componentes
 // fixos (corrida, flexão, abdominal, barra) — não como registro de valor único.
@@ -37,7 +35,10 @@ export default function CadastroTAF() {
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(cadastroTafSchema) });
 
-  const nomeAluno = NOMES_MOCK[id] ?? "Aluno";
+  // Nome vem da camada de dados (issue #125) — antes era a terceira cópia do
+  // mesmo mapa de nomes no projeto.
+  const aluno = useIntegrante(id, "fisico");
+  const nomeAluno = aluno.data?.nome ?? "Aluno";
   const voltarPara = `/educador-fisico/aluno/${id}`;
 
   const onSubmit = async (dados) => {
