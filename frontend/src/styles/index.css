@@ -110,6 +110,41 @@ html.modo-simplificado.dark .text-text-muted {
   background-color: theme("colors.dark-line");
 }
 
+/*
+ * Placeholder de carregamento (issue #126) — cor e animação da classe que
+ * components/Skeleton.jsx aplica em todas as suas barras. Mora aqui, fora de
+ * @layer e junto dos overrides de tema acima, pelo mesmo motivo deles: uma
+ * definição só, válida nos dois temas, em vez de hex espalhado por componente.
+ * Sem esta regra o skeleton renderiza transparente — a tela fica em branco
+ * durante o carregamento, exatamente o que a issue #120 queria evitar.
+ */
+.skeleton {
+  border-radius: 0.375rem;
+  background-color: theme("colors.line");
+  animation: skeleton-pulso 1.6s ease-in-out infinite;
+}
+.dark .skeleton {
+  background-color: theme("colors.dark-line");
+}
+
+@keyframes skeleton-pulso {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Mesma preocupação das preferências de acessibilidade (issue #95): quem pede
+   menos movimento continua vendo o bloco, só sem a pulsação. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
 @layer components {
   /* Sistema de componentes visuais compartilhado entre as telas — ver
      agents/claude.md > Identidade de Marca. Ao portar uma nova tela do

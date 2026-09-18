@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 import { clearTokens } from "../../lib/authTokens";
+import { MODO_DEMO } from "../demo/flag";
 
 // TODO: `usuario` deve vir do backend (payload do JWT ou GET /api/usuarios/me)
 // quando a autenticação real existir. Por ora, é preenchido pelo atalho de
@@ -25,6 +26,13 @@ const CHAVES_PREFERENCIA_USUARIO = ["rastria:consentimento-lgpd", "rastria:ranki
 const PREFIXO_TOUR = "rastria:tour:";
 
 function lerUsuarioSalvo() {
+  // Fora do modo demo (issue #128), um papel gravado no localStorage não
+  // restaura sessão nenhuma. Esconder o atalho do Login sem fechar isto
+  // deixaria o mecanismo aberto: bastaria escrever `rastria:usuario` à mão
+  // para entrar como qualquer papel. Com o login real, o que persiste é o
+  // token e o papel vem do backend — esta reidratação some junto com o atalho.
+  if (!MODO_DEMO) return null;
+
   try {
     const bruto = localStorage.getItem(STORAGE_KEY_USUARIO);
     return bruto ? JSON.parse(bruto) : null;

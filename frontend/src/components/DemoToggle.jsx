@@ -1,5 +1,7 @@
 import { Sparkles, Users } from "lucide-react";
 
+import { MODO_DEMO } from "../features/demo/flag";
+
 /**
  * Alternância só de demonstração (issue #80): como todo dado hoje é mockado e
  * as listas nunca ficam vazias sozinhas, o estado vazio de cada tela nunca é
@@ -8,9 +10,13 @@ import { Sparkles, Users } from "lucide-react";
  * "conta nova" (mock zerado), sem depender de backend.
  *
  * Não é uma preferência do usuário real — some quando a API existir e as
- * telas passarem a refletir o dado de verdade.
+ * telas passarem a refletir o dado de verdade. Até lá, fica atrás da flag
+ * `VITE_MODO_DEMO` (issue #128): a condição mora aqui, e não nas 4 telas que
+ * usam o componente, para não haver como esquecer uma delas.
  */
 export function DemoToggle({ contaNova, onToggle }) {
+  if (!MODO_DEMO) return null;
+
   return (
     <button
       type="button"

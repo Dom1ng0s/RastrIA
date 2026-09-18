@@ -4,6 +4,8 @@
 
 import { useMockQuery } from "../../lib/mockQuery";
 
+const DELAY_DEMO_MS = 600; // referência visual de skeleton/erro (issue #120)
+
 // --- Mocks (extraídos das telas — issue #119) --------------------------------
 
 // Exceção deliberada à regra "Comando nunca vê dado individual nominal" (issue
@@ -15,39 +17,23 @@ const EXAMES_ATRASADOS = [
   { id: 3, nome: "Sd. Marcos Lima", unidade: "3º Batalhão", exame: "TAF", diasAtraso: 20 },
 ];
 
-// Hierarquia multinível (Batalhão/Companhia/Pelotão) ainda depende de
-// confirmação do piloto institucional.
-const UNIDADES_AGREGADO = [
-  {
-    id: 1,
-    nome: "1º Batalhão",
-    percentual: 94,
-    subunidades: [
-      { nome: "1ª Companhia", percentual: 96 },
-      { nome: "2ª Companhia", percentual: 91 },
-      { nome: "3ª Companhia", percentual: 95 },
-    ],
-  },
-  {
-    id: 2,
-    nome: "2º Batalhão",
-    percentual: 88,
-    subunidades: [
-      { nome: "1ª Companhia", percentual: 85 },
-      { nome: "2ª Companhia", percentual: 90 },
-    ],
-  },
-  {
-    id: 3,
-    nome: "3º Batalhão",
-    percentual: 95,
-    subunidades: [
-      { nome: "1ª Companhia", percentual: 97 },
-      { nome: "2ª Companhia", percentual: 94 },
-      { nome: "3ª Companhia", percentual: 95 },
-    ],
-  },
-];
+// Indicador agregado "% com exames em dia", indexado por id de unidade.
+//
+// Só os PERCENTUAIS vivem aqui — a ESTRUTURA da hierarquia (quais batalhões e
+// companhias existem) é do `features/hierarquia/store.js`, editável pelo
+// Gerente (issue #98). Antes os dois carregavam a lista inteira de unidades, e
+// as duas cópias já tinham começado a divergir (issue #125). A divisão segue o
+// que cada lado é capaz de saber: a instituição define a própria estrutura, e
+// só o backend consegue calcular o indicador por cima dela.
+//
+// Unidade sem entrada aqui é unidade sem dado real ainda (uma companhia recém
+// criada pelo Gerente, por exemplo) — a tela mostra "Sem dado ainda".
+const PERCENTUAIS_POR_UNIDADE = {
+  batalhoes: { 1: 94, 2: 88, 3: 95 },
+  subunidades: { 1: 96, 2: 91, 3: 95, 4: 85, 5: 90, 6: 97, 7: 94, 8: 95 },
+};
+
+const EFETIVO_GERAL = 92;
 
 const NOMES_INSTITUICAO = { 1: "Batalhão PMAL", 2: "Outra instituição" };
 
@@ -55,12 +41,24 @@ const NOMES_INSTITUICAO = { 1: "Batalhão PMAL", 2: "Outra instituição" };
 
 /** GET /api/registros-saude?atrasados= — pendências administrativas do efetivo. */
 export function useExamesAtrasados() {
-  return useMockQuery({ queryKey: ["exames-atrasados"], dados: EXAMES_ATRASADOS });
+  return useMockQuery({
+    queryKey: ["exames-atrasados"],
+    dados: EXAMES_ATRASADOS,
+    delayMs: DELAY_DEMO_MS,
+  });
 }
 
-/** GET /api/instituicoes/:id/agregado — percentual em dia por unidade/subunidade. */
-export function useUnidadesAgregado() {
-  return useMockQuery({ queryKey: ["instituicoes", "agregado"], dados: UNIDADES_AGREGADO });
+/**
+ * GET /api/instituicoes/:id/agregado — percentual em dia do efetivo e de cada
+ * unidade. A tela cruza estes números com a hierarquia do store (issue #98)
+ * pelo id da unidade.
+ */
+export function useAgregadoInstituicao() {
+  return useMockQuery({
+    queryKey: ["instituicoes", "agregado"],
+    dados: { efetivoGeral: EFETIVO_GERAL, percentuais: PERCENTUAIS_POR_UNIDADE },
+    delayMs: DELAY_DEMO_MS,
+  });
 }
 
 /** GET /api/instituicoes/:id — nome da instituição (`null` se desconhecida). */

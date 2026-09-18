@@ -6,6 +6,13 @@ import { CampoBusca } from "../../components/CampoBusca";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { DemoToggle } from "../../components/DemoToggle";
 import { EmptyState } from "../../components/EmptyState";
+import { EstadoErro } from "../../components/EstadoErro";
+import { SkeletonLista } from "../../components/Skeleton";
+import {
+  useResponderSolicitacao,
+  useSolicitacoesPendentes,
+  useVinculosCuidado,
+} from "../../features/atendimentos/queries";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
 import { useToast } from "../../features/ui/ToastProvider";
@@ -29,52 +36,37 @@ const tourSteps = [
   },
 ];
 
-// TODO: substituir por dados reais via TanStack Query (GET /api/solicitacoes,
-// GET /api/vinculos-cuidado) quando os endpoints estiverem prontos.
-const solicitacoesIniciais = [
-  { id: 1, paciente: "Ana Souza", especialidade: "Clínico geral", data: "18 ago 2026" },
-  { id: 2, paciente: "Carlos Lima", especialidade: "Cardiologia", data: "17 ago 2026" },
-];
-
-const pacientesIniciais = [
-  { id: 1, nome: "Bruno Alves", ultimoExame: "10 ago 2026" },
-  { id: 2, nome: "Fernanda Dias", ultimoExame: "05 ago 2026" },
-];
-
+// Solicitações e vínculos de cuidado vêm de features/atendimentos/queries.js
+// (issue #127). O fluxo é sempre solicitação → confirmação pelo profissional,
+// nunca aceite automático (Parecer CFM nº 15/2026, issue #75).
 export default function DashboardMedico() {
   const { run, handleCallback, restart } = useGuidedTour();
   const { showToast } = useToast();
   const [buscaPaciente, setBuscaPaciente] = useState("");
-  // Solicitações e pacientes viram estado local para o mock reagir a
-  // confirmar/recusar (issue #73) — sem endpoint ainda, a mudança some no
-  // reload. TODO: PATCH /api/solicitacoes/:id (fluxo é sempre solicitação →
-  // confirmação, nunca aceite automático) + refetch de "Meus pacientes".
-  const [solicitacoes, setSolicitacoes] = useState(solicitacoesIniciais);
-  const [pacientes, setPacientes] = useState(pacientesIniciais);
-  // Modo demo (issue #80) — solicitações/pacientes mockados nunca ficam
-  // vazios sozinhos; este toggle simula "nenhum paciente/solicitação ainda"
-  // sem descartar o estado real do mock (volta ao normal ao desligar).
+  // Modo demo (issue #80) — as listas mockadas nunca ficam vazias sozinhas;
+  // este toggle simula "conta nova" sem descartar o dado do mock.
   const [contaNova, setContaNova] = useState(false);
-  const solicitacoesExibidas = contaNova ? [] : solicitacoes;
-  const pacientesExibidos = contaNova ? [] : pacientes;
+
+  const solicitacoes = useSolicitacoesPendentes("clinico");
+  const pacientes = useVinculosCuidado("clinico");
+  const responder = useResponderSolicitacao("clinico");
+
+  const solicitacoesExibidas = contaNova ? [] : solicitacoes.data ?? [];
+  const pacientesExibidos = contaNova ? [] : pacientes.data ?? [];
 
   const pacientesFiltrados = pacientesExibidos.filter((paciente) =>
     paciente.nome.toLowerCase().includes(buscaPaciente.toLowerCase()),
   );
 
-  function confirmarSolicitacao(solicitacao) {
-    setSolicitacoes((atual) => atual.filter((item) => item.id !== solicitacao.id));
-    setPacientes((atual) =>
-      atual.some((paciente) => paciente.nome === solicitacao.paciente)
-        ? atual
-        : [{ id: `sol-${solicitacao.id}`, nome: solicitacao.paciente, ultimoExame: "—" }, ...atual],
+  function responderSolicitacao(solicitacao, acao) {
+    responder.mutate(
+      { solicitacao, acao },
+      {
+        onSuccess: () =>
+          showToast(acao === "confirmar" ? "Solicitação confirmada" : "Solicitação recusada"),
+        onError: () => showToast("Não foi possível responder à solicitação"),
+      },
     );
-    showToast("Solicitação confirmada");
-  }
-
-  function recusarSolicitacao(solicitacao) {
-    setSolicitacoes((atual) => atual.filter((item) => item.id !== solicitacao.id));
-    showToast("Solicitação recusada");
   }
 
   return (
@@ -88,13 +80,22 @@ export default function DashboardMedico() {
           Solicitações pendentes
         </h2>
         <div className="space-y-3">
+          {solicitacoes.isLoading && <SkeletonLista itens={2} />}
+
+          {solicitacoes.isError && (
+            <EstadoErro
+              title="Não foi possível carregar as solicitações"
+              onRetry={solicitacoes.refetch}
+            />
+          )}
+
           {solicitacoesExibidas.map((solicitacao) => (
             <div
               key={solicitacao.id}
               className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm"
             >
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{solicitacao.paciente}</p>
+                <p className="truncate text-sm font-medium">{solicitacao.pessoa}</p>
                 <p className="truncate text-xs text-text-muted">
                   {solicitacao.especialidade} · {solicitacao.data}
                 </p>
@@ -102,15 +103,17 @@ export default function DashboardMedico() {
               <div className="flex shrink-0 gap-2">
                 <button
                   type="button"
-                  onClick={() => confirmarSolicitacao(solicitacao)}
-                  className="btn-primary rounded-lg px-3 py-1.5 text-xs font-semibold"
+                  onClick={() => responderSolicitacao(solicitacao, "confirmar")}
+                  disabled={responder.isPending}
+                  className="btn-primary rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-60"
                 >
                   Confirmar
                 </button>
                 <button
                   type="button"
-                  onClick={() => recusarSolicitacao(solicitacao)}
-                  className="btn-outline rounded-lg px-3 py-1.5 text-xs font-semibold"
+                  onClick={() => responderSolicitacao(solicitacao, "recusar")}
+                  disabled={responder.isPending}
+                  className="btn-outline rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-60"
                 >
                   Recusar
                 </button>
@@ -118,7 +121,7 @@ export default function DashboardMedico() {
             </div>
           ))}
 
-          {solicitacoesExibidas.length === 0 && (
+          {solicitacoes.isSuccess && solicitacoesExibidas.length === 0 && (
             <EmptyState icon={AlertCircle} title="Nenhuma solicitação pendente no momento" />
           )}
         </div>
@@ -128,6 +131,12 @@ export default function DashboardMedico() {
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meus pacientes</h2>
         <CampoBusca valor={buscaPaciente} aoMudar={setBuscaPaciente} placeholder="Buscar paciente por nome..." />
         <div className="mt-3 space-y-2">
+          {pacientes.isLoading && <SkeletonLista itens={2} />}
+
+          {pacientes.isError && (
+            <EstadoErro title="Não foi possível carregar seus pacientes" onRetry={pacientes.refetch} />
+          )}
+
           {pacientesFiltrados.map((paciente) => (
             <Link
               key={paciente.id}
@@ -135,11 +144,11 @@ export default function DashboardMedico() {
               className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm hover:bg-bg-tint"
             >
               <span className="min-w-0 flex-1 truncate text-sm font-medium">{paciente.nome}</span>
-              <span className="shrink-0 text-xs text-text-muted">Último exame · {paciente.ultimoExame}</span>
+              <span className="shrink-0 text-xs text-text-muted">Último contato · {paciente.ultimoContato}</span>
             </Link>
           ))}
 
-          {pacientesExibidos.length === 0 && (
+          {pacientes.isSuccess && pacientesExibidos.length === 0 && (
             <EmptyState
               icon={Users}
               title="Nenhum paciente sob sua responsabilidade ainda"
@@ -147,7 +156,7 @@ export default function DashboardMedico() {
             />
           )}
 
-          {pacientesExibidos.length > 0 && pacientesFiltrados.length === 0 && (
+          {pacientes.isSuccess && pacientesExibidos.length > 0 && pacientesFiltrados.length === 0 && (
             <p className="py-6 text-center text-sm text-text-muted">
               Nenhum paciente encontrado com esse nome.
             </p>

@@ -1,7 +1,9 @@
 import { Bell, Trash2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 import { useNotificacoesStore } from "../features/notificacoes/store";
+import { rotaInternaSegura } from "../lib/rotaInterna";
 import { EmptyState } from "./EmptyState";
 
 /**
@@ -10,6 +12,12 @@ import { EmptyState } from "./EmptyState";
  * HelpMenu em DashboardLayout.jsx). Papel vem de quem chama (DashboardLayout
  * já sabe o papel logado via useAuthStore); cada papel só enxerga suas
  * próprias notificações mockadas.
+ *
+ * Cada notificação leva à tela que a originou (issue #129). O corpo vira um
+ * <Link> quando há `destino`, e o botão de excluir continua sendo IRMÃO dele —
+ * nunca aninhado dentro do link, que seria HTML inválido (mesmo cuidado da
+ * issue #99). Sem `destino`, o corpo segue sendo um <button> que só marca
+ * como lida.
  */
 export function NotificacoesMenu({ papel }) {
   const [aberto, setAberto] = useState(false);
@@ -91,23 +99,13 @@ export function NotificacoesMenu({ papel }) {
                       notificacao.lida ? "" : "bg-bg-tint"
                     }`}
                   >
-                    <button
-                      type="button"
-                      onClick={() => marcarLida(papel, notificacao.id)}
-                      className="min-w-0 flex-1 text-left"
-                    >
-                      <span className="flex items-start gap-2">
-                        {!notificacao.lida && (
-                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-coral" aria-hidden="true" />
-                        )}
-                        <span className="min-w-0">
-                          <p className={`text-xs ${notificacao.lida ? "text-text-muted" : "font-medium text-text-dark"}`}>
-                            {notificacao.titulo}
-                          </p>
-                          <p className="mt-0.5 text-[11px] text-text-muted">{notificacao.data}</p>
-                        </span>
-                      </span>
-                    </button>
+                    <ConteudoNotificacao
+                      notificacao={notificacao}
+                      onAbrir={() => {
+                        marcarLida(papel, notificacao.id);
+                        setAberto(false);
+                      }}
+                    />
                     <button
                       type="button"
                       onClick={() => excluir(papel, notificacao.id)}
@@ -135,5 +133,48 @@ export function NotificacoesMenu({ papel }) {
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Corpo clicável da notificação: <Link> quando ela aponta para alguma tela,
+ * <button> quando é só um aviso. Nos dois casos o clique marca como lida e
+ * fecha o painel.
+ *
+ * O destino passa por `rotaInternaSegura` mesmo vindo do nosso próprio mock:
+ * quando o backend da issue #31 gerar esses eventos, o campo passa a ser dado
+ * externo, e o lugar de sanitizar é aqui (defesa em profundidade contra open
+ * redirect — issue #107).
+ */
+function ConteudoNotificacao({ notificacao, onAbrir }) {
+  const classe = "min-w-0 flex-1 text-left";
+  const destino = notificacao.destino ? rotaInternaSegura(notificacao.destino, "") : "";
+
+  const corpo = (
+    <span className="flex items-start gap-2">
+      {!notificacao.lida && (
+        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-coral" aria-hidden="true" />
+      )}
+      <span className="min-w-0">
+        <p className={`text-xs ${notificacao.lida ? "text-text-muted" : "font-medium text-text-dark"}`}>
+          {notificacao.titulo}
+        </p>
+        <p className="mt-0.5 text-[11px] text-text-muted">{notificacao.data}</p>
+      </span>
+    </span>
+  );
+
+  if (!destino) {
+    return (
+      <button type="button" onClick={onAbrir} className={classe}>
+        {corpo}
+      </button>
+    );
+  }
+
+  return (
+    <Link to={destino} onClick={onAbrir} className={`${classe} hover:underline`}>
+      {corpo}
+    </Link>
   );
 }

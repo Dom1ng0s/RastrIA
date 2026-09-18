@@ -2,21 +2,22 @@ import { LayoutDashboard, Users } from "lucide-react";
 import { useParams } from "react-router-dom";
 
 import { DetalheIntegrante } from "../../components/DetalheIntegrante";
+import { useIntegrante } from "../../features/integrantes/queries";
 
 const navItems = [
   { to: "/medico", label: "Painel do Médico", icon: LayoutDashboard },
   { to: "/medico/atendimentos", label: "Meus Atendimentos", icon: Users },
 ];
 
-// TODO: buscar nome real via GET /api/integrantes/:id quando o endpoint existir.
-const NOMES_MOCK = { 1: "Bruno Alves", 2: "Fernanda Dias" };
-
 export default function DetalhePaciente() {
   const { id } = useParams();
+  // Nome vem da camada de dados (issue #125); enquanto carrega (ou se o
+  // integrante não for encontrado) o cabeçalho cai no rótulo genérico.
+  const integrante = useIntegrante(id, "clinico");
 
   return (
     <DetalheIntegrante
-      nome={NOMES_MOCK[id] ?? "Paciente"}
+      nome={integrante.data?.nome ?? "Paciente"}
       voltarPara="/medico"
       navItems={navItems}
       tituloPagina="Painel do Médico"

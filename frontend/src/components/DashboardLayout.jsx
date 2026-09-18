@@ -146,8 +146,33 @@ function SidebarContent({ navItems, location, onNavigate, onReportarProblema }) 
   );
 }
 
+/**
+ * Rola até a seção apontada pelo fragmento da URL (issue #129) — é o que faz
+ * "/gerente#exames-atrasados", vindo de uma notificação, abrir o painel já na
+ * seção certa. A âncora é o `data-tour` que as seções já carregam, com `id`
+ * como alternativa; nada de marcação nova só para isto.
+ *
+ * As seções existem desde o primeiro render (só o conteúdo delas é skeleton),
+ * então não é preciso esperar a consulta resolver. Quem pede menos movimento
+ * recebe um salto direto, sem rolagem animada.
+ */
+function useRolarParaSecao(hash) {
+  useEffect(() => {
+    const alvoId = hash.replace(/^#/, "");
+    if (!alvoId) return;
+
+    const elemento =
+      document.querySelector(`[data-tour="${CSS.escape(alvoId)}"]`) ?? document.getElementById(alvoId);
+    if (!elemento) return;
+
+    const menosMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    elemento.scrollIntoView({ behavior: menosMovimento ? "auto" : "smooth", block: "start" });
+  }, [hash]);
+}
+
 export function DashboardLayout({ title, navItems, children, onHelp }) {
   const location = useLocation();
+  useRolarParaSecao(location.hash);
   const [menuAberto, setMenuAberto] = useState(false);
   const [reportarAberto, setReportarAberto] = useState(false);
   const { showToast } = useToast();

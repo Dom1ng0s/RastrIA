@@ -9,6 +9,7 @@ import { FieldError } from "../../components/FieldError";
 import { PasswordInput } from "../../components/PasswordInput";
 import { useAuthStore } from "../../features/auth/store";
 import { ROLES } from "../../features/auth/roles";
+import { MODO_DEMO } from "../../features/demo/flag";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { formatarCpf, validarCpf } from "../../lib/cpf";
 import { fieldErrorProps } from "../../lib/fieldA11y";
@@ -133,9 +134,19 @@ export default function Login() {
 
           {/* Atalho temporário de desenvolvimento — sem backend de autenticação
               real ainda, é a única forma de navegar entre os 4 papéis para
-              testar/demonstrar o app. Remover quando o login real acima estiver
-              de fato integrado à API. Ver "Estado Atual do Repositório" em
-              agents/claude.md. */}
+              testar/demonstrar o app.
+
+              Ele define papel e navega para o dashboard SEM credencial
+              nenhuma: hoje é inofensivo (não há autenticação nem dado real a
+              proteger), mas no dia em que a API entrar vira um bypass de
+              autenticação e de papel numa tela pública. Por isso fica atrás de
+              `VITE_MODO_DEMO` (issue #128), que já mantém o build de
+              piloto/produção limpo.
+
+              A flag reduz a exposição, não substitui a remoção: o bloco deve
+              sair de vez quando o login acima estiver de fato integrado à API.
+              Ver "Estado Atual do Repositório" em agents/claude.md. */}
+          {MODO_DEMO && (
           <div className="mt-8 border-t border-line pt-5">
             <button
               type="button"
@@ -180,6 +191,7 @@ export default function Login() {
               </div>
             )}
           </div>
+          )}
         </div>
       </div>
     </div>
