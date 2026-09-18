@@ -34,4 +34,13 @@ export default defineConfig({
   server: {
     host: "127.0.0.1",
   },
+  // Vitest (issue #123). Os testes cobrem prioritariamente regra de negócio e
+  // segurança — o que quebra silenciosamente e custa caro — em vez de snapshot
+  // de UI, que quebra a cada ajuste de layout sem dizer nada sobre corretude.
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["./src/test/setup.js"],
+    include: ["src/**/*.test.{js,jsx}"],
+  },
 });
