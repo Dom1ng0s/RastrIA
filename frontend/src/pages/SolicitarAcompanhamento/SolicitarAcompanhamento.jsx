@@ -3,34 +3,19 @@ import { Stethoscope, Dumbbell, Check, Clock } from "lucide-react";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { EmptyState } from "../../components/EmptyState";
+import { EstadoErro } from "../../components/EstadoErro";
+import { SkeletonLista } from "../../components/Skeleton";
+import { useProfissionaisDisponiveis } from "../../features/atendimentos/queries";
 import { useAuthStore } from "../../features/auth/store";
+import { useNomeInstituicao } from "../../features/instituicoes/queries";
 import { useToast } from "../../features/ui/ToastProvider";
 import { navItems } from "../DashboardUsuario/DashboardUsuario";
 
-// TODO: substituir por dados reais via TanStack Query
-// (GET /api/profissionais?tipo=&instituicao=) e pelo vínculo de cuidado ativo
-// do usuário (GET /api/vinculos-cuidado/meu) quando os endpoints existirem.
-// Ver stub em features/atendimentos/queries.js.
-//
-// `instituicaoId` simula o vínculo institucional de cada profissional — desde
-// a decisão de 24/08/2026 (ver "Fim da Rede Pré-Qualificada Entre
-// Instituições" em agents/claude.md), não existe mais uma rede compartilhada
-// entre instituições diferentes. O backend deve aplicar esse filtro no
-// próprio endpoint (?instituicao=), não só no frontend — o filtro aqui é só
-// para a experiência da tela enquanto o endpoint real não existe.
-const profissionaisMock = [
-  { id: 1, tipo: "medico", nome: "Dra. Camila Andrade", especialidade: "Clínica Geral", disponibilidade: "Hoje, a partir das 14h", instituicaoId: 1 },
-  { id: 2, tipo: "medico", nome: "Dr. Ricardo Nunes", especialidade: "Cardiologia", disponibilidade: "Amanhã, a partir das 9h", instituicaoId: 1 },
-  { id: 3, tipo: "educador_fisico", nome: "Felipe Souza", especialidade: "Educação Física — Condicionamento", disponibilidade: "Hoje, a partir das 16h", instituicaoId: 1 },
-  { id: 4, tipo: "educador_fisico", nome: "Marina Alves", especialidade: "Educação Física — Reabilitação", disponibilidade: "Amanhã, a partir das 10h", instituicaoId: 1 },
-  // Profissionais de outra instituição — devem ficar de fora do filtro abaixo,
-  // demonstrando que o fim da rede pré-qualificada está em vigor.
-  { id: 5, tipo: "medico", nome: "Dr. Otávio Reis", especialidade: "Clínica Geral", disponibilidade: "Hoje, a partir das 11h", instituicaoId: 2 },
-];
-
-// TODO: substituir por GET /api/instituicoes/:id quando o endpoint existir.
-const INSTITUICOES_MOCK = { 1: "Batalhão PMAL", 2: "Outra instituição" };
-
+// Profissionais e nome da instituição vêm da camada de dados (issue #127).
+// O recorte por instituição está no próprio hook: desde 24/08/2026 não existe
+// mais rede pré-qualificada entre instituições (ver "Fim da Rede
+// Pré-Qualificada Entre Instituições" em agents/claude.md). O backend precisa
+// aplicar esse filtro no endpoint, não só aqui.
 // Enquanto não há backend, o profissional "confirma" a solicitação sozinho
 // depois de alguns segundos — só para o fluxo solicitação → confirmação →
 // vínculo contínuo (o que diferencia o modelo do matching instantâneo,
@@ -58,8 +43,11 @@ export default function SolicitarAcompanhamento() {
   const [solicitacaoPendente, setSolicitacaoPendente] = useState(null);
   const timerConfirmacao = useRef(null);
 
-  const profissionaisFiltrados = profissionaisMock.filter(
-    (p) => p.tipo === tipoSelecionado && p.instituicaoId === instituicaoId,
+  const consultaProfissionais = useProfissionaisDisponiveis(instituicaoId);
+  const nomeInstituicao = useNomeInstituicao(instituicaoId);
+
+  const profissionaisFiltrados = (consultaProfissionais.data ?? []).filter(
+    (p) => p.tipo === tipoSelecionado,
   );
 
   function limparTimer() {
@@ -161,7 +149,7 @@ export default function SolicitarAcompanhamento() {
             cuidado, a solicitação vai direto para ele.
           </p>
           <p className="mb-6 text-xs text-text-muted">
-            Mostrando profissionais de <strong>{INSTITUICOES_MOCK[instituicaoId]}</strong> — não existe
+            Mostrando profissionais de <strong>{nomeInstituicao.data ?? "sua instituição"}</strong> — não existe
             mais rede compartilhada entre instituições diferentes.
           </p>
 
@@ -184,6 +172,15 @@ export default function SolicitarAcompanhamento() {
           </div>
 
           <div className="space-y-3">
+            {consultaProfissionais.isLoading && <SkeletonLista itens={2} />}
+
+            {consultaProfissionais.isError && (
+              <EstadoErro
+                title="Não foi possível carregar os profissionais"
+                onRetry={consultaProfissionais.refetch}
+              />
+            )}
+
             {profissionaisFiltrados.map((profissional) => (
               <div
                 key={profissional.id}
@@ -207,7 +204,7 @@ export default function SolicitarAcompanhamento() {
               </div>
             ))}
 
-            {profissionaisFiltrados.length === 0 && (
+            {consultaProfissionais.isSuccess && profissionaisFiltrados.length === 0 && (
               <EmptyState
                 icon={tipoSelecionado === "medico" ? Stethoscope : Dumbbell}
                 title="Nenhum profissional disponível nessa categoria"

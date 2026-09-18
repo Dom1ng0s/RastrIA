@@ -15,6 +15,9 @@ import { ConfirmarAlteradoModal } from "../../components/ConfirmarAlteradoModal"
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { DemoToggle } from "../../components/DemoToggle";
 import { EmptyState } from "../../components/EmptyState";
+import { EstadoErro } from "../../components/EstadoErro";
+import { Skeleton, SkeletonLista } from "../../components/Skeleton";
+import { useRegistrosSaude, useUltimoTaf } from "../../features/saude/queries";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
 
@@ -66,41 +69,12 @@ const tourSteps = [
   },
 ];
 
-// TODO: substituir por dados reais via TanStack Query (GET /api/registros-saude)
-// quando o endpoint estiver pronto.
-// `anexo` (issue #99) é opcional — mock aponta pra um PNG estático em
-// public/mock/ só pra demonstrar os botões "Visualizar"/"Baixar"; quando o
-// upload real existir (CadastrarExameModal.jsx), a URL vem de um blob local
-// (nesta sessão) ou, depois, de uma URL assinada do backend.
-const registrosIniciais = [
-  { id: 1, indice: "Pressão arterial", valor: "12/8", data: "10 ago 2026", status: "normal" },
-  {
-    id: 2,
-    indice: "Glicemia em jejum",
-    valor: "112 mg/dL",
-    data: "14 ago 2026",
-    status: "atencao",
-    anexo: { nome: "glicemia-14-08.png", url: "/mock/exame-anexo-exemplo.png" },
-  },
-  { id: 3, indice: "IMC", valor: "23.4", data: "14 ago 2026", status: "normal" },
-];
-
+// Registros e TAF vêm de features/saude/queries.js (issue #127).
 const badgeClasse = { normal: "badge-normal", atencao: "badge-atencao", alterado: "badge-alterado" };
 const badgeTexto = { normal: "Normal", atencao: "Atenção", alterado: "Alterado" };
 
 // TAF só é cadastrado por um educador físico (issue #7, ver agents/claude.md) — o
 // usuário só visualiza o próprio último resultado, sem nenhuma ação de edição aqui.
-// TODO: substituir por dado real via TanStack Query (GET /api/taf/ultimo) quando o
-// endpoint existir.
-const ultimoTaf = {
-  data: "12 ago 2026",
-  corrida: "11min 30s",
-  flexoes: 32,
-  abdominais: 40,
-  barra: 6,
-  resultado: "apto",
-};
-
 const resultadoTafClasse = { apto: "badge-normal", inapto: "badge-alterado" };
 const resultadoTafTexto = { apto: "Apto", inapto: "Inapto" };
 
@@ -122,9 +96,16 @@ export default function DashboardUsuario() {
   // mocks normais e listas vazias, só para poder demonstrar/testar visualmente
   // o estado de "conta nova sem nenhum registro ainda".
   const [contaNova, setContaNova] = useState(false);
-  const registros = contaNova ? [] : registrosIniciais;
-  const taf = contaNova ? null : ultimoTaf;
   const { run, handleCallback, restart } = useGuidedTour();
+
+  const consultaRegistros = useRegistrosSaude();
+  const consultaTaf = useUltimoTaf();
+  const registros = contaNova ? [] : consultaRegistros.data ?? [];
+  const taf = contaNova ? null : consultaTaf.data;
+
+  // O resumo só faz sentido quando as duas consultas resolveram — antes disso
+  // "tudo em dia" seria uma afirmação sobre dado que ainda não chegou.
+  const resumoPronto = consultaRegistros.isSuccess && consultaTaf.isSuccess;
 
   // Confirmação explícita ao visualizar um resultado "Alterado" (issue #97) —
   // um badge na lista não garante que a pessoa notou/entendeu a gravidade.
@@ -141,7 +122,9 @@ export default function DashboardUsuario() {
 
       <DemoToggle contaNova={contaNova} onToggle={() => setContaNova((atual) => !atual)} />
 
-      {totalPendencias === 0 ? (
+      {!resumoPronto && !contaNova ? (
+        <Skeleton variante="card" className="mb-6" />
+      ) : totalPendencias === 0 ? (
         <div className="mb-6 flex items-center gap-3 rounded-xl badge-normal p-4">
           <CheckCircle2 size={20} className="shrink-0" />
           <div>
@@ -179,6 +162,12 @@ export default function DashboardUsuario() {
 
       <section className="mb-8" data-tour="ultimo-taf">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meu último TAF</h2>
+        {consultaTaf.isLoading && !contaNova && <Skeleton variante="card" />}
+
+        {consultaTaf.isError && (
+          <EstadoErro title="Não foi possível carregar seu TAF" onRetry={consultaTaf.refetch} />
+        )}
+
         {taf ? (
           <div className="rounded-xl bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
@@ -201,15 +190,23 @@ export default function DashboardUsuario() {
             </p>
           </div>
         ) : (
+          (consultaTaf.isSuccess || contaNova) && (
           <EmptyState
             icon={Trophy}
             title="Você ainda não fez nenhum TAF"
             description="O Teste de Aptidão Física é cadastrado pelo educador físico responsável da sua instituição."
           />
+          )
         )}
       </section>
 
       <div className="space-y-3">
+        {consultaRegistros.isLoading && !contaNova && <SkeletonLista itens={3} variante="card" />}
+
+        {consultaRegistros.isError && (
+          <EstadoErro title="Não foi possível carregar seus registros" onRetry={consultaRegistros.refetch} />
+        )}
+
         {registros.map((registro) => {
           const ehAlterado = registro.status === "alterado";
           // Card inteiro só vira <button> quando não tem anexo — com anexo,
@@ -273,7 +270,7 @@ export default function DashboardUsuario() {
           );
         })}
 
-        {registros.length === 0 && (
+        {(consultaRegistros.isSuccess || contaNova) && registros.length === 0 && (
           <EmptyState
             icon={ClipboardList}
             title="Você ainda não tem nenhum registro de saúde"

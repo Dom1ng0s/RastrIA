@@ -1,22 +1,11 @@
 import { FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { useAtendimentosRealizados } from "../features/atendimentos/queries";
 import { DashboardLayout } from "./DashboardLayout";
 import { EmptyState } from "./EmptyState";
-
-// TODO: substituir por dado real via TanStack Query (GET /api/atendimentos?profissional=me)
-// quando o endpoint existir. Diferente de "Meus pacientes"/"Meus alunos" (que mostra
-// responsabilidade atual, no dashboard), esta tela é o log do que já foi efetivamente
-// atendido — issue #79.
-const ATENDIMENTOS_MOCK = {
-  clinico: [
-    { id: 1, pessoaId: 1, pessoa: "Bruno Alves", data: "10 ago 2026", resumo: "Avaliação de rotina — exames dentro da faixa esperada." },
-    { id: 2, pessoaId: 2, pessoa: "Fernanda Dias", data: "05 ago 2026", resumo: "Acompanhamento de glicemia alterada, solicitado novo exame em 30 dias." },
-  ],
-  fisico: [
-    { id: 3, pessoaId: 1, pessoa: "Diego Martins", data: "12 ago 2026", resumo: "Avaliação de condicionamento antes do TAF." },
-  ],
-};
+import { EstadoErro } from "./EstadoErro";
+import { SkeletonLista } from "./Skeleton";
 
 /**
  * Reutilizado por médico (escopo="clinico") e educador físico (escopo="fisico"),
@@ -25,7 +14,11 @@ const ATENDIMENTOS_MOCK = {
  * para saltar do log para o histórico completo da pessoa.
  */
 export function AtendimentosRealizados({ navItems, tituloPagina, escopo, detalheBase }) {
-  const atendimentos = escopo === "clinico" ? ATENDIMENTOS_MOCK.clinico : ATENDIMENTOS_MOCK.fisico;
+  // Log do que já foi concluído — vem de features/atendimentos/queries.js
+  // (issue #127). Diferente de "Meus pacientes"/"Meus alunos" no painel, que
+  // mostra quem está sob acompanhamento agora (issue #79).
+  const consulta = useAtendimentosRealizados(escopo);
+  const atendimentos = consulta.data ?? [];
 
   return (
     <DashboardLayout title={tituloPagina} navItems={navItems}>
@@ -35,6 +28,12 @@ export function AtendimentosRealizados({ navItems, tituloPagina, escopo, detalhe
       </p>
 
       <div className="space-y-3">
+        {consulta.isLoading && <SkeletonLista itens={2} variante="card" />}
+
+        {consulta.isError && (
+          <EstadoErro title="Não foi possível carregar seus atendimentos" onRetry={consulta.refetch} />
+        )}
+
         {atendimentos.map((atendimento) => (
           <div key={atendimento.id} className="rounded-xl bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between gap-3">
@@ -50,7 +49,7 @@ export function AtendimentosRealizados({ navItems, tituloPagina, escopo, detalhe
           </div>
         ))}
 
-        {atendimentos.length === 0 && (
+        {consulta.isSuccess && atendimentos.length === 0 && (
           <EmptyState icon={FileText} title="Nenhum atendimento realizado ainda" />
         )}
       </div>

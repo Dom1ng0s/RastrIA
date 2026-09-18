@@ -2,30 +2,18 @@ import { FileText } from "lucide-react";
 
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { EmptyState } from "../../components/EmptyState";
+import { EstadoErro } from "../../components/EstadoErro";
+import { SkeletonLista } from "../../components/Skeleton";
+import { useMeusAtendimentos } from "../../features/atendimentos/queries";
 import { navItems } from "../DashboardUsuario/DashboardUsuario";
 
-// TODO: substituir por dado real via TanStack Query (GET /api/atendimentos?papel=usuario)
-// quando o endpoint existir. Diferente de SolicitarAcompanhamento (que mostra a
-// solicitação pendente/em andamento), esta tela é o histórico do que já foi
-// efetivamente atendido — ver issue "histórico de atendimentos (usuário e profissional)".
-const atendimentosRealizados = [
-  {
-    id: 1,
-    profissional: "Dra. Camila Andrade",
-    especialidade: "Clínica Geral",
-    data: "10 ago 2026",
-    resumo: "Avaliação de rotina — pressão arterial e glicemia dentro da faixa esperada.",
-  },
-  {
-    id: 2,
-    profissional: "Felipe Souza",
-    especialidade: "Educação Física",
-    data: "02 ago 2026",
-    resumo: "Avaliação de condicionamento físico antes do TAF.",
-  },
-];
-
+// Histórico do que já foi atendido — vem de features/atendimentos/queries.js
+// (issue #127). Diferente de SolicitarAcompanhamento, que mostra a solicitação
+// pendente/em andamento.
 export default function HistoricoAtendimentos() {
+  const consulta = useMeusAtendimentos();
+  const atendimentosRealizados = consulta.data ?? [];
+
   return (
     <DashboardLayout title="Meus Atendimentos" navItems={navItems}>
       <p className="mb-6 text-sm text-text-muted">
@@ -35,6 +23,12 @@ export default function HistoricoAtendimentos() {
       </p>
 
       <div className="space-y-3">
+        {consulta.isLoading && <SkeletonLista itens={2} variante="card" />}
+
+        {consulta.isError && (
+          <EstadoErro title="Não foi possível carregar seus atendimentos" onRetry={consulta.refetch} />
+        )}
+
         {atendimentosRealizados.map((atendimento) => (
           <div key={atendimento.id} className="rounded-xl bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
@@ -46,7 +40,7 @@ export default function HistoricoAtendimentos() {
           </div>
         ))}
 
-        {atendimentosRealizados.length === 0 && (
+        {consulta.isSuccess && atendimentosRealizados.length === 0 && (
           <EmptyState
             icon={FileText}
             title="Você ainda não teve nenhum atendimento"

@@ -6,6 +6,13 @@ import { CampoBusca } from "../../components/CampoBusca";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { DemoToggle } from "../../components/DemoToggle";
 import { EmptyState } from "../../components/EmptyState";
+import { EstadoErro } from "../../components/EstadoErro";
+import { SkeletonLista } from "../../components/Skeleton";
+import {
+  useResponderSolicitacao,
+  useSolicitacoesPendentes,
+  useVinculosCuidado,
+} from "../../features/atendimentos/queries";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
 import { useToast } from "../../features/ui/ToastProvider";
@@ -29,45 +36,37 @@ const tourSteps = [
   },
 ];
 
-// TODO: substituir por dados reais via TanStack Query quando os endpoints existirem.
-const solicitacoesIniciais = [{ id: 1, usuario: "Diego Martins", data: "18 ago 2026" }];
-
-const alunosIniciais = [
-  { id: 1, nome: "Diego Martins", ultimaAvaliacao: "12 ago 2026" },
-  { id: 2, nome: "Juliana Prado", ultimaAvaliacao: "08 ago 2026" },
-];
-
+// Solicitações e vínculos de cuidado vêm de features/atendimentos/queries.js
+// (issue #127). O fluxo é sempre solicitação → confirmação pelo profissional,
+// nunca aceite automático (Parecer CFM nº 15/2026, issue #75).
 export default function DashboardEducadorFisico() {
   const { run, handleCallback, restart } = useGuidedTour();
   const { showToast } = useToast();
   const [buscaAluno, setBuscaAluno] = useState("");
-  // Estado local para o mock reagir a confirmar/recusar (issue #73) — sem
-  // endpoint ainda, a mudança some no reload. TODO: PATCH /api/solicitacoes/:id
-  // (fluxo é sempre solicitação → confirmação) + refetch de "Meus alunos".
-  const [solicitacoes, setSolicitacoes] = useState(solicitacoesIniciais);
-  const [alunos, setAlunos] = useState(alunosIniciais);
-  // Modo demo (issue #80) — ver components/DemoToggle.jsx.
+  // Modo demo (issue #80) — as listas mockadas nunca ficam vazias sozinhas;
+  // este toggle simula "conta nova" sem descartar o dado do mock.
   const [contaNova, setContaNova] = useState(false);
-  const solicitacoesExibidas = contaNova ? [] : solicitacoes;
-  const alunosExibidos = contaNova ? [] : alunos;
+
+  const solicitacoes = useSolicitacoesPendentes("fisico");
+  const alunos = useVinculosCuidado("fisico");
+  const responder = useResponderSolicitacao("fisico");
+
+  const solicitacoesExibidas = contaNova ? [] : solicitacoes.data ?? [];
+  const alunosExibidos = contaNova ? [] : alunos.data ?? [];
 
   const alunosFiltrados = alunosExibidos.filter((aluno) =>
     aluno.nome.toLowerCase().includes(buscaAluno.toLowerCase()),
   );
 
-  function confirmarSolicitacao(solicitacao) {
-    setSolicitacoes((atual) => atual.filter((item) => item.id !== solicitacao.id));
-    setAlunos((atual) =>
-      atual.some((aluno) => aluno.nome === solicitacao.usuario)
-        ? atual
-        : [{ id: `sol-${solicitacao.id}`, nome: solicitacao.usuario, ultimaAvaliacao: "—" }, ...atual],
+  function responderSolicitacao(solicitacao, acao) {
+    responder.mutate(
+      { solicitacao, acao },
+      {
+        onSuccess: () =>
+          showToast(acao === "confirmar" ? "Solicitação confirmada" : "Solicitação recusada"),
+        onError: () => showToast("Não foi possível responder à solicitação"),
+      },
     );
-    showToast("Solicitação confirmada");
-  }
-
-  function recusarSolicitacao(solicitacao) {
-    setSolicitacoes((atual) => atual.filter((item) => item.id !== solicitacao.id));
-    showToast("Solicitação recusada");
   }
 
   return (
@@ -85,24 +84,35 @@ export default function DashboardEducadorFisico() {
           Solicitações pendentes
         </h2>
         <div className="space-y-3">
+          {solicitacoes.isLoading && <SkeletonLista itens={1} />}
+
+          {solicitacoes.isError && (
+            <EstadoErro
+              title="Não foi possível carregar as solicitações"
+              onRetry={solicitacoes.refetch}
+            />
+          )}
+
           {solicitacoesExibidas.map((solicitacao) => (
             <div
               key={solicitacao.id}
               className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm"
             >
-              <p className="min-w-0 flex-1 truncate text-sm font-medium">{solicitacao.usuario}</p>
+              <p className="min-w-0 flex-1 truncate text-sm font-medium">{solicitacao.pessoa}</p>
               <div className="flex shrink-0 gap-2">
                 <button
                   type="button"
-                  onClick={() => confirmarSolicitacao(solicitacao)}
-                  className="btn-primary rounded-lg px-3 py-1.5 text-xs font-semibold"
+                  onClick={() => responderSolicitacao(solicitacao, "confirmar")}
+                  disabled={responder.isPending}
+                  className="btn-primary rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-60"
                 >
                   Confirmar
                 </button>
                 <button
                   type="button"
-                  onClick={() => recusarSolicitacao(solicitacao)}
-                  className="btn-outline rounded-lg px-3 py-1.5 text-xs font-semibold"
+                  onClick={() => responderSolicitacao(solicitacao, "recusar")}
+                  disabled={responder.isPending}
+                  className="btn-outline rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-60"
                 >
                   Recusar
                 </button>
@@ -110,7 +120,7 @@ export default function DashboardEducadorFisico() {
             </div>
           ))}
 
-          {solicitacoesExibidas.length === 0 && (
+          {solicitacoes.isSuccess && solicitacoesExibidas.length === 0 && (
             <EmptyState icon={AlertCircle} title="Nenhuma solicitação pendente no momento" />
           )}
         </div>
@@ -120,6 +130,12 @@ export default function DashboardEducadorFisico() {
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meus alunos</h2>
         <CampoBusca valor={buscaAluno} aoMudar={setBuscaAluno} placeholder="Buscar aluno por nome..." />
         <div className="mt-3 space-y-2">
+          {alunos.isLoading && <SkeletonLista itens={2} />}
+
+          {alunos.isError && (
+            <EstadoErro title="Não foi possível carregar seus alunos" onRetry={alunos.refetch} />
+          )}
+
           {alunosFiltrados.map((aluno) => (
             <Link
               key={aluno.id}
@@ -127,11 +143,11 @@ export default function DashboardEducadorFisico() {
               className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm hover:bg-bg-tint"
             >
               <span className="min-w-0 flex-1 truncate text-sm font-medium">{aluno.nome}</span>
-              <span className="shrink-0 text-xs text-text-muted">Última avaliação · {aluno.ultimaAvaliacao}</span>
+              <span className="shrink-0 text-xs text-text-muted">Último contato · {aluno.ultimoContato}</span>
             </Link>
           ))}
 
-          {alunosExibidos.length === 0 && (
+          {alunos.isSuccess && alunosExibidos.length === 0 && (
             <EmptyState
               icon={Users}
               title="Nenhum aluno sob sua responsabilidade ainda"
@@ -139,7 +155,7 @@ export default function DashboardEducadorFisico() {
             />
           )}
 
-          {alunosExibidos.length > 0 && alunosFiltrados.length === 0 && (
+          {alunos.isSuccess && alunosExibidos.length > 0 && alunosFiltrados.length === 0 && (
             <p className="py-6 text-center text-sm text-text-muted">Nenhum aluno encontrado com esse nome.</p>
           )}
         </div>

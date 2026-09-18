@@ -1,34 +1,13 @@
 import { ArrowLeft, ClipboardPlus } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
+import { useRegistrosIntegrante, useTafIntegrante } from "../features/saude/queries";
 import { DashboardLayout } from "./DashboardLayout";
+import { EstadoErro } from "./EstadoErro";
+import { Skeleton, SkeletonLista } from "./Skeleton";
 
 const badgeClasse = { normal: "badge-normal", atencao: "badge-atencao", alterado: "badge-alterado" };
 const badgeTexto = { normal: "Normal", atencao: "Atenção", alterado: "Alterado" };
-
-// TODO: substituir por dado real via TanStack Query (GET /api/integrantes/:id/registros?escopo=)
-// quando o endpoint existir. O parâmetro `escopo` é quem garante, no backend, que um
-// educador físico nunca recebe dado clínico — não é só uma regra de exibição no frontend.
-const REGISTROS_MOCK = {
-  clinico: [
-    { id: 1, indice: "Hemograma completo", valor: "dentro da faixa", data: "28 jul 2026", status: "normal" },
-    { id: 2, indice: "Glicemia em jejum", valor: "112 mg/dL", data: "14 ago 2026", status: "atencao" },
-  ],
-  fisico: [
-    { id: 3, indice: "Corrida 5km", valor: "27min 40s", data: "05 ago 2026", status: "normal" },
-    { id: 4, indice: "IMC", valor: "23.4", data: "14 ago 2026", status: "normal" },
-  ],
-};
-
-// TAF só é cadastrado por um educador físico (issue #7, ver agents/claude.md) — por
-// isso mora à parte de REGISTROS_MOCK.fisico, com botão de cadastro condicionado ao
-// escopo desta tela. O médico também enxerga o resultado (é dado de desempenho físico,
-// não dado clínico restrito — acompanha o paciente para fins ocupacionais/PCMSO), mas
-// só em modo leitura: o botão "Cadastrar TAF" só aparece para o educador físico.
-const TAF_MOCK = {
-  1: { data: "12 ago 2026", corrida: "11min 30s", flexoes: 32, abdominais: 40, barra: 6, resultado: "apto" },
-  2: { data: "08 ago 2026", corrida: "12min 05s", flexoes: 25, abdominais: 35, barra: 3, resultado: "apto" },
-};
 
 const resultadoTafClasse = { apto: "badge-normal", inapto: "badge-alterado" };
 const resultadoTafTexto = { apto: "Apto", inapto: "Inapto" };
@@ -41,8 +20,13 @@ const resultadoTafTexto = { apto: "Apto", inapto: "Inapto" };
  */
 export function DetalheIntegrante({ nome, voltarPara, navItems, tituloPagina, escopo }) {
   const { id } = useParams();
-  const registros = escopo === "clinico" ? REGISTROS_MOCK.clinico : REGISTROS_MOCK.fisico;
-  const taf = TAF_MOCK[id];
+  // Registros e TAF vêm de features/saude/queries.js (issue #127). O `escopo`
+  // é o que garante, no backend, que um educador físico nunca receba dado
+  // clínico — não é só regra de exibição aqui.
+  const consultaRegistros = useRegistrosIntegrante(id, escopo);
+  const consultaTaf = useTafIntegrante(id);
+  const registros = consultaRegistros.data ?? [];
+  const taf = consultaTaf.data;
 
   return (
     <DashboardLayout title={tituloPagina} navItems={navItems}>
@@ -71,7 +55,17 @@ export function DetalheIntegrante({ nome, voltarPara, navItems, tituloPagina, es
           )}
         </div>
 
-        {taf ? (
+        {consultaTaf.isLoading && <Skeleton variante="card" />}
+
+        {consultaTaf.isError && (
+          <EstadoErro
+            title="Não foi possível carregar o TAF"
+            description={null}
+            onRetry={consultaTaf.refetch}
+          />
+        )}
+
+        {consultaTaf.isSuccess && taf ? (
           <div className="rounded-xl bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Último resultado</span>
@@ -91,11 +85,20 @@ export function DetalheIntegrante({ nome, voltarPara, navItems, tituloPagina, es
             )}
           </div>
         ) : (
-          <p className="text-xs text-text-muted">Nenhum TAF cadastrado ainda.</p>
+          consultaTaf.isSuccess && <p className="text-xs text-text-muted">Nenhum TAF cadastrado ainda.</p>
         )}
       </section>
 
       <div className="space-y-3">
+        {consultaRegistros.isLoading && <SkeletonLista itens={2} variante="card" />}
+
+        {consultaRegistros.isError && (
+          <EstadoErro
+            title="Não foi possível carregar os registros"
+            onRetry={consultaRegistros.refetch}
+          />
+        )}
+
         {registros.map((registro) => (
           <div key={registro.id} className="rounded-xl bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
@@ -109,6 +112,10 @@ export function DetalheIntegrante({ nome, voltarPara, navItems, tituloPagina, es
             </p>
           </div>
         ))}
+
+        {consultaRegistros.isSuccess && registros.length === 0 && (
+          <p className="py-6 text-center text-sm text-text-muted">Nenhum registro neste escopo ainda.</p>
+        )}
       </div>
     </DashboardLayout>
   );
