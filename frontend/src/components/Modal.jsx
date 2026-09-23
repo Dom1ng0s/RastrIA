@@ -65,7 +65,7 @@ export function Modal({ tituloId, onClose, children, className = "" }) {
         if (evento.target === evento.currentTarget) onClose();
       }}
     >
-      <div ref={dialogoRef} role="dialog" aria-modal="true" aria-labelledby={tituloId} tabIndex={-1} className={className}>
+      <div ref={dialogoRef} role="dialog" aria-modal="true" aria-labelledby={tituloId} tabIndex={-1} className={`outline-none ${className}`}>
         {children}
       </div>
     </div>,

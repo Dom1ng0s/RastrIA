@@ -8,11 +8,11 @@ import { avaliarSenha } from "../lib/senha";
 // lugar da dica estática. A validação de envio continua no `senhaForteSchema`.
 
 const NIVEIS = [
-  { label: "muito fraca", cor: "bg-coral" },
-  { label: "fraca", cor: "bg-coral" },
+  { label: "muito fraca", cor: "bg-coral-escuro" },
+  { label: "fraca", cor: "bg-coral-escuro" },
   { label: "média", cor: "bg-amber-400" },
   { label: "quase lá", cor: "bg-amber-400" },
-  { label: "forte", cor: "bg-seafoam" },
+  { label: "forte", cor: "bg-seafoam-escuro" },
 ];
 
 export function ForcaSenha({ senha = "", id }) {
@@ -39,7 +39,7 @@ export function ForcaSenha({ senha = "", id }) {
           <li
             key={criterio.id}
             className={`flex items-center gap-1.5 text-xs ${
-              criterio.ok ? "text-seafoam" : "text-text-muted"
+              criterio.ok ? "text-seafoam-escuro" : "text-text-muted"
             }`}
           >
             {criterio.ok ? (

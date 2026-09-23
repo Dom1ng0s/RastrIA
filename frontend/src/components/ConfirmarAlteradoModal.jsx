@@ -20,7 +20,7 @@ export function ConfirmarAlteradoModal({ registro, confirmado, onConfirmar, onCl
       }}
       className="w-full max-w-[420px] rounded-2xl bg-white p-6"
     >
-      <div className="mb-3 flex items-center gap-2 text-coral">
+      <div className="mb-3 flex items-center gap-2 text-coral-escuro">
         <AlertTriangle size={20} />
         <h2 id="confirmar-alterado-titulo" className="text-base font-semibold text-text-dark">
           Resultado alterado

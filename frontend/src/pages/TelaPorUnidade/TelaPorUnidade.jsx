@@ -71,7 +71,7 @@ export default function TelaPorUnidade() {
               {agregado.isLoading ? (
                 <span className="skeleton h-5 w-24 shrink-0 rounded-full" aria-label="Carregando" />
               ) : (
-                <span className="shrink-0 badge-normal rounded-full px-2 py-0.5 text-[11px] font-semibold">
+                <span className="shrink-0 badge-normal rounded-full px-2 py-0.5 text-xs font-semibold">
                   {percentuaisSubunidades[sub.id] === undefined
                     ? "Sem dado ainda"
                     : `${percentuaisSubunidades[sub.id]}% em dia`}

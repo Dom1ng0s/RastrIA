@@ -42,7 +42,7 @@ function LinhaEditavel({ nome, onSalvar, onExcluir, placeholder, confirmarExclus
           placeholder={placeholder}
           className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-1.5 text-sm text-text-dark"
         />
-        <button type="button" onClick={salvar} aria-label="Salvar" className="text-seafoam hover:opacity-80">
+        <button type="button" onClick={salvar} aria-label="Salvar" className="text-seafoam-escuro hover:opacity-80">
           <Check size={18} />
         </button>
         <button
@@ -78,7 +78,7 @@ function LinhaEditavel({ nome, onSalvar, onExcluir, placeholder, confirmarExclus
             if (!confirmarExclusao || window.confirm(confirmarExclusao)) onExcluir();
           }}
           aria-label="Excluir"
-          className="text-text-muted hover:text-coral"
+          className="text-text-muted hover:text-coral-escuro"
         >
           <Trash2 size={15} />
         </button>

@@ -185,7 +185,7 @@ export default function DashboardUsuario() {
           <CheckCircle2 size={20} className="shrink-0" />
           <div>
             <p className="text-sm font-semibold">Tudo em dia</p>
-            <p className="text-xs opacity-80">Nenhum índice em atenção ou alterado.</p>
+            <p className="text-xs">Nenhum índice em atenção ou alterado.</p>
           </div>
         </div>
       ) : (
@@ -195,7 +195,7 @@ export default function DashboardUsuario() {
             <p className="text-sm font-semibold">
               {totalPendencias} {totalPendencias === 1 ? "pendência" : "pendências"}
             </p>
-            <p className="text-xs opacity-80">Vale revisar: {rotulosPendencias.join(", ")}.</p>
+            <p className="text-xs">Vale revisar: {rotulosPendencias.join(", ")}.</p>
           </div>
         </div>
       )}
@@ -229,7 +229,7 @@ export default function DashboardUsuario() {
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Resultado</span>
               <span
-                className={`${resultadoTafClasse[taf.resultado]} rounded-full px-2 py-0.5 text-[11px] font-semibold`}
+                className={`${resultadoTafClasse[taf.resultado]} rounded-full px-2 py-0.5 text-xs font-semibold`}
               >
                 {resultadoTafTexto[taf.resultado]}
               </span>
@@ -278,7 +278,7 @@ export default function DashboardUsuario() {
             >
               <div className="flex items-center justify-between">
                 <span className="min-w-0 flex-1 truncate text-sm font-medium">{registro.indice}</span>
-                <span className={`${badgeClasse[registro.status]} shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold transition-colors`}>
+                <span className={`${badgeClasse[registro.status]} shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold transition-colors`}>
                   {badgeTexto[registro.status]}
                   {ehAlterado && confirmados.has(registro.id) ? " · visto" : ""}
                 </span>
@@ -287,7 +287,7 @@ export default function DashboardUsuario() {
                 {registro.data} · {registro.valor}
               </p>
               {!ehDoUsuario && (
-                <p className="mt-0.5 text-[11px] text-text-muted">
+                <p className="mt-0.5 text-xs text-text-muted">
                   Lançado pelo profissional responsável — não pode ser editado por aqui.
                 </p>
               )}
@@ -335,7 +335,7 @@ export default function DashboardUsuario() {
                         type="button"
                         onClick={() => excluirRegistro(registro)}
                         disabled={excluir.isPending}
-                        className="flex items-center gap-1 text-xs font-medium text-text-muted hover:text-coral disabled:opacity-60"
+                        className="flex items-center gap-1 text-xs font-medium text-text-muted hover:text-coral-escuro disabled:opacity-60"
                       >
                         <Trash2 size={13} /> Excluir
                       </button>

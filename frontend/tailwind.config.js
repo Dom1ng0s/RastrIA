@@ -9,6 +9,19 @@ export default {
         "primary-dark": "#083430",
         seafoam: "#14B892",
         coral: "#FF6B4A",
+        // Variantes das cores de marca para TEXTO, ÍCONE e fundo de texto
+        // branco (issue #137): coral e seafoam têm só ~2,5–2,8:1 sobre branco,
+        // abaixo do mínimo de 4,5:1 do WCAG. No tema escuro as originais passam
+        // e voltam a valer (overrides em styles/index.css).
+        "coral-escuro": "#B8431F",
+        "seafoam-escuro": "#0B7A5E",
+        // Borda de campo de formulário: ≥ 3:1 com o fundo (WCAG 1.4.11). O
+        // `line` (1,3:1) segue para separadores e cards, que não são controles.
+        "borda-campo": "#7C8C88",
+        "dark-borda-campo": "#6B7F7A",
+        "medalha-ouro": "#8A6700",
+        "medalha-prata": "#737373",
+        "medalha-bronze": "#9A5424",
         "text-dark": "#1B2C29",
         "text-muted": "#5B6B67",
         "bg-tint": "#F2F8F6",

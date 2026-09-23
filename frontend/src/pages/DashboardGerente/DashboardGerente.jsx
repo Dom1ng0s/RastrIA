@@ -111,7 +111,7 @@ export default function DashboardGerente() {
                   </p>
                 </div>
               </div>
-              <span className="shrink-0 badge-atencao rounded-full px-2 py-0.5 text-[11px] font-semibold">
+              <span className="shrink-0 badge-atencao rounded-full px-2 py-0.5 text-xs font-semibold">
                 {entrada.diasAtraso} dias atrasado
               </span>
               </div>
@@ -147,7 +147,7 @@ export default function DashboardGerente() {
               {agregado.isLoading ? (
                 <span className="skeleton h-5 w-24 shrink-0 rounded-full" aria-label="Carregando" />
               ) : (
-                <span className="shrink-0 badge-normal rounded-full px-2 py-0.5 text-[11px] font-semibold">
+                <span className="shrink-0 badge-normal rounded-full px-2 py-0.5 text-xs font-semibold">
                   {percentuaisBatalhoes[unidade.id] === undefined
                     ? "Sem dado ainda"
                     : `${percentuaisBatalhoes[unidade.id]}% em dia`}
