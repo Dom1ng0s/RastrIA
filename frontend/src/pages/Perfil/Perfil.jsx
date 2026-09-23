@@ -122,15 +122,23 @@ function SecaoEditarPerfil({ ehUsuarioIndividual }) {
 
   return (
     <div className="max-w-[400px] rounded-2xl border border-line bg-white p-7">
-      <label className="mb-1.5 block text-xs font-medium text-text-dark">E-mail</label>
-      <p className="mb-5 text-sm text-text-muted">{dadosMock.email}</p>
+      {/* Dados só de leitura: par termo/valor, não <label> — <label> sem campo
+          não rotula nada para o leitor de tela (issue #141). */}
+      <dl>
+        <dt className="mb-1.5 text-xs font-medium text-text-dark">E-mail</dt>
+        <dd className="mb-5 text-sm text-text-muted">{dadosMock.email}</dd>
+        {ehUsuarioIndividual && (
+          <>
+            <dt className="mb-1.5 text-xs font-medium text-text-dark">Data de nascimento</dt>
+            <dd className="mb-5 text-sm text-text-muted">
+              {formatarDataNascimento(dadosMock.dataNascimento)} · {calcularIdade(dadosMock.dataNascimento)} anos
+            </dd>
+          </>
+        )}
+      </dl>
 
       {ehUsuarioIndividual && (
         <>
-          <label className="mb-1.5 block text-xs font-medium text-text-dark">Data de nascimento</label>
-          <p className="mb-5 text-sm text-text-muted">
-            {formatarDataNascimento(dadosMock.dataNascimento)} · {calcularIdade(dadosMock.dataNascimento)} anos
-          </p>
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="pesoKg">
@@ -190,40 +198,44 @@ function SecaoEditarPerfil({ ehUsuarioIndividual }) {
               {errors.tipoSanguineo?.message}
             </FieldError>
 
-            <p className="mb-1.5 mt-4 text-xs font-medium text-text-dark">Contato de emergência</p>
-            <p className="mb-2 text-xs text-text-muted">
-              Preenchimento opcional — usado só em caso de emergência, não aparece para outros papéis.
-            </p>
+            {/* <fieldset>: sem ele o leitor de tela lê só "Nome" e "Telefone",
+                sem saber de quem (issue #141). */}
+            <fieldset aria-describedby="contatoEmergencia-dica">
+              <legend className="mb-1.5 mt-4 text-xs font-medium text-text-dark">Contato de emergência</legend>
+              <p id="contatoEmergencia-dica" className="mb-2 text-xs text-text-muted">
+                Preenchimento opcional — usado só em caso de emergência, não aparece para outros papéis.
+              </p>
 
-            <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="contatoEmergenciaNome">
-              Nome
-            </label>
-            <input
-              id="contatoEmergenciaNome"
-              type="text"
-              placeholder="Nome completo"
-              className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-              {...register("contatoEmergenciaNome")}
-              {...fieldErrorProps(errors.contatoEmergenciaNome, "contatoEmergenciaNome")}
-            />
-            <FieldError id="contatoEmergenciaNome-erro" className="mb-3">
-              {errors.contatoEmergenciaNome?.message}
-            </FieldError>
+              <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="contatoEmergenciaNome">
+                Nome
+              </label>
+              <input
+                id="contatoEmergenciaNome"
+                type="text"
+                placeholder="Nome completo"
+                className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+                {...register("contatoEmergenciaNome")}
+                {...fieldErrorProps(errors.contatoEmergenciaNome, "contatoEmergenciaNome")}
+              />
+              <FieldError id="contatoEmergenciaNome-erro" className="mb-3">
+                {errors.contatoEmergenciaNome?.message}
+              </FieldError>
 
-            <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="contatoEmergenciaTelefone">
-              Telefone
-            </label>
-            <input
-              id="contatoEmergenciaTelefone"
-              type="tel"
-              placeholder="(82) 99999-9999"
-              className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-              {...register("contatoEmergenciaTelefone")}
-              {...fieldErrorProps(errors.contatoEmergenciaTelefone, "contatoEmergenciaTelefone")}
-            />
-            <FieldError id="contatoEmergenciaTelefone-erro" className="mb-4">
-              {errors.contatoEmergenciaTelefone?.message}
-            </FieldError>
+              <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="contatoEmergenciaTelefone">
+                Telefone
+              </label>
+              <input
+                id="contatoEmergenciaTelefone"
+                type="tel"
+                placeholder="(82) 99999-9999"
+                className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+                {...register("contatoEmergenciaTelefone")}
+                {...fieldErrorProps(errors.contatoEmergenciaTelefone, "contatoEmergenciaTelefone")}
+              />
+              <FieldError id="contatoEmergenciaTelefone-erro" className="mb-4">
+                {errors.contatoEmergenciaTelefone?.message}
+              </FieldError>
+            </fieldset>
 
             <button
               type="submit"

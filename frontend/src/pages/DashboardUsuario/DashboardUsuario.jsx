@@ -300,7 +300,7 @@ export default function DashboardUsuario() {
                       onClick={() => setRegistroAberto(registro)}
                       className="text-xs font-semibold text-primary hover:underline"
                     >
-                      Ver detalhes
+                      Ver detalhes<span className="sr-only"> — {registro.indice} de {registro.data}</span>
                     </button>
                   )}
                   {registro.anexo && (
@@ -311,14 +311,15 @@ export default function DashboardUsuario() {
                         rel="noreferrer"
                         className="flex items-center gap-1 text-xs font-medium text-text-muted hover:text-primary"
                       >
-                        <Paperclip size={13} /> Visualizar anexo
+                        <Paperclip size={13} aria-hidden="true" /> Visualizar anexo
+                        <span className="sr-only"> — {registro.indice} de {registro.data}</span>
                       </a>
                       <a
                         href={registro.anexo.url}
                         download={registro.anexo.nome}
                         className="text-xs font-medium text-text-muted hover:text-primary"
                       >
-                        Baixar
+                        Baixar<span className="sr-only"> anexo — {registro.indice} de {registro.data}</span>
                       </a>
                     </>
                   )}
@@ -329,7 +330,8 @@ export default function DashboardUsuario() {
                         onClick={() => setRegistroEditando(registro)}
                         className="ml-auto flex items-center gap-1 text-xs font-medium text-text-muted hover:text-primary"
                       >
-                        <Pencil size={13} /> Editar
+                        <Pencil size={13} aria-hidden="true" /> Editar
+                        <span className="sr-only"> — {registro.indice} de {registro.data}</span>
                       </button>
                       <button
                         type="button"
@@ -337,7 +339,8 @@ export default function DashboardUsuario() {
                         disabled={excluir.isPending}
                         className="flex items-center gap-1 text-xs font-medium text-text-muted hover:text-coral-escuro disabled:opacity-60"
                       >
-                        <Trash2 size={13} /> Excluir
+                        <Trash2 size={13} aria-hidden="true" /> Excluir
+                        <span className="sr-only"> — {registro.indice} de {registro.data}</span>
                       </button>
                     </>
                   )}

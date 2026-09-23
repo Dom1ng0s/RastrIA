@@ -13,8 +13,13 @@ import { navItems } from "../DashboardGerente/DashboardGerente";
  * TelaPorUnidade. Estado local por enquanto (features/hierarquia/store.js) —
  * persistência real depende de modelagem de backend ainda não definida.
  */
-function LinhaEditavel({ nome, onSalvar, onExcluir, placeholder, confirmarExclusao }) {
+// Cada linha repete "Renomear"/"Excluir"; o nome da unidade entra no nome
+// acessível para a lista de botões do leitor de tela não virar dez "Excluir"
+// iguais (issue #141). `contexto` desempata nomes que se repetem entre
+// batalhões — todo batalhão tem sua "1ª Companhia".
+function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confirmarExclusao }) {
   const [editando, setEditando] = useState(false);
+  const nomeAcessivel = contexto ? `${nome} (${contexto})` : nome;
   const [valor, setValor] = useState(nome);
 
   function salvar() {
@@ -40,9 +45,10 @@ function LinhaEditavel({ nome, onSalvar, onExcluir, placeholder, confirmarExclus
             }
           }}
           placeholder={placeholder}
+          aria-label={`Novo nome para ${nomeAcessivel}`}
           className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-1.5 text-sm text-text-dark"
         />
-        <button type="button" onClick={salvar} aria-label="Salvar" className="text-seafoam-escuro hover:opacity-80">
+        <button type="button" onClick={salvar} aria-label={`Salvar novo nome de ${nomeAcessivel}`} className="text-seafoam-escuro hover:opacity-80">
           <Check size={18} />
         </button>
         <button
@@ -51,7 +57,7 @@ function LinhaEditavel({ nome, onSalvar, onExcluir, placeholder, confirmarExclus
             setValor(nome);
             setEditando(false);
           }}
-          aria-label="Cancelar"
+          aria-label={`Cancelar edição de ${nomeAcessivel}`}
           className="text-text-muted hover:text-text-dark"
         >
           <X size={18} />
@@ -67,7 +73,7 @@ function LinhaEditavel({ nome, onSalvar, onExcluir, placeholder, confirmarExclus
         <button
           type="button"
           onClick={() => setEditando(true)}
-          aria-label="Renomear"
+          aria-label={`Renomear ${nomeAcessivel}`}
           className="text-text-muted hover:text-primary"
         >
           <Pencil size={15} />
@@ -77,7 +83,7 @@ function LinhaEditavel({ nome, onSalvar, onExcluir, placeholder, confirmarExclus
           onClick={() => {
             if (!confirmarExclusao || window.confirm(confirmarExclusao)) onExcluir();
           }}
-          aria-label="Excluir"
+          aria-label={`Excluir ${nomeAcessivel}`}
           className="text-text-muted hover:text-coral-escuro"
         >
           <Trash2 size={15} />
@@ -87,7 +93,10 @@ function LinhaEditavel({ nome, onSalvar, onExcluir, placeholder, confirmarExclus
   );
 }
 
-function FormularioNovo({ placeholder, botaoLabel, onAdicionar }) {
+// `rotulo` nomeia o campo (o placeholder some ao digitar); `contextoBotao`
+// completa, só para o leitor de tela, o texto curto do botão — "Companhia"
+// aparece uma vez por batalhão (issue #141).
+function FormularioNovo({ rotulo, placeholder, botaoLabel, contextoBotao, onAdicionar }) {
   const [valor, setValor] = useState("");
 
   function adicionar(evento) {
@@ -105,13 +114,15 @@ function FormularioNovo({ placeholder, botaoLabel, onAdicionar }) {
         value={valor}
         onChange={(evento) => setValor(evento.target.value)}
         placeholder={placeholder}
+        aria-label={rotulo}
         className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-1.5 text-sm text-text-dark"
       />
       <button
         type="submit"
         className="btn-primary flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold"
       >
-        <Plus size={14} /> {botaoLabel}
+        <Plus size={14} aria-hidden="true" /> {botaoLabel}
+        {contextoBotao && <span className="sr-only"> {contextoBotao}</span>}
       </button>
     </form>
   );
@@ -137,6 +148,7 @@ export default function ConfigurarHierarquia() {
       <div className="mb-6 max-w-[520px] rounded-2xl border border-line bg-white p-6">
         <h2 className="mb-3 text-sm font-semibold text-text-dark">Novo batalhão</h2>
         <FormularioNovo
+          rotulo="Nome do novo batalhão"
           placeholder="Ex: 4º Batalhão"
           botaoLabel="Adicionar"
           onAdicionar={adicionarBatalhao}
@@ -162,6 +174,7 @@ export default function ConfigurarHierarquia() {
                 <div key={sub.id} className="pl-4">
                   <LinhaEditavel
                     nome={sub.nome}
+                    contexto={unidade.nome}
                     onSalvar={(nome) => editarCompanhia(unidade.id, sub.id, nome)}
                     onExcluir={() => removerCompanhia(unidade.id, sub.id)}
                     confirmarExclusao={`Remover "${sub.nome}"?`}
@@ -171,8 +184,10 @@ export default function ConfigurarHierarquia() {
 
               <div className="pl-4">
                 <FormularioNovo
+                  rotulo={`Nome da nova companhia em ${unidade.nome}`}
                   placeholder="Ex: 4ª Companhia"
                   botaoLabel="Companhia"
+                  contextoBotao={`em ${unidade.nome}`}
                   onAdicionar={(nome) => adicionarCompanhia(unidade.id, nome)}
                 />
               </div>
