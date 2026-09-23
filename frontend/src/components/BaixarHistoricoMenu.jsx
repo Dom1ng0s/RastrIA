@@ -1,7 +1,7 @@
 import { ChevronDown, Download, FileSpreadsheet, FileText } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 
 import { useToast } from "../features/ui/ToastProvider";
+import { usePainelSuspenso } from "../lib/usePainelSuspenso";
 
 // Menu "Baixar histórico" (CSV/PDF). Vive em Configurações → Meus dados
 // (issue #88) — foi MOVIDO do DashboardUsuario para cá, sob a ótica de LGPD,
@@ -127,27 +127,12 @@ function montarDadosHistorico(historico, taf) {
 
 export function BaixarHistoricoMenu() {
   const { showToast } = useToast();
-  const [aberto, setAberto] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if (!aberto) return undefined;
-    const aoClicarFora = (evento) => {
-      if (ref.current && !ref.current.contains(evento.target)) setAberto(false);
-    };
-    const aoTeclar = (evento) => {
-      if (evento.key === "Escape") setAberto(false);
-    };
-    document.addEventListener("mousedown", aoClicarFora);
-    document.addEventListener("keydown", aoTeclar);
-    return () => {
-      document.removeEventListener("mousedown", aoClicarFora);
-      document.removeEventListener("keydown", aoTeclar);
-    };
-  }, [aberto]);
+  // Painel no padrão Disclosure (issue #139) — ver lib/usePainelSuspenso.js.
+  const { aberto, fechar, containerRef, propsBotao, propsPainel } = usePainelSuspenso();
 
   const baixarComo = async (formato) => {
-    setAberto(false);
+    // A opção clicada some com o painel: o foco volta para o botão.
+    fechar({ devolverFoco: true });
     try {
       // import dinâmico: o jsPDF (e o resto do módulo) só entra no bundle quando
       // o usuário de fato baixa algo.
@@ -160,37 +145,33 @@ export function BaixarHistoricoMenu() {
   };
 
   return (
-    <div className="relative inline-block" ref={ref}>
+    <div className="relative inline-block" ref={containerRef}>
       <button
         type="button"
-        onClick={() => setAberto((v) => !v)}
-        aria-haspopup="menu"
-        aria-expanded={aberto}
+        {...propsBotao}
         className="btn-outline flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold"
       >
-        <Download size={16} /> Baixar histórico
-        <ChevronDown size={14} className={`transition-transform ${aberto ? "rotate-180" : ""}`} />
+        <Download size={16} aria-hidden="true" /> Baixar histórico
+        <ChevronDown size={14} aria-hidden="true" className={`transition-transform ${aberto ? "rotate-180" : ""}`} />
       </button>
       {aberto && (
         <div
-          role="menu"
+          {...propsPainel}
           className="absolute left-0 z-10 mt-2 w-48 overflow-hidden rounded-lg border border-line bg-white py-1 shadow-lg"
         >
           <button
             type="button"
-            role="menuitem"
             onClick={() => baixarComo("csv")}
             className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-text-dark hover:bg-bg-tint"
           >
-            <FileSpreadsheet size={15} /> Baixar em CSV
+            <FileSpreadsheet size={15} aria-hidden="true" /> Baixar em CSV
           </button>
           <button
             type="button"
-            role="menuitem"
             onClick={() => baixarComo("pdf")}
             className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-text-dark hover:bg-bg-tint"
           >
-            <FileText size={15} /> Baixar em PDF
+            <FileText size={15} aria-hidden="true" /> Baixar em PDF
           </button>
         </div>
       )}

@@ -1,9 +1,10 @@
 import { Bell, Trash2, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useId, useRef } from "react";
 import { Link } from "react-router-dom";
 
 import { useNotificacoesStore } from "../features/notificacoes/store";
 import { rotaInternaSegura } from "../lib/rotaInterna";
+import { usePainelSuspenso } from "../lib/usePainelSuspenso";
 import { EmptyState } from "./EmptyState";
 
 /**
@@ -20,8 +21,12 @@ import { EmptyState } from "./EmptyState";
  * como lida.
  */
 export function NotificacoesMenu({ papel }) {
-  const [aberto, setAberto] = useState(false);
-  const ref = useRef(null);
+  // Painel no padrão Disclosure (issue #139) — ver lib/usePainelSuspenso.js.
+  // Era `role="menu"` com lista, links e botões dentro: ARIA inválido, e o
+  // leitor de tela anunciava "menu, 0 itens".
+  const { aberto, fechar, containerRef, propsBotao, propsPainel } = usePainelSuspenso();
+  const tituloRef = useRef(null);
+  const tituloId = useId();
 
   const notificacoes = useNotificacoesStore((state) => state.porPapel[papel] ?? []);
   const marcarLida = useNotificacoesStore((state) => state.marcarLida);
@@ -32,36 +37,22 @@ export function NotificacoesMenu({ papel }) {
   const naoLidas = notificacoes.filter((notificacao) => !notificacao.lida).length;
   const temLidas = notificacoes.some((notificacao) => notificacao.lida);
 
-  useEffect(() => {
-    if (!aberto) return undefined;
-    const aoClicarFora = (evento) => {
-      if (ref.current && !ref.current.contains(evento.target)) setAberto(false);
-    };
-    const aoTeclar = (evento) => {
-      if (evento.key === "Escape") setAberto(false);
-    };
-    document.addEventListener("mousedown", aoClicarFora);
-    document.addEventListener("keydown", aoTeclar);
-    return () => {
-      document.removeEventListener("mousedown", aoClicarFora);
-      document.removeEventListener("keydown", aoTeclar);
-    };
-  }, [aberto]);
+  // "Excluir", "Marcar todas como lidas" e "Limpar lidas" somem depois de
+  // usados; o foco vai para o título do painel em vez de cair no <body>.
+  const focarTitulo = () => requestAnimationFrame(() => tituloRef.current?.focus());
 
   return (
-    <div className="relative inline-flex items-center" ref={ref}>
+    <div className="relative inline-flex items-center" ref={containerRef}>
       <button
         type="button"
         aria-label={`Notificações${naoLidas > 0 ? ` (${naoLidas} não lidas)` : ""}`}
         title="Notificações"
-        aria-haspopup="menu"
-        aria-expanded={aberto}
-        onClick={() => setAberto((v) => !v)}
+        {...propsBotao}
         className="relative inline-flex h-5 w-5 items-center justify-center text-text-muted hover:text-primary"
       >
-        <Bell size={20} />
+        <Bell size={20} aria-hidden="true" />
         {naoLidas > 0 && (
-          <span className="absolute -right-1.5 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-coral-escuro px-1 text-xs font-semibold leading-none text-white">
+          <span aria-hidden="true" className="absolute -right-1.5 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-coral-escuro px-1 text-xs font-semibold leading-none text-white">
             {naoLidas > 9 ? "9+" : naoLidas}
           </span>
         )}
@@ -69,15 +60,27 @@ export function NotificacoesMenu({ papel }) {
 
       {aberto && (
         <div
-          role="menu"
+          {...propsPainel}
+          role="region"
+          aria-labelledby={tituloId}
           className="absolute right-0 top-full z-20 mt-2 w-80 max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-line bg-white shadow-lg"
         >
           <div className="flex items-center justify-between border-b border-line px-3 py-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">Notificações</span>
+            <h2
+              id={tituloId}
+              ref={tituloRef}
+              tabIndex={-1}
+              className="font-body text-xs font-semibold uppercase tracking-wide text-text-muted outline-none"
+            >
+              Notificações
+            </h2>
             {naoLidas > 0 && (
               <button
                 type="button"
-                onClick={() => marcarTodasLidas(papel)}
+                onClick={() => {
+                  marcarTodasLidas(papel);
+                  focarTitulo();
+                }}
                 className="text-xs font-medium text-primary hover:underline"
               >
                 Marcar todas como lidas
@@ -103,17 +106,20 @@ export function NotificacoesMenu({ papel }) {
                       notificacao={notificacao}
                       onAbrir={() => {
                         marcarLida(papel, notificacao.id);
-                        setAberto(false);
+                        fechar();
                       }}
                     />
                     <button
                       type="button"
-                      onClick={() => excluir(papel, notificacao.id)}
+                      onClick={() => {
+                        excluir(papel, notificacao.id);
+                        focarTitulo();
+                      }}
                       aria-label={`Excluir notificação: ${notificacao.titulo}`}
                       title="Excluir"
                       className="shrink-0 text-text-muted opacity-0 hover:text-coral-escuro focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
                     >
-                      <X size={14} />
+                      <X size={14} aria-hidden="true" />
                     </button>
                   </li>
                 ))}
@@ -124,10 +130,13 @@ export function NotificacoesMenu({ papel }) {
           {temLidas && (
             <button
               type="button"
-              onClick={() => limparLidas(papel)}
+              onClick={() => {
+                limparLidas(papel);
+                focarTitulo();
+              }}
               className="flex w-full items-center justify-center gap-1.5 border-t border-line px-3 py-2 text-xs font-medium text-text-muted hover:bg-bg-tint hover:text-text-dark"
             >
-              <Trash2 size={13} /> Limpar lidas
+              <Trash2 size={13} aria-hidden="true" /> Limpar lidas
             </button>
           )}
         </div>

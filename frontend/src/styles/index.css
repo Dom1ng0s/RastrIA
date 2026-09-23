@@ -77,9 +77,12 @@
   .dark input[type="file"]:focus-visible + label {
     outline-color: theme("colors.dark-primary");
   }
-  /* Título que recebe foco na troca de página (issue #135): é um marcador de
-     posição para o leitor de tela, não um controle — sem anel em volta. */
-  h1[tabindex="-1"]:focus {
+  /* Destino de foco por script (tabindex="-1"): título na troca de página
+     (#135), título do painel de notificações (#139), <main> do "Pular para o
+     conteúdo", contêiner de diálogo. É marcador de posição para o leitor de
+     tela, não controle — sem anel. Vem depois das regras acima para vencer
+     `.overflow-hidden :focus-visible`, de mesma especificidade. */
+  [tabindex="-1"]:focus {
     outline: none;
   }
 }
@@ -172,7 +175,7 @@ html.alto-contraste footer a {
 /* Destaque de foco reforçado (issue #136) — para baixa visão, nos moldes do
    WCAG 2.4.13 (AAA): anel duplo amarelo + preto, que contrasta com qualquer
    fundo do app, claro ou escuro. */
-html.foco-reforcado :focus-visible,
+html.foco-reforcado :focus-visible:not([tabindex="-1"]),
 html.foco-reforcado input[type="file"]:focus-visible + label {
   outline: 4px solid #000 !important;
   outline-offset: 4px !important;
