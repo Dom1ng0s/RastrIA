@@ -32,7 +32,7 @@ export default function CadastroInformacoes() {
           <p className="text-sm font-semibold text-primary">Cadastrar Exame</p>
           <p className="mt-1 text-xs text-text-muted">Exames laboratoriais, pressão, IMC e outros índices clínicos.</p>
           {exameSalvo && (
-            <p className="mt-3 flex items-center gap-1.5 text-xs font-medium text-seafoam">
+            <p className="mt-3 flex items-center gap-1.5 text-xs font-medium text-seafoam-escuro">
               <Check size={14} /> Registro salvo
             </p>
           )}

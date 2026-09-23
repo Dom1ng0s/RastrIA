@@ -177,7 +177,7 @@ export default function Login() {
                     Links diretos aqui garantem que essas telas entrem na
                     validação com stakeholders. Remover junto com o atalho de
                     papéis quando o login real existir. */}
-                <p className="pt-2 text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+                <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-text-muted">
                   Fluxo de acesso
                 </p>
                 {FLUXOS_DEMO.map((fluxo) => (

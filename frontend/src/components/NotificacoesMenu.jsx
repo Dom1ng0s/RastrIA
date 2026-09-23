@@ -61,7 +61,7 @@ export function NotificacoesMenu({ papel }) {
       >
         <Bell size={20} />
         {naoLidas > 0 && (
-          <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-coral px-1 text-[10px] font-semibold text-white">
+          <span className="absolute -right-1.5 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-coral-escuro px-1 text-xs font-semibold leading-none text-white">
             {naoLidas > 9 ? "9+" : naoLidas}
           </span>
         )}
@@ -111,7 +111,7 @@ export function NotificacoesMenu({ papel }) {
                       onClick={() => excluir(papel, notificacao.id)}
                       aria-label="Excluir notificação"
                       title="Excluir"
-                      className="shrink-0 text-text-muted opacity-0 hover:text-coral focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+                      className="shrink-0 text-text-muted opacity-0 hover:text-coral-escuro focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
                     >
                       <X size={14} />
                     </button>
@@ -153,13 +153,13 @@ function ConteudoNotificacao({ notificacao, onAbrir }) {
   const corpo = (
     <span className="flex items-start gap-2">
       {!notificacao.lida && (
-        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-coral" aria-hidden="true" />
+        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-coral-escuro" aria-hidden="true" />
       )}
       <span className="min-w-0">
         <p className={`text-xs ${notificacao.lida ? "text-text-muted" : "font-medium text-text-dark"}`}>
           {notificacao.titulo}
         </p>
-        <p className="mt-0.5 text-[11px] text-text-muted">{notificacao.data}</p>
+        <p className="mt-0.5 text-xs text-text-muted">{notificacao.data}</p>
       </span>
     </span>
   );

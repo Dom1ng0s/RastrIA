@@ -21,6 +21,11 @@ export const PREFERENCIAS = {
   // Escopo ainda será refinado com a equipe (issue #95).
   modoSimplificado: { padrao: false, classe: "modo-simplificado" },
   espacamentoTexto: { padrao: false, classe: "espacamento-texto" },
+  altoContraste: {
+    padrao: false,
+    classe: "alto-contraste",
+    mediaQuery: "(prefers-contrast: more)",
+  },
   reduzirMovimento: {
     padrao: false,
     classe: "reduzir-movimento",

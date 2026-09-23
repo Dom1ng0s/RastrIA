@@ -186,7 +186,7 @@ export function CadastrarExameModal({ onClose, onSalvar, registro }) {
               setAnexo(null);
               setErroAnexo("");
             }}
-            className="mt-1.5 text-xs font-medium text-text-muted underline hover:text-coral"
+            className="mt-1.5 text-xs font-medium text-text-muted underline hover:text-coral-escuro"
           >
             Remover anexo
           </button>

@@ -189,7 +189,7 @@ export default function SolicitarAcompanhamento() {
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{profissional.nome}</p>
                   <span className="block truncate text-xs text-text-muted">{profissional.especialidade}</span>
-                  <div className="mt-1 flex items-center gap-1.5 text-xs text-seafoam">
+                  <div className="mt-1 flex items-center gap-1.5 text-xs text-seafoam-escuro">
                     <Check size={12} className="shrink-0" />
                     <span className="truncate">Disponível — {profissional.disponibilidade}</span>
                   </div>

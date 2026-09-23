@@ -16,7 +16,7 @@ export function EstadoErro({
 }) {
   return (
     <div role="alert" className="rounded-xl border border-dashed border-line p-8 text-center">
-      <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-bg-tint text-coral">
+      <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-bg-tint text-coral-escuro">
         <AlertTriangle size={20} />
       </div>
       <p className="text-sm font-medium text-text-dark">{title}</p>

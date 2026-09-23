@@ -22,9 +22,9 @@ const escopos = [
 ];
 
 const medalhaClasse = {
-  1: "text-[#D4A017]",
-  2: "text-[#8C8C8C]",
-  3: "text-[#B0692A]",
+  1: "text-medalha-ouro",
+  2: "text-medalha-prata",
+  3: "text-medalha-bronze",
 };
 
 export default function RankingFisico() {
@@ -168,7 +168,7 @@ export default function RankingFisico() {
           <div
             key={entrada.id}
             className={`flex items-center justify-between rounded-xl bg-white p-4 shadow-sm ${
-              entrada.id === usuarioAtualId ? "border-l-4 border-seafoam" : ""
+              entrada.id === usuarioAtualId ? "border-l-4 border-seafoam-escuro" : ""
             }`}
           >
             <div className="flex min-w-0 flex-1 items-center gap-3">

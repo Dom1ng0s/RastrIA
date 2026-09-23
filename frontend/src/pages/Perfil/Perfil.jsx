@@ -96,7 +96,7 @@ function ToggleLinha({ rotulo, descricao, ativo, onToggle }) {
       <span className="flex shrink-0 items-center gap-2" aria-hidden="true">
         <span className="text-xs font-medium text-text-muted">{ativo ? "Ativado" : "Desativado"}</span>
         {ativo ? (
-          <ToggleRight size={28} className="text-seafoam" />
+          <ToggleRight size={28} className="text-seafoam-escuro" />
         ) : (
           <ToggleLeft size={28} className="text-text-muted" />
         )}
@@ -371,7 +371,12 @@ function SecaoAcessibilidade() {
         <PreferenciaAcessibilidade
           chave="modoSimplificado"
           rotulo="Modo simplificado"
-          descricao="Esconde elementos decorativos e reforça o contraste do texto."
+          descricao="Esconde elementos decorativos."
+        />
+        <PreferenciaAcessibilidade
+          chave="altoContraste"
+          rotulo="Alto contraste"
+          descricao="Textos secundários mais escuros, bordas mais fortes e links sempre sublinhados."
         />
         <PreferenciaAcessibilidade
           chave="espacamentoTexto"
@@ -403,11 +408,6 @@ function SecaoAcessibilidade() {
           rotulo="Atalhos de teclado"
           descricao="Desligue se os atalhos conflitarem com o seu leitor de tela ou navegador."
         />
-        <PreferenciaAcessibilidade
-          chave="focoReforcado"
-          rotulo="Destaque de foco reforçado"
-          descricao="Contorno mais grosso, em amarelo e preto, no item selecionado pelo teclado."
-        />
         <dl className="divide-y divide-line rounded-lg border border-line text-sm">
           {ATALHOS_TECLADO.map((atalho) => (
             <div key={atalho.teclas} className="flex items-center justify-between gap-4 px-4 py-2.5">
@@ -420,6 +420,11 @@ function SecaoAcessibilidade() {
             </div>
           ))}
         </dl>
+        <PreferenciaAcessibilidade
+          chave="focoReforcado"
+          rotulo="Destaque de foco reforçado"
+          descricao="Contorno mais grosso, em amarelo e preto, no item selecionado pelo teclado."
+        />
       </GrupoAcessibilidade>
 
       <button

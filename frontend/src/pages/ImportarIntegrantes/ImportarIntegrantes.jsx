@@ -172,11 +172,11 @@ export default function ImportarIntegrantes() {
                     <td className="px-4 py-2.5">{registro.contato || "—"}</td>
                     <td className="px-4 py-2.5">
                       {registro.erros.length === 0 ? (
-                        <span className="flex items-center gap-1 text-xs font-medium text-seafoam">
+                        <span className="flex items-center gap-1 text-xs font-medium text-seafoam-escuro">
                           <CheckCircle2 size={14} /> OK
                         </span>
                       ) : (
-                        <span className="text-xs font-medium text-coral">{registro.erros.join("; ")}</span>
+                        <span className="text-xs font-medium text-coral-escuro">{registro.erros.join("; ")}</span>
                       )}
                     </td>
                   </tr>
@@ -186,7 +186,7 @@ export default function ImportarIntegrantes() {
           </div>
 
           {importado !== null ? (
-            <p className="flex items-center gap-2 text-sm font-medium text-seafoam">
+            <p className="flex items-center gap-2 text-sm font-medium text-seafoam-escuro">
               <CheckCircle2 size={16} /> {importado} conta(s) provisionada(s) com sucesso.
             </p>
           ) : (

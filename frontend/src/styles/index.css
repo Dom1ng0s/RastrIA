@@ -31,6 +31,18 @@
     @apply font-heading;
   }
 
+  /* Placeholder com o mesmo cinza do texto secundário (5,6:1) — o padrão do
+     navegador ficava em ~2,5:1 (issue #137). */
+  input::placeholder,
+  textarea::placeholder {
+    color: theme("colors.text-muted");
+    opacity: 1;
+  }
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: theme("colors.dark-text-muted");
+  }
+
   /* Indicador de foco (issue #136, WCAG 2.4.7 e 1.4.11). Antes o app dependia
      do anel padrão do navegador, que some sobre a sidebar verde e no tema
      escuro. `:focus-visible` = só quando o foco veio do teclado, não em clique.
@@ -77,21 +89,15 @@
  * rem/Tailwind, então textos, campos e espaçamentos crescem juntos.
  *
  * `.modo-simplificado` é a versão conservadora inicial — esconde elementos
- * puramente decorativos (marcados com [data-decorativo]) e reforça o contraste
- * do texto secundário. O escopo exato ainda será refinado com a equipe antes
- * de expandir (ver issue #95).
+ * puramente decorativos (marcados com [data-decorativo]). O escopo exato ainda
+ * será refinado com a equipe antes de expandir (ver issue #95). O reforço de
+ * contraste que morava aqui passou para `.alto-contraste` (issue #137).
  */
 html.fonte-grande {
   font-size: 18.5px;
 }
 html.modo-simplificado [data-decorativo] {
   display: none !important;
-}
-html.modo-simplificado .text-text-muted {
-  color: #3f4c49;
-}
-html.modo-simplificado.dark .text-text-muted {
-  color: theme("colors.dark-text");
 }
 
 /* Espaçamento de texto ampliado (issue #149) — os valores exatos do critério
@@ -104,6 +110,58 @@ html.espacamento-texto * {
 }
 html.espacamento-texto p {
   margin-bottom: 2em !important;
+}
+
+/* Alto contraste (issue #137) — acima do mínimo AA, nos moldes do WCAG 1.4.6
+   (AAA, 7:1). Segue `prefers-contrast: more` do sistema (no iOS/macOS,
+   "Aumentar contraste") até o usuário escolher na aba Acessibilidade. */
+html.alto-contraste .text-text-muted {
+  color: theme("colors.text-dark");
+}
+html.alto-contraste .bg-primary .text-white\/70,
+html.alto-contraste .bg-primary .text-\[\#CFEAE3\],
+html.alto-contraste .bg-primary .text-\[\#9FCFC4\] {
+  color: #fff;
+}
+html.alto-contraste.dark .text-text-muted {
+  color: theme("colors.dark-text");
+}
+html.alto-contraste .border-line {
+  border-color: theme("colors.text-muted");
+}
+html.alto-contraste.dark .border-line {
+  border-color: theme("colors.dark-text-muted");
+}
+html.alto-contraste input::placeholder,
+html.alto-contraste textarea::placeholder {
+  color: #3f4c49;
+}
+html.alto-contraste .text-coral-escuro,
+html.alto-contraste .badge-atencao,
+html.alto-contraste .badge-alterado {
+  color: #7a2810;
+}
+html.alto-contraste .text-seafoam-escuro,
+html.alto-contraste .badge-normal {
+  color: #064d3c;
+}
+html.alto-contraste.dark .text-coral-escuro {
+  color: #ff9a82;
+}
+html.alto-contraste.dark .text-seafoam-escuro {
+  color: #5fe0bf;
+}
+html.alto-contraste .shadow-sm,
+html.alto-contraste .shadow-md,
+html.alto-contraste .shadow-lg,
+html.alto-contraste .shadow-xl {
+  box-shadow: none;
+}
+/* Link identificável sem depender de cor. Botões e itens de menu estilizados
+   como link ficam de fora — já têm forma de botão/item. */
+html.alto-contraste main a:not(.btn-primary):not(.btn-outline),
+html.alto-contraste footer a {
+  text-decoration: underline;
 }
 
 /* Destaque de foco reforçado (issue #136) — para baixa visão, nos moldes do
@@ -181,6 +239,41 @@ html.reduzir-movimento *::after {
 .dark .hover\:bg-bg-tint:hover {
   background-color: theme("colors.dark-line");
 }
+/* Variantes "-escuro" (issue #137): no fundo escuro as cores originais da
+   marca já passam de 4,5:1 (coral 5,9:1, seafoam 6,5:1), e as escuras não. */
+.dark .text-coral-escuro,
+.dark .hover\:text-coral-escuro:hover {
+  color: theme("colors.coral");
+}
+.dark .text-seafoam-escuro {
+  color: theme("colors.seafoam");
+}
+.dark .border-seafoam-escuro {
+  border-color: theme("colors.seafoam");
+}
+.dark .text-medalha-ouro {
+  color: #d4a017;
+}
+.dark .text-medalha-prata {
+  color: #a3a3a3;
+}
+.dark .text-medalha-bronze {
+  color: #c77a3a;
+}
+
+/* Campos de formulário (issue #137, WCAG 1.4.11): a borda é o que mostra onde
+   o campo está, então precisa de ≥ 3:1. Todos os campos já usam
+   `border-line`; o seletor por elemento vence a utility sem tocar em tela. */
+input.border-line,
+select.border-line,
+textarea.border-line {
+  border-color: theme("colors.borda-campo");
+}
+.dark input.border-line,
+.dark select.border-line,
+.dark textarea.border-line {
+  border-color: theme("colors.dark-borda-campo");
+}
 
 /*
  * Placeholder de carregamento (issue #126) — cor e animação da classe que
@@ -234,11 +327,11 @@ html.reduzir-movimento *::after {
   }
   .badge-atencao {
     background: #fff1ec;
-    color: #b8431f;
+    color: #a93a18; /* ≥ 5,2:1 — #b8431f ficava em 4,49:1 aqui (issue #137) */
   }
   .badge-alterado {
     background: #ffe4da;
-    color: #b8431f;
+    color: #a93a18; /* ≥ 5,2:1 — #b8431f ficava em 4,49:1 aqui (issue #137) */
   }
 
   .nav-item {

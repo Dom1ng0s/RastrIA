@@ -179,7 +179,7 @@ function Hero() {
         >
           <div className="mb-1 flex items-center justify-between">
             <span className="text-sm font-medium">Pressão arterial</span>
-            <span className="badge-normal rounded-full px-2 py-0.5 text-[11px] font-semibold">Normal</span>
+            <span className="badge-normal rounded-full px-2 py-0.5 text-xs font-semibold">Normal</span>
           </div>
           <span className="text-xs text-text-muted">10 ago 2026 · 12/8</span>
         </div>
@@ -189,7 +189,7 @@ function Hero() {
         >
           <div className="mb-1 flex items-center justify-between">
             <span className="text-sm font-medium">Glicemia em jejum</span>
-            <span className="badge-atencao rounded-full px-2 py-0.5 text-[11px] font-semibold">Atenção</span>
+            <span className="badge-atencao rounded-full px-2 py-0.5 text-xs font-semibold">Atenção</span>
           </div>
           <span className="text-xs text-text-muted">14 ago 2026 · 112 mg/dL</span>
         </div>
@@ -218,15 +218,15 @@ function TrustStrip() {
 
 function ComoFunciona() {
   const passos = [
-    { numero: 1, cor: "bg-seafoam", titulo: "Cadastre", texto: "Exames laboratoriais, avaliações cardiológicas, bioimpedância e desempenho físico." },
+    { numero: 1, cor: "bg-seafoam-escuro", titulo: "Cadastre", texto: "Exames laboratoriais, avaliações cardiológicas, bioimpedância e desempenho físico." },
     { numero: 2, cor: "bg-primary", titulo: "Verifique", texto: "Seus índices são comparados automaticamente com parâmetros de referência clínica." },
-    { numero: 3, cor: "bg-coral", titulo: "Conecte-se", texto: "Acesse médicos e educadores físicos da sua própria instituição, com continuidade de cuidado." },
+    { numero: 3, cor: "bg-coral-escuro", titulo: "Conecte-se", texto: "Acesse médicos e educadores físicos da sua própria instituição, com continuidade de cuidado." },
   ];
 
   return (
     <section id="como-funciona" className="mx-auto max-w-[1180px] px-6 py-24">
       <div className="mx-auto mb-14 max-w-[560px] text-center">
-        <span className="text-xs font-semibold text-seafoam">COMO FUNCIONA</span>
+        <span className="text-xs font-semibold text-seafoam-escuro">COMO FUNCIONA</span>
         <h2 className="mt-2 text-3xl font-semibold text-primary">Três passos, um único histórico</h2>
       </div>
       <div className="grid gap-8 md:grid-cols-3">
@@ -250,7 +250,7 @@ function Institucional() {
   return (
     <section id="instituicoes" className="mx-auto grid max-w-[1180px] items-center gap-14 px-6 py-24 md:grid-cols-2">
       <div>
-        <span className="text-xs font-semibold text-seafoam">PARA INSTITUIÇÕES</span>
+        <span className="text-xs font-semibold text-seafoam-escuro">PARA INSTITUIÇÕES</span>
         <h2 className="mb-5 mt-2 text-3xl font-semibold text-primary">
           Gestão de saúde ocupacional, sem expor dado individual a quem não deveria vê-lo
         </h2>
@@ -260,19 +260,19 @@ function Institucional() {
         </p>
         <ul className="space-y-3 text-sm">
           <li className="flex gap-3">
-            <span className="text-seafoam">●</span>
+            <span className="text-seafoam-escuro" aria-hidden="true">●</span>
             <span>
               <strong>Comando/gestor</strong> vê apenas indicadores agregados — nunca dado clínico individual.
             </span>
           </li>
           <li className="flex gap-3">
-            <span className="text-primary">●</span>
+            <span className="text-primary" aria-hidden="true">●</span>
             <span>
               <strong>Médico responsável</strong> acessa o dado individual completo, como já faz hoje.
             </span>
           </li>
           <li className="flex gap-3">
-            <span className="text-coral">●</span>
+            <span className="text-coral-escuro" aria-hidden="true">●</span>
             <span>
               <strong>Integrante</strong> mantém controle sobre seu próprio histórico.
             </span>
@@ -292,11 +292,11 @@ function Institucional() {
         </div>
         <div className="flex items-center justify-between rounded-xl bg-white p-4">
           <span className="text-sm font-medium">Sargento A.</span>
-          <span className="badge-normal rounded-full px-2 py-0.5 text-[11px] font-semibold">Exame em dia</span>
+          <span className="badge-normal rounded-full px-2 py-0.5 text-xs font-semibold">Exame em dia</span>
         </div>
         <div className="mt-2 flex items-center justify-between rounded-xl bg-white p-4">
           <span className="text-sm font-medium">Soldado B.</span>
-          <span className="badge-atencao rounded-full px-2 py-0.5 text-[11px] font-semibold">Pendente</span>
+          <span className="badge-atencao rounded-full px-2 py-0.5 text-xs font-semibold">Pendente</span>
         </div>
       </div>
     </section>
@@ -307,7 +307,7 @@ function Faq() {
   return (
     <section id="faq" className="mx-auto max-w-[760px] px-6 py-24">
       <div className="mx-auto mb-14 max-w-[560px] text-center">
-        <span className="text-xs font-semibold text-seafoam">PERGUNTAS FREQUENTES</span>
+        <span className="text-xs font-semibold text-seafoam-escuro">PERGUNTAS FREQUENTES</span>
         <h2 className="mt-2 text-3xl font-semibold text-primary">Dúvidas comuns</h2>
       </div>
       <FaqAccordion itens={PERGUNTAS_FREQUENTES} />
@@ -367,7 +367,7 @@ function FaleComTime() {
     <section id="contato" className="bg-bg-tint py-20">
       <div className="mx-auto grid max-w-[1180px] gap-10 px-6 md:grid-cols-2 md:items-start">
         <div>
-          <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-seafoam">Contato</span>
+          <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-seafoam-escuro">Contato</span>
           <h2 className="mb-3 text-3xl font-semibold text-primary">Fale com o time</h2>
           <p className="max-w-[420px] text-sm text-text-muted">
             Sua empresa, academia ou corporação quer levar a Rastria para o efetivo/colaboradores?
