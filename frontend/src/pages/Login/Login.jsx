@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -8,6 +8,11 @@ import { AuthBrandPanel } from "../../components/AuthBrandPanel";
 import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { FieldError } from "../../components/FieldError";
 import { PasswordInput } from "../../components/PasswordInput";
+import {
+  esquecerSessaoExpirada,
+  MINUTOS_LIMITE_SESSAO,
+  sessaoExpirouPorInatividade,
+} from "../../features/auth/SessaoInativa";
 import { useAuthStore } from "../../features/auth/store";
 import { ROLES } from "../../features/auth/roles";
 import { MODO_DEMO } from "../../features/demo/flag";
@@ -35,6 +40,13 @@ const schema = z.object({
 export default function Login() {
   useTituloPagina("Entrar");
   const navigate = useNavigate();
+  // Vindo do encerramento por inatividade (features/auth/SessaoInativa.jsx,
+  // #143): explica o motivo na própria tela, não num aviso que some. Lido no
+  // estado inicial e apagado num efeito — assim o StrictMode (que chama o
+  // inicializador duas vezes) não perde a marca, e um reload não repete a
+  // mensagem.
+  const [sessaoExpirada] = useState(sessaoExpirouPorInatividade);
+  useEffect(() => esquecerSessaoExpirada(), []);
   const setUsuario = useAuthStore((state) => state.setUsuario);
   const [mostrarAtalhoDev, setMostrarAtalhoDev] = useState(false);
 
@@ -88,6 +100,15 @@ export default function Login() {
         <div className="mx-auto w-full max-w-[360px]">
           <h2 className="mb-1 text-2xl font-semibold text-primary">Entrar</h2>
           <p className="mb-8 text-sm text-text-muted">Acesse sua conta com seu CPF.</p>
+
+          {/* role="alert": é lido quando aparece, sem depender de onde está o
+              foco (a troca de página leva o foco ao título, #135). */}
+          {sessaoExpirada && (
+            <p role="alert" className="badge-atencao mb-6 rounded-lg px-4 py-3 text-sm">
+              Sua sessão foi encerrada após {MINUTOS_LIMITE_SESSAO} minutos sem atividade. Entre de novo
+              para continuar.
+            </p>
+          )}
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="cpf">

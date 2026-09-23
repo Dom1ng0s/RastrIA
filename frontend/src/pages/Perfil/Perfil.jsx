@@ -9,6 +9,7 @@ import { BaixarHistoricoMenu } from "../../components/BaixarHistoricoMenu";
 import { FieldError } from "../../components/FieldError";
 import { LogAcessoProntuario } from "../../components/LogAcessoProntuario";
 import { PREFERENCIAS, useAcessibilidadeStore } from "../../features/acessibilidade/store";
+import { MINUTOS_LIMITE_SESSAO } from "../../features/auth/SessaoInativa";
 import { useAuthStore } from "../../features/auth/store";
 import { navItemsDoPapel, PAPEL_PADRAO } from "../../features/auth/navPorPapel";
 import { useConsentimentoStore } from "../../features/consentimento/store";
@@ -479,6 +480,11 @@ function SecaoAcessibilidade() {
 
       <GrupoAcessibilidade id="acessibilidade-tempo" titulo="Tempo e avisos">
         <DuracaoAvisos />
+        <p className="text-xs text-text-muted">
+          <span className="font-medium text-text-dark">Tempo de sessão:</span> por segurança, a sessão é
+          encerrada após {MINUTOS_LIMITE_SESSAO} minutos sem atividade. Dois minutos antes aparece um aviso
+          para você renová-la.
+        </p>
       </GrupoAcessibilidade>
 
       <GrupoAcessibilidade id="acessibilidade-leitor-tela" titulo="Leitor de tela">

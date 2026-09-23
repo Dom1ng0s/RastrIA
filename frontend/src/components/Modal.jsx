@@ -10,9 +10,14 @@ import { useFocoPreso } from "../lib/useFocoPreso";
 // compartilhado com a Gaveta (issue #140). Renderiza em `document.body` via
 // portal (mesmo motivo do menu mobile da Landing — evita ficar preso em
 // containing block de ancestral com `transform`/`backdrop-blur`).
-export function Modal({ tituloId, onClose, children, className = "" }) {
+//
+// `papel="alertdialog"` para avisos que exigem resposta (ex.: sessão prestes a
+// expirar, #143); `descricaoId` liga o texto principal via aria-describedby
+// (lido ao abrir); `seletorFocoInicial` foca um botão específico em vez do
+// contêiner.
+export function Modal({ tituloId, descricaoId, papel = "dialog", seletorFocoInicial, onClose, children, className = "" }) {
   const dialogoRef = useRef(null);
-  useFocoPreso(dialogoRef, onClose);
+  useFocoPreso(dialogoRef, onClose, { seletorFocoInicial });
 
   return createPortal(
     <div
@@ -21,7 +26,15 @@ export function Modal({ tituloId, onClose, children, className = "" }) {
         if (evento.target === evento.currentTarget) onClose();
       }}
     >
-      <div ref={dialogoRef} role="dialog" aria-modal="true" aria-labelledby={tituloId} tabIndex={-1} className={`outline-none ${className}`}>
+      <div
+        ref={dialogoRef}
+        role={papel}
+        aria-modal="true"
+        aria-labelledby={tituloId}
+        aria-describedby={descricaoId}
+        tabIndex={-1}
+        className={`outline-none ${className}`}
+      >
         {children}
       </div>
     </div>,
