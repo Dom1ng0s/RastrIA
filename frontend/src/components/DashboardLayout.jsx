@@ -1,5 +1,5 @@
 import { Flag, HelpCircle, ListChecks, LogOut, Menu, Settings, Compass, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { useAcessibilidadeStore } from "../features/acessibilidade/store";
@@ -7,6 +7,7 @@ import { useAuthStore } from "../features/auth/store";
 import { PAPEL_PADRAO } from "../features/auth/navPorPapel";
 import { useToast } from "../features/ui/ToastProvider";
 import { useTituloPagina } from "../lib/tituloPagina";
+import { usePainelSuspenso } from "../lib/usePainelSuspenso";
 import { ThemeToggle } from "../features/theme/ThemeToggle";
 
 import { ConteudoPrincipal } from "./ConteudoPrincipal";
@@ -16,62 +17,42 @@ import { ReportarProblemaModal } from "./ReportarProblemaModal";
 
 // Ícone de ajuda expandido (issue #91): além de reabrir o tour guiado, oferece
 // um atalho para as perguntas frequentes (seção pública `/#faq` da Landing).
+// Painel no padrão Disclosure (issue #139) — ver lib/usePainelSuspenso.js.
 function HelpMenu({ onRever }) {
-  const [aberto, setAberto] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if (!aberto) return undefined;
-    const aoClicarFora = (evento) => {
-      if (ref.current && !ref.current.contains(evento.target)) setAberto(false);
-    };
-    const aoTeclar = (evento) => {
-      if (evento.key === "Escape") setAberto(false);
-    };
-    document.addEventListener("mousedown", aoClicarFora);
-    document.addEventListener("keydown", aoTeclar);
-    return () => {
-      document.removeEventListener("mousedown", aoClicarFora);
-      document.removeEventListener("keydown", aoTeclar);
-    };
-  }, [aberto]);
+  const { aberto, fechar, containerRef, propsBotao, propsPainel } = usePainelSuspenso();
 
   return (
-    <div className="relative inline-flex items-center" ref={ref}>
+    <div className="relative inline-flex items-center" ref={containerRef}>
       <button
         type="button"
         aria-label="Ajuda"
         title="Ajuda"
-        aria-haspopup="menu"
-        aria-expanded={aberto}
-        onClick={() => setAberto((v) => !v)}
+        {...propsBotao}
         className="inline-flex h-5 w-5 items-center justify-center text-text-muted hover:text-primary"
       >
-        <HelpCircle size={20} />
+        <HelpCircle size={20} aria-hidden="true" />
       </button>
       {aberto && (
         <div
-          role="menu"
+          {...propsPainel}
           className="absolute right-0 top-full z-20 mt-2 w-56 max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-line bg-white py-1 shadow-lg"
         >
           <button
             type="button"
-            role="menuitem"
             onClick={() => {
-              setAberto(false);
+              fechar();
               onRever?.();
             }}
             className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-text-dark hover:bg-bg-tint"
           >
-            <Compass size={15} /> Rever tour guiado
+            <Compass size={15} aria-hidden="true" /> Rever tour guiado
           </button>
           <a
-            role="menuitem"
             href="/#faq"
-            onClick={() => setAberto(false)}
+            onClick={() => fechar()}
             className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-text-dark hover:bg-bg-tint"
           >
-            <ListChecks size={15} /> Ver perguntas frequentes
+            <ListChecks size={15} aria-hidden="true" /> Ver perguntas frequentes
           </a>
         </div>
       )}
