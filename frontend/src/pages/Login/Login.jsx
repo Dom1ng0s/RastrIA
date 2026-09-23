@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { FieldError } from "../../components/FieldError";
 import { PasswordInput } from "../../components/PasswordInput";
 import { useAuthStore } from "../../features/auth/store";
@@ -81,7 +82,7 @@ export default function Login() {
         subtitle="Cadastre exames, acompanhe seus índices e conecte-se a profissionais quando precisar."
       />
 
-      <div className="flex flex-col justify-center p-10 md:p-14">
+      <ConteudoPrincipal className="flex flex-col justify-center p-10 md:p-14">
         <div className="mx-auto w-full max-w-[360px]">
           <h2 className="mb-1 text-2xl font-semibold text-primary">Entrar</h2>
           <p className="mb-8 text-sm text-text-muted">Acesse sua conta com seu CPF.</p>
@@ -193,7 +194,7 @@ export default function Login() {
           </div>
           )}
         </div>
-      </div>
+      </ConteudoPrincipal>
     </div>
   );
 }

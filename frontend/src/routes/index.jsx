@@ -1,5 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 
+import { PularParaConteudo } from "../components/PularParaConteudo";
+import { AtalhosTeclado } from "../features/acessibilidade/AtalhosTeclado";
 import { RotaProtegida } from "../features/auth/RotaProtegida";
 import { SessaoInativa } from "../features/auth/SessaoInativa";
 import AlterarSenha from "../pages/AlterarSenha/AlterarSenha";
@@ -51,6 +53,9 @@ const USUARIO = ["usuario"];
 export function AppRoutes() {
   return (
     <>
+      {/* Primeiro elemento focável de toda tela + atalhos Alt+1/Alt+2 (issue #134). */}
+      <PularParaConteudo />
+      <AtalhosTeclado />
       {/* Encerra a sessão após inatividade (issue #92) — inócuo sem usuário logado. */}
       <SessaoInativa />
       <Routes>

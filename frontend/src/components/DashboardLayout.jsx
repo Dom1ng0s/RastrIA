@@ -7,6 +7,7 @@ import { PAPEL_PADRAO } from "../features/auth/navPorPapel";
 import { useToast } from "../features/ui/ToastProvider";
 import { ThemeToggle } from "../features/theme/ThemeToggle";
 
+import { ConteudoPrincipal } from "./ConteudoPrincipal";
 import { Logo } from "./Logo";
 import { NotificacoesMenu } from "./NotificacoesMenu";
 import { ReportarProblemaModal } from "./ReportarProblemaModal";
@@ -92,7 +93,7 @@ function SidebarContent({ navItems, location, onNavigate, onReportarProblema }) 
     <>
       <div>
         <Logo reverse className="mb-10" />
-        <nav className="space-y-1">
+        <nav aria-label="Navegação principal" data-navegacao-principal className="space-y-1">
           {navItems.map((item) => (
             <Link
               key={item.to}
@@ -222,6 +223,7 @@ export function DashboardLayout({ title, navItems, children, onHelp }) {
           <button
             type="button"
             aria-label="Abrir menu"
+            data-abrir-menu
             onClick={() => setMenuAberto(true)}
             className="text-primary md:hidden"
           >
@@ -234,7 +236,7 @@ export function DashboardLayout({ title, navItems, children, onHelp }) {
             {onHelp && <HelpMenu onRever={onHelp} />}
           </div>
         </header>
-        <main className="mx-auto max-w-6xl p-5 md:p-8">{children}</main>
+        <ConteudoPrincipal className="mx-auto max-w-6xl p-5 md:p-8">{children}</ConteudoPrincipal>
       </div>
 
       {reportarAberto && (

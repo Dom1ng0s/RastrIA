@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { Logo } from "../../components/Logo";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
 
@@ -29,7 +30,7 @@ export default function TermosDeUso() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[720px] px-6 py-12">
+      <ConteudoPrincipal className="mx-auto max-w-[720px] px-6 py-12">
         <div className="mb-8 rounded-lg border border-coral/40 bg-coral/10 p-4 text-xs text-text-dark">
           <strong>Rascunho estrutural.</strong> Este conteúdo ainda não passou por revisão jurídica e
           não deve ser considerado texto definitivo antes de o produto operar com usuários reais.
@@ -102,7 +103,7 @@ export default function TermosDeUso() {
             <p>Estes termos são regidos pelas leis da República Federativa do Brasil.</p>
           </section>
         </div>
-      </main>
+      </ConteudoPrincipal>
     </div>
   );
 }

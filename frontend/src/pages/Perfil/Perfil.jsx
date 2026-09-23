@@ -305,31 +305,71 @@ function SecaoNotificacoes() {
   );
 }
 
+// Atalhos exibidos na aba — mesma lista que `AtalhosTeclado.jsx` trata.
+const ATALHOS_TECLADO = [
+  { teclas: "Alt + 1", acao: "Ir para o conteúdo principal" },
+  { teclas: "Alt + 2", acao: "Ir para o menu de navegação" },
+];
+
 function SecaoAcessibilidade() {
   const fonteGrande = useAcessibilidadeStore((state) => state.fonteGrande);
   const modoSimplificado = useAcessibilidadeStore((state) => state.modoSimplificado);
+  const atalhosTeclado = useAcessibilidadeStore((state) => state.atalhosTeclado);
   const toggleFonteGrande = useAcessibilidadeStore((state) => state.toggleFonteGrande);
   const toggleModoSimplificado = useAcessibilidadeStore((state) => state.toggleModoSimplificado);
+  const toggleAtalhosTeclado = useAcessibilidadeStore((state) => state.toggleAtalhosTeclado);
 
   return (
-    <div className="max-w-[520px] space-y-3 rounded-2xl border border-line bg-white p-7">
-      <h2 className="text-sm font-semibold text-text-dark">Exibição</h2>
-      <p className="mb-2 text-xs text-text-muted">
-        Ajustes de exibição para deixar o sistema mais confortável de usar. As preferências ficam
-        salvas neste navegador.
-      </p>
-      <ToggleLinha
-        rotulo="Fonte grande"
-        descricao="Aumenta o tamanho do texto em todo o sistema."
-        ativo={fonteGrande}
-        onToggle={toggleFonteGrande}
-      />
-      <ToggleLinha
-        rotulo="Modo simplificado"
-        descricao="Esconde elementos decorativos e reforça o contraste do texto."
-        ativo={modoSimplificado}
-        onToggle={toggleModoSimplificado}
-      />
+    <div className="max-w-[520px] space-y-6">
+      <section aria-labelledby="acessibilidade-exibicao" className="space-y-3 rounded-2xl border border-line bg-white p-7">
+        <h2 id="acessibilidade-exibicao" className="text-sm font-semibold text-text-dark">
+          Exibição
+        </h2>
+        <p className="mb-2 text-xs text-text-muted">
+          Ajustes de exibição para deixar o sistema mais confortável de usar. As preferências ficam
+          salvas neste navegador.
+        </p>
+        <ToggleLinha
+          rotulo="Fonte grande"
+          descricao="Aumenta o tamanho do texto em todo o sistema."
+          ativo={fonteGrande}
+          onToggle={toggleFonteGrande}
+        />
+        <ToggleLinha
+          rotulo="Modo simplificado"
+          descricao="Esconde elementos decorativos e reforça o contraste do texto."
+          ativo={modoSimplificado}
+          onToggle={toggleModoSimplificado}
+        />
+      </section>
+
+      <section aria-labelledby="acessibilidade-teclado" className="space-y-3 rounded-2xl border border-line bg-white p-7">
+        <h2 id="acessibilidade-teclado" className="text-sm font-semibold text-text-dark">
+          Navegação por teclado
+        </h2>
+        <p className="mb-2 text-xs text-text-muted">
+          Em qualquer tela, a primeira tecla Tab mostra o link &ldquo;Pular para o conteúdo&rdquo;. Os
+          atalhos abaixo seguem o padrão de acessibilidade do governo (eMAG).
+        </p>
+        <ToggleLinha
+          rotulo="Atalhos de teclado"
+          descricao="Desligue se os atalhos conflitarem com o seu leitor de tela ou navegador."
+          ativo={atalhosTeclado}
+          onToggle={toggleAtalhosTeclado}
+        />
+        <dl className="divide-y divide-line rounded-lg border border-line text-sm">
+          {ATALHOS_TECLADO.map((atalho) => (
+            <div key={atalho.teclas} className="flex items-center justify-between gap-4 px-4 py-2.5">
+              <dt className="text-text-dark">{atalho.acao}</dt>
+              <dd>
+                <kbd className="rounded border border-line bg-bg-tint px-2 py-0.5 font-body text-xs font-semibold text-text-dark">
+                  {atalho.teclas}
+                </kbd>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
     </div>
   );
 }

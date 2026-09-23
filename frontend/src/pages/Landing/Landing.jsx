@@ -10,6 +10,7 @@ import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { useToast } from "../../features/ui/ToastProvider";
 import { FaqAccordion } from "../../components/FaqAccordion";
 import { FieldError } from "../../components/FieldError";
+import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { Logo } from "../../components/Logo";
 import { PERGUNTAS_FREQUENTES } from "../../features/faq/perguntas";
 import { fieldErrorProps } from "../../lib/fieldA11y";
@@ -50,16 +51,18 @@ function MenuMobile({ aberto, onFechar }) {
             <X size={22} className="text-text-dark" />
           </button>
         </div>
-        {LINKS_NAV.map((link) => (
-          <a
-            key={link.href}
-            href={link.href}
-            onClick={onFechar}
-            className="rounded-lg px-3 py-2.5 text-sm font-medium text-text-dark hover:bg-bg-tint"
-          >
-            {link.label}
-          </a>
-        ))}
+        <nav aria-label="Seções da página" data-navegacao-principal className="flex flex-col gap-1">
+          {LINKS_NAV.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={onFechar}
+              className="rounded-lg px-3 py-2.5 text-sm font-medium text-text-dark hover:bg-bg-tint"
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
         <div className="mt-4 space-y-2 border-t border-line pt-4">
           <Link
             to="/login"
@@ -89,7 +92,11 @@ function Header() {
     <header className="sticky top-0 z-20 border-b border-line bg-white/90 backdrop-blur dark:bg-dark-surface/90">
       <div className="mx-auto flex max-w-[1180px] items-center justify-between px-6 py-4">
         <Logo />
-        <nav className="hidden items-center text-sm font-medium text-text-dark md:flex">
+        <nav
+          aria-label="Seções da página"
+          data-navegacao-principal
+          className="hidden items-center text-sm font-medium text-text-dark md:flex"
+        >
           {LINKS_NAV.map((link) => (
             <a key={link.href} href={link.href} className="mr-8 hover:opacity-70 last:mr-0">
               {link.label}
@@ -107,7 +114,13 @@ function Header() {
         </div>
         <div className="flex items-center gap-4 md:hidden">
           <ThemeToggle />
-          <button type="button" aria-label="Abrir menu" onClick={() => setMenuAberto(true)} className="text-primary">
+          <button
+            type="button"
+            aria-label="Abrir menu"
+            data-abrir-menu
+            onClick={() => setMenuAberto(true)}
+            className="text-primary"
+          >
             <Menu size={24} />
           </button>
         </div>
@@ -499,13 +512,15 @@ export default function Landing() {
   return (
     <div className="relative">
       <Header />
-      <Hero />
-      <TrustStrip />
-      <ComoFunciona />
-      <Institucional />
-      <Faq />
-      <CtaFinal />
-      <FaleComTime />
+      <ConteudoPrincipal>
+        <Hero />
+        <TrustStrip />
+        <ComoFunciona />
+        <Institucional />
+        <Faq />
+        <CtaFinal />
+        <FaleComTime />
+      </ConteudoPrincipal>
       <Footer />
     </div>
   );

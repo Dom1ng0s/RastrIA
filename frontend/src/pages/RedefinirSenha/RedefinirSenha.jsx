@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { FieldError } from "../../components/FieldError";
 import { ForcaSenha } from "../../components/ForcaSenha";
 import { PasswordInput } from "../../components/PasswordInput";
@@ -59,7 +60,7 @@ export default function RedefinirSenha() {
           heading={<>Link inválido ou expirado.</>}
           subtitle="Solicite um novo link em 'Esqueci minha senha'."
         />
-        <div className="flex flex-col justify-center p-10 md:p-14">
+        <ConteudoPrincipal className="flex flex-col justify-center p-10 md:p-14">
           <div className="mx-auto w-full max-w-[360px]">
             <h2 className="mb-1 text-2xl font-semibold text-primary">Link não encontrado</h2>
             <p className="text-sm text-text-muted">
@@ -67,7 +68,7 @@ export default function RedefinirSenha() {
               completo, ou solicite um novo.
             </p>
           </div>
-        </div>
+        </ConteudoPrincipal>
       </div>
     );
   }
@@ -86,7 +87,7 @@ export default function RedefinirSenha() {
         subtitle="Escolha uma senha forte para proteger sua conta."
       />
 
-      <div className="flex flex-col justify-center p-10 md:p-14">
+      <ConteudoPrincipal className="flex flex-col justify-center p-10 md:p-14">
         <div className="mx-auto w-full max-w-[360px]">
           {concluido ? (
             <>
@@ -149,7 +150,7 @@ export default function RedefinirSenha() {
             </>
           )}
         </div>
-      </div>
+      </ConteudoPrincipal>
     </div>
   );
 }

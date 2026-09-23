@@ -3,6 +3,7 @@ import { ptBR } from "date-fns/locale";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { TermoConsentimentoLGPD } from "../../components/TermoConsentimentoLGPD";
 import { useConsentimentoStore } from "../../features/consentimento/store";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
@@ -24,7 +25,7 @@ export default function TermoConsentimento() {
         <ThemeToggle />
       </div>
 
-      <div className="rounded-2xl border border-line bg-white p-7">
+      <ConteudoPrincipal className="rounded-2xl border border-line bg-white p-7">
         {consentimento ? (
           <p className="mb-6 rounded-lg bg-bg-tint px-4 py-3 text-xs text-text-muted">
             Aceito em{" "}
@@ -40,7 +41,7 @@ export default function TermoConsentimento() {
         )}
 
         <TermoConsentimentoLGPD />
-      </div>
+      </ConteudoPrincipal>
     </div>
   );
 }
