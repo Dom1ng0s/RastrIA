@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Landmark, Lock, Mail, Menu, ShieldCheck, X } from "lucide-react";
-import { useState } from "react";
-import { createPortal } from "react-dom";
+import { useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { z } from "zod";
@@ -10,6 +9,7 @@ import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { useToast } from "../../features/ui/ToastProvider";
 import { FaqAccordion } from "../../components/FaqAccordion";
 import { FieldError } from "../../components/FieldError";
+import { Gaveta } from "../../components/Gaveta";
 import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { Logo } from "../../components/Logo";
 import { PERGUNTAS_FREQUENTES } from "../../features/faq/perguntas";
@@ -25,69 +25,53 @@ const LINKS_NAV = [
   { href: "#contato", label: "Contato" },
 ];
 
-/**
- * Renderizado via createPortal direto em document.body (não como filho do
- * <header>). Correção de bug real: o <header> tem backdrop-blur, e em
- * navegadores WebKit/Blink (Chrome/Safari), qualquer ancestral com
- * backdrop-filter vira o "containing block" de um descendente
- * position:fixed — o menu ficava preso dentro da caixa (baixinha) do
- * header em vez de cobrir a tela inteira. Portal contorna isso de vez,
- * independente de qualquer propriedade CSS de ancestral.
- */
-function MenuMobile({ aberto, onFechar }) {
-  if (!aberto) return null;
-
-  return createPortal(
-    <div className="fixed inset-0 z-30 md:hidden">
-      <button
-        type="button"
-        aria-label="Fechar menu"
-        onClick={onFechar}
-        className="absolute inset-0 bg-primary/40"
-      />
-      <div className="absolute right-0 top-0 flex h-full w-72 flex-col gap-1 bg-white p-6 shadow-xl">
-        <div className="mb-6 flex items-center justify-between">
-          <Logo />
-          <button type="button" aria-label="Fechar menu" onClick={onFechar}>
-            <X size={22} className="text-text-dark" />
-          </button>
-        </div>
-        <nav aria-label="Seções da página" data-navegacao-principal className="flex flex-col gap-1">
-          {LINKS_NAV.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={onFechar}
-              className="rounded-lg px-3 py-2.5 text-sm font-medium text-text-dark hover:bg-bg-tint"
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
-        <div className="mt-4 space-y-2 border-t border-line pt-4">
-          <Link
-            to="/login"
-            onClick={onFechar}
-            className="btn-outline block rounded-lg px-3 py-2.5 text-center text-sm font-semibold"
-          >
-            Entrar
-          </Link>
-          <a
-            href="#contato"
-            onClick={onFechar}
-            className="btn-primary block rounded-lg px-3 py-2.5 text-center text-sm font-semibold"
-          >
-            Fale com o time
-          </a>
-        </div>
+// Menu do celular — diálogo modal via <Gaveta> (issue #140), que também cuida
+// do portal para document.body (o <header> tem backdrop-blur, e um ancestral
+// com backdrop-filter prendia o `position: fixed` na altura do header).
+function MenuMobile({ id, onFechar }) {
+  return (
+    <Gaveta id={id} rotulo="Menu" lado="direita" onFechar={onFechar} className="w-72 gap-1 bg-white p-6 shadow-xl">
+      <div className="mb-6 flex items-center justify-between">
+        <Logo />
+        <button type="button" aria-label="Fechar menu" onClick={onFechar}>
+          <X size={22} aria-hidden="true" className="text-text-dark" />
+        </button>
       </div>
-    </div>,
-    document.body,
+      <nav aria-label="Seções da página" data-navegacao-principal className="flex flex-col gap-1">
+        {LINKS_NAV.map((link) => (
+          <a
+            key={link.href}
+            href={link.href}
+            onClick={onFechar}
+            className="rounded-lg px-3 py-2.5 text-sm font-medium text-text-dark hover:bg-bg-tint"
+          >
+            {link.label}
+          </a>
+        ))}
+      </nav>
+      <div className="mt-4 space-y-2 border-t border-line pt-4">
+        <Link
+          to="/login"
+          onClick={onFechar}
+          className="btn-outline block rounded-lg px-3 py-2.5 text-center text-sm font-semibold"
+        >
+          Entrar
+        </Link>
+        <a
+          href="#contato"
+          onClick={onFechar}
+          className="btn-primary block rounded-lg px-3 py-2.5 text-center text-sm font-semibold"
+        >
+          Fale com o time
+        </a>
+      </div>
+    </Gaveta>
   );
 }
 
 function Header() {
   const [menuAberto, setMenuAberto] = useState(false);
+  const idMenu = useId();
 
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-white/90 backdrop-blur dark:bg-dark-surface/90">
@@ -118,16 +102,18 @@ function Header() {
           <button
             type="button"
             aria-label="Abrir menu"
+            aria-expanded={menuAberto}
+            aria-controls={idMenu}
             data-abrir-menu
             onClick={() => setMenuAberto(true)}
             className="text-primary"
           >
-            <Menu size={24} />
+            <Menu size={24} aria-hidden="true" />
           </button>
         </div>
       </div>
 
-      <MenuMobile aberto={menuAberto} onFechar={() => setMenuAberto(false)} />
+      {menuAberto && <MenuMobile id={idMenu} onFechar={() => setMenuAberto(false)} />}
     </header>
   );
 }
