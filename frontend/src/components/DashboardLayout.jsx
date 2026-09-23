@@ -1,5 +1,5 @@
 import { Flag, HelpCircle, ListChecks, LogOut, Menu, Settings, Compass, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { useAcessibilidadeStore } from "../features/acessibilidade/store";
@@ -11,6 +11,7 @@ import { usePainelSuspenso } from "../lib/usePainelSuspenso";
 import { ThemeToggle } from "../features/theme/ThemeToggle";
 
 import { ConteudoPrincipal } from "./ConteudoPrincipal";
+import { Gaveta } from "./Gaveta";
 import { Logo } from "./Logo";
 import { NotificacoesMenu } from "./NotificacoesMenu";
 import { ReportarProblemaModal } from "./ReportarProblemaModal";
@@ -163,6 +164,7 @@ export function DashboardLayout({ title, paginaAtual, navItems, children, onHelp
   const location = useLocation();
   useRolarParaSecao(location.hash);
   const [menuAberto, setMenuAberto] = useState(false);
+  const idGaveta = useId();
   const [reportarAberto, setReportarAberto] = useState(false);
   const { showToast } = useToast();
   const papel = useAuthStore((state) => state.usuario?.papel) ?? PAPEL_PADRAO;
@@ -178,32 +180,29 @@ export function DashboardLayout({ title, paginaAtual, navItems, children, onHelp
         />
       </aside>
 
-      {/* Gaveta mobile */}
+      {/* Gaveta mobile — diálogo modal (issue #140) */}
       {menuAberto && (
-        <div className="fixed inset-0 z-40 md:hidden">
+        <Gaveta
+          id={idGaveta}
+          rotulo="Menu"
+          onFechar={() => setMenuAberto(false)}
+          className="w-64 justify-between bg-primary p-6"
+        >
           <button
             type="button"
             aria-label="Fechar menu"
             onClick={() => setMenuAberto(false)}
-            className="absolute inset-0 bg-primary/40"
+            className="absolute right-4 top-4 text-white/80 hover:text-white"
+          >
+            <X size={20} aria-hidden="true" />
+          </button>
+          <SidebarContent
+            navItems={navItems}
+            location={location}
+            onNavigate={() => setMenuAberto(false)}
+            onReportarProblema={() => setReportarAberto(true)}
           />
-          <aside className="relative flex h-full w-64 flex-col justify-between bg-primary p-6">
-            <button
-              type="button"
-              aria-label="Fechar menu"
-              onClick={() => setMenuAberto(false)}
-              className="absolute right-4 top-4 text-white/80 hover:text-white"
-            >
-              <X size={20} />
-            </button>
-            <SidebarContent
-              navItems={navItems}
-              location={location}
-              onNavigate={() => setMenuAberto(false)}
-              onReportarProblema={() => setReportarAberto(true)}
-            />
-          </aside>
-        </div>
+        </Gaveta>
       )}
 
       <div className="flex-1 bg-bg-tint">
@@ -211,11 +210,13 @@ export function DashboardLayout({ title, paginaAtual, navItems, children, onHelp
           <button
             type="button"
             aria-label="Abrir menu"
+            aria-expanded={menuAberto}
+            aria-controls={idGaveta}
             data-abrir-menu
             onClick={() => setMenuAberto(true)}
             className="text-primary md:hidden"
           >
-            <Menu size={22} />
+            <Menu size={22} aria-hidden="true" />
           </button>
           <h1 className="text-xl font-semibold text-primary">{title}</h1>
           <div className="ml-auto flex items-center gap-3">
