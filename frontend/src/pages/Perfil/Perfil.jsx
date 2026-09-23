@@ -8,7 +8,7 @@ import { DashboardLayout } from "../../components/DashboardLayout";
 import { BaixarHistoricoMenu } from "../../components/BaixarHistoricoMenu";
 import { FieldError } from "../../components/FieldError";
 import { LogAcessoProntuario } from "../../components/LogAcessoProntuario";
-import { useAcessibilidadeStore } from "../../features/acessibilidade/store";
+import { PREFERENCIAS, useAcessibilidadeStore } from "../../features/acessibilidade/store";
 import { useAuthStore } from "../../features/auth/store";
 import { navItemsDoPapel, PAPEL_PADRAO } from "../../features/auth/navPorPapel";
 import { useConsentimentoStore } from "../../features/consentimento/store";
@@ -76,23 +76,31 @@ const dadosMock = {
   contatoEmergenciaTelefone: "",
 };
 
+// Interruptor liga/desliga (issue #149): `role="switch"` + `aria-checked`, e o
+// estado também em texto visível — só o ícone colorido não bastava (WCAG
+// 1.4.1). O texto é `aria-hidden` porque o leitor de tela já anuncia o estado
+// pelo `aria-checked`.
 function ToggleLinha({ rotulo, descricao, ativo, onToggle }) {
   return (
     <button
       type="button"
+      role="switch"
+      aria-checked={ativo}
       onClick={onToggle}
-      aria-pressed={ativo}
       className="flex w-full items-center justify-between gap-4 rounded-lg border border-line px-4 py-3 text-left text-sm font-medium hover:bg-bg-tint"
     >
       <span>
         {rotulo}
         {descricao && <span className="mt-0.5 block text-xs font-normal text-text-muted">{descricao}</span>}
       </span>
-      {ativo ? (
-        <ToggleRight size={28} className="shrink-0 text-seafoam" />
-      ) : (
-        <ToggleLeft size={28} className="shrink-0 text-text-muted" />
-      )}
+      <span className="flex shrink-0 items-center gap-2" aria-hidden="true">
+        <span className="text-xs font-medium text-text-muted">{ativo ? "Ativado" : "Desativado"}</span>
+        {ativo ? (
+          <ToggleRight size={28} className="text-seafoam" />
+        ) : (
+          <ToggleLeft size={28} className="text-text-muted" />
+        )}
+      </span>
     </button>
   );
 }
@@ -311,51 +319,89 @@ const ATALHOS_TECLADO = [
   { teclas: "Alt + 2", acao: "Ir para o menu de navegação" },
 ];
 
+function GrupoAcessibilidade({ id, titulo, descricao, children }) {
+  return (
+    <section aria-labelledby={id} className="space-y-3 rounded-2xl border border-line bg-white p-7">
+      <h2 id={id} className="text-sm font-semibold text-text-dark">
+        {titulo}
+      </h2>
+      {descricao && <p className="mb-2 text-xs text-text-muted">{descricao}</p>}
+      {children}
+    </section>
+  );
+}
+
+// Toggle ligado direto a uma chave de `PREFERENCIAS`. Quando o padrão vem do
+// sistema operacional e o usuário ainda não escolheu, avisa — senão a opção
+// aparece ligada "sozinha" e parece bug.
+function PreferenciaAcessibilidade({ chave, rotulo, descricao }) {
+  const ativo = useAcessibilidadeStore((state) => state[chave]);
+  const escolhido = useAcessibilidadeStore((state) => chave in state.escolhas);
+  const alternar = useAcessibilidadeStore((state) => state.alternar);
+  const segueSistema = Boolean(PREFERENCIAS[chave].mediaQuery) && !escolhido;
+
+  return (
+    <div>
+      <ToggleLinha rotulo={rotulo} descricao={descricao} ativo={ativo} onToggle={() => alternar(chave)} />
+      {segueSistema && (
+        <p className="mt-1.5 px-1 text-xs text-text-muted">Seguindo a configuração do seu sistema.</p>
+      )}
+    </div>
+  );
+}
+
 function SecaoAcessibilidade() {
-  const fonteGrande = useAcessibilidadeStore((state) => state.fonteGrande);
-  const modoSimplificado = useAcessibilidadeStore((state) => state.modoSimplificado);
-  const atalhosTeclado = useAcessibilidadeStore((state) => state.atalhosTeclado);
-  const toggleFonteGrande = useAcessibilidadeStore((state) => state.toggleFonteGrande);
-  const toggleModoSimplificado = useAcessibilidadeStore((state) => state.toggleModoSimplificado);
-  const toggleAtalhosTeclado = useAcessibilidadeStore((state) => state.toggleAtalhosTeclado);
+  const { showToast } = useToast();
+  const temEscolhas = useAcessibilidadeStore((state) => Object.keys(state.escolhas).length > 0);
+  const restaurarPadroes = useAcessibilidadeStore((state) => state.restaurarPadroes);
 
   return (
     <div className="max-w-[520px] space-y-6">
-      <section aria-labelledby="acessibilidade-exibicao" className="space-y-3 rounded-2xl border border-line bg-white p-7">
-        <h2 id="acessibilidade-exibicao" className="text-sm font-semibold text-text-dark">
-          Exibição
-        </h2>
-        <p className="mb-2 text-xs text-text-muted">
-          Ajustes de exibição para deixar o sistema mais confortável de usar. As preferências ficam
-          salvas neste navegador.
-        </p>
-        <ToggleLinha
+      <p className="text-xs text-text-muted">
+        Ajustes para deixar o sistema mais confortável de usar. As preferências ficam salvas neste
+        navegador e valem também nas telas antes do login.
+      </p>
+
+      <GrupoAcessibilidade id="acessibilidade-exibicao" titulo="Exibição">
+        <PreferenciaAcessibilidade
+          chave="fonteGrande"
           rotulo="Fonte grande"
           descricao="Aumenta o tamanho do texto em todo o sistema."
-          ativo={fonteGrande}
-          onToggle={toggleFonteGrande}
         />
-        <ToggleLinha
+        <PreferenciaAcessibilidade
+          chave="modoSimplificado"
           rotulo="Modo simplificado"
           descricao="Esconde elementos decorativos e reforça o contraste do texto."
-          ativo={modoSimplificado}
-          onToggle={toggleModoSimplificado}
         />
-      </section>
+        <PreferenciaAcessibilidade
+          chave="espacamentoTexto"
+          rotulo="Espaçamento de texto ampliado"
+          descricao="Mais espaço entre linhas, letras, palavras e parágrafos, para facilitar a leitura."
+        />
+      </GrupoAcessibilidade>
 
-      <section aria-labelledby="acessibilidade-teclado" className="space-y-3 rounded-2xl border border-line bg-white p-7">
-        <h2 id="acessibilidade-teclado" className="text-sm font-semibold text-text-dark">
-          Navegação por teclado
-        </h2>
-        <p className="mb-2 text-xs text-text-muted">
-          Em qualquer tela, a primeira tecla Tab mostra o link &ldquo;Pular para o conteúdo&rdquo;. Os
-          atalhos abaixo seguem o padrão de acessibilidade do governo (eMAG).
-        </p>
-        <ToggleLinha
+      <GrupoAcessibilidade id="acessibilidade-movimento" titulo="Movimento">
+        <PreferenciaAcessibilidade
+          chave="reduzirMovimento"
+          rotulo="Reduzir movimento"
+          descricao="Desliga animações, transições e rolagens suaves."
+        />
+      </GrupoAcessibilidade>
+
+      <GrupoAcessibilidade
+        id="acessibilidade-teclado"
+        titulo="Navegação por teclado"
+        descricao={
+          <>
+            Em qualquer tela, a primeira tecla Tab mostra o link &ldquo;Pular para o conteúdo&rdquo;. Os
+            atalhos abaixo seguem o padrão de acessibilidade do governo (eMAG).
+          </>
+        }
+      >
+        <PreferenciaAcessibilidade
+          chave="atalhosTeclado"
           rotulo="Atalhos de teclado"
           descricao="Desligue se os atalhos conflitarem com o seu leitor de tela ou navegador."
-          ativo={atalhosTeclado}
-          onToggle={toggleAtalhosTeclado}
         />
         <dl className="divide-y divide-line rounded-lg border border-line text-sm">
           {ATALHOS_TECLADO.map((atalho) => (
@@ -369,7 +415,19 @@ function SecaoAcessibilidade() {
             </div>
           ))}
         </dl>
-      </section>
+      </GrupoAcessibilidade>
+
+      <button
+        type="button"
+        onClick={() => {
+          restaurarPadroes();
+          showToast("Preferências de acessibilidade restauradas");
+        }}
+        disabled={!temEscolhas}
+        className="btn-outline rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-60"
+      >
+        Restaurar padrões
+      </button>
     </div>
   );
 }

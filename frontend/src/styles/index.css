@@ -59,6 +59,33 @@ html.modo-simplificado.dark .text-text-muted {
   color: theme("colors.dark-text");
 }
 
+/* Espaçamento de texto ampliado (issue #149) — os valores exatos do critério
+   WCAG 1.4.12: entrelinha 1.5×, parágrafo 2×, letras 0.12em, palavras 0.16em.
+   `*` com !important para vencer as classes leading e tracking do Tailwind. */
+html.espacamento-texto * {
+  line-height: 1.5 !important;
+  letter-spacing: 0.12em !important;
+  word-spacing: 0.16em !important;
+}
+html.espacamento-texto p {
+  margin-bottom: 2em !important;
+}
+
+/* Reduzir movimento (issue #149). A classe segue `prefers-reduced-motion` do
+   sistema até o usuário escolher na aba Acessibilidade (ver
+   features/acessibilidade/store.js), por isso a regra é por classe e não por
+   media query — assim quem desliga a opção no app volta a ver as animações
+   mesmo com o sistema pedindo menos movimento. Duração quase zero, e não
+   `none`, para `animationend`/`transitionend` continuarem disparando. */
+html.reduzir-movimento *,
+html.reduzir-movimento *::before,
+html.reduzir-movimento *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
 /*
  * Modo escuro (issue #9): as telas do produto reaproveitam um conjunto pequeno
  * e consistente de classes utilitárias (bg-white, bg-bg-tint, text-text-dark,
@@ -134,14 +161,6 @@ html.modo-simplificado.dark .text-text-muted {
   }
   50% {
     opacity: 0.5;
-  }
-}
-
-/* Mesma preocupação das preferências de acessibilidade (issue #95): quem pede
-   menos movimento continua vendo o bloco, só sem a pulsação. */
-@media (prefers-reduced-motion: reduce) {
-  .skeleton {
-    animation: none;
   }
 }
 

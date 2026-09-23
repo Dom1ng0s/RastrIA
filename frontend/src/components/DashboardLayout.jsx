@@ -2,6 +2,7 @@ import { Flag, HelpCircle, ListChecks, LogOut, Menu, Settings, Compass, X } from
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
+import { useAcessibilidadeStore } from "../features/acessibilidade/store";
 import { useAuthStore } from "../features/auth/store";
 import { PAPEL_PADRAO } from "../features/auth/navPorPapel";
 import { useToast } from "../features/ui/ToastProvider";
@@ -166,7 +167,8 @@ function useRolarParaSecao(hash) {
       document.querySelector(`[data-tour="${CSS.escape(alvoId)}"]`) ?? document.getElementById(alvoId);
     if (!elemento) return;
 
-    const menosMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Preferência da aba Acessibilidade, que já segue o sistema por padrão.
+    const menosMovimento = useAcessibilidadeStore.getState().reduzirMovimento;
     elemento.scrollIntoView({ behavior: menosMovimento ? "auto" : "smooth", block: "start" });
   }, [hash]);
 }
