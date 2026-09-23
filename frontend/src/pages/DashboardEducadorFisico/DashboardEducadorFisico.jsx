@@ -64,7 +64,7 @@ export default function DashboardEducadorFisico() {
       {
         onSuccess: () =>
           showToast(acao === "confirmar" ? "Solicitação confirmada" : "Solicitação recusada"),
-        onError: () => showToast("Não foi possível responder à solicitação"),
+        onError: () => showToast("Não foi possível responder à solicitação", "erro"),
       },
     );
   }
@@ -128,7 +128,7 @@ export default function DashboardEducadorFisico() {
 
       <section data-tour="meus-alunos">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meus alunos</h2>
-        <CampoBusca rotulo="Buscar aluno" valor={buscaAluno} aoMudar={setBuscaAluno} placeholder="Buscar aluno por nome..." />
+        <CampoBusca rotulo="Buscar aluno" valor={buscaAluno} aoMudar={setBuscaAluno} totalResultados={alunosFiltrados.length} placeholder="Buscar aluno por nome..." />
         <div className="mt-3 space-y-2">
           {alunos.isLoading && <SkeletonLista itens={2} />}
 

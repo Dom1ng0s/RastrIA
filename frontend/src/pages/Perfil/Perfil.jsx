@@ -362,6 +362,44 @@ function PreferenciaAcessibilidade({ chave, rotulo, descricao }) {
   );
 }
 
+const OPCOES_DURACAO_AVISOS = [
+  { valor: 5, rotulo: "5 segundos" },
+  { valor: 10, rotulo: "10 segundos" },
+  { valor: 20, rotulo: "20 segundos" },
+  { valor: 0, rotulo: "Até eu fechar" },
+];
+
+function DuracaoAvisos() {
+  const duracao = useAcessibilidadeStore((state) => state.duracaoAvisos);
+  const definir = useAcessibilidadeStore((state) => state.definir);
+
+  return (
+    <div>
+      <label htmlFor="duracao-avisos" className="mb-1.5 block text-sm font-medium text-text-dark">
+        Duração dos avisos
+      </label>
+      <select
+        id="duracao-avisos"
+        value={duracao}
+        onChange={(evento) => definir("duracaoAvisos", Number(evento.target.value))}
+        aria-describedby="duracao-avisos-dica"
+        className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+      >
+        {OPCOES_DURACAO_AVISOS.map((opcao) => (
+          <option key={opcao.valor} value={opcao.valor}>
+            {opcao.rotulo}
+          </option>
+        ))}
+      </select>
+      <p id="duracao-avisos-dica" className="mt-1.5 text-xs text-text-muted">
+        Quanto tempo as mensagens de confirmação (&ldquo;Alterações salvas&rdquo;) ficam na tela.
+        Mensagens de erro sempre ficam até você fechar. Passar o mouse ou o foco sobre um aviso
+        pausa o tempo.
+      </p>
+    </div>
+  );
+}
+
 function SecaoAcessibilidade() {
   const { showToast } = useToast();
   const temEscolhas = useAcessibilidadeStore((state) => Object.keys(state.escolhas).length > 0);
@@ -437,6 +475,10 @@ function SecaoAcessibilidade() {
           rotulo="Destaque de foco reforçado"
           descricao="Contorno mais grosso, em amarelo e preto, no item selecionado pelo teclado."
         />
+      </GrupoAcessibilidade>
+
+      <GrupoAcessibilidade id="acessibilidade-tempo" titulo="Tempo e avisos">
+        <DuracaoAvisos />
       </GrupoAcessibilidade>
 
       <GrupoAcessibilidade id="acessibilidade-leitor-tela" titulo="Leitor de tela">

@@ -15,7 +15,9 @@ import { create } from "zustand";
 //                  `styles/index.css`); sem ela, quem consome lê o store;
 // - `mediaQuery` → quando existe, o padrão vem da preferência do sistema
 //                  operacional (e acompanha mudanças nela) até o usuário
-//                  escolher explicitamente.
+//                  escolher explicitamente;
+// - `opcoes`     → para preferência de múltipla escolha (não liga/desliga):
+//                  os valores aceitos. Sem `opcoes`, a preferência é booleana.
 export const PREFERENCIAS = {
   fonteGrande: { padrao: false, classe: "fonte-grande" },
   // Escopo ainda será refinado com a equipe (issue #95).
@@ -36,6 +38,9 @@ export const PREFERENCIAS = {
   focoReforcado: { padrao: false, classe: "foco-reforcado" },
   // Lido por `AnuncioDeRota.jsx` (issue #135).
   focarTituloAoNavegar: { padrao: true },
+  // Segundos que um aviso de sucesso fica na tela; 0 = até o usuário fechar.
+  // Avisos de erro sempre ficam até fechar. Lido pelo ToastProvider (#142).
+  duracaoAvisos: { padrao: 5, opcoes: [5, 10, 20, 0] },
 };
 
 // Só as escolhas explícitas do usuário são gravadas: chave ausente = "segue o
@@ -44,12 +49,16 @@ export const PREFERENCIAS = {
 // as chaves gravadas) continua válido — vira escolha explícita.
 const STORAGE_KEY = "rastria:acessibilidade";
 
+function valorValido(chave, valor) {
+  const def = PREFERENCIAS[chave];
+  if (!def) return false;
+  return def.opcoes ? def.opcoes.includes(valor) : typeof valor === "boolean";
+}
+
 function lerEscolhas() {
   try {
     const salvo = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
-    return Object.fromEntries(
-      Object.entries(salvo).filter(([chave, valor]) => chave in PREFERENCIAS && typeof valor === "boolean"),
-    );
+    return Object.fromEntries(Object.entries(salvo).filter(([chave, valor]) => valorValido(chave, valor)));
   } catch {
     return {};
   }
@@ -101,6 +110,9 @@ export const useAcessibilidadeStore = create((set, get) => {
     ...prefsIniciais,
     escolhas: escolhasIniciais,
     alternar: (chave) => atualizar({ ...get().escolhas, [chave]: !get()[chave] }),
+    definir: (chave, valor) => {
+      if (valorValido(chave, valor)) atualizar({ ...get().escolhas, [chave]: valor });
+    },
     restaurarPadroes: () => atualizar({}),
   };
 });
