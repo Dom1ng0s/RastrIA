@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { FieldError } from "../../components/FieldError";
 import { ForcaSenha } from "../../components/ForcaSenha";
 import { PasswordInput } from "../../components/PasswordInput";
@@ -83,7 +84,7 @@ export default function PrimeiroAcesso() {
           heading={<>Link inválido ou expirado.</>}
           subtitle="Peça para o responsável pela sua instituição gerar um novo link de ativação."
         />
-        <div className="flex flex-col justify-center p-10 md:p-14">
+        <ConteudoPrincipal className="flex flex-col justify-center p-10 md:p-14">
           <div className="mx-auto w-full max-w-[360px]">
             <h2 className="mb-1 text-2xl font-semibold text-primary">Link não encontrado</h2>
             <p className="text-sm text-text-muted">
@@ -91,7 +92,7 @@ export default function PrimeiroAcesso() {
               solicite um novo.
             </p>
           </div>
-        </div>
+        </ConteudoPrincipal>
       </div>
     );
   }
@@ -113,7 +114,7 @@ export default function PrimeiroAcesso() {
         }
       />
 
-      <div className="flex flex-col justify-center p-10 md:p-14">
+      <ConteudoPrincipal className="flex flex-col justify-center p-10 md:p-14">
         <div className={`mx-auto w-full ${passo === PASSO_CONSENTIMENTO ? "max-w-[480px]" : "max-w-[360px]"}`}>
           {passo === PASSO_CONCLUIDO && (
             <>
@@ -209,7 +210,7 @@ export default function PrimeiroAcesso() {
             </>
           )}
         </div>
-      </div>
+      </ConteudoPrincipal>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { FieldError } from "../../components/FieldError";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { fieldErrorProps } from "../../lib/fieldA11y";
@@ -45,7 +46,7 @@ export default function EsqueciSenha() {
         subtitle="Enviamos um link seguro para redefinir sua senha."
       />
 
-      <div className="flex flex-col justify-center p-10 md:p-14">
+      <ConteudoPrincipal className="flex flex-col justify-center p-10 md:p-14">
         <div className="mx-auto w-full max-w-[360px]">
           {enviado ? (
             <>
@@ -100,7 +101,7 @@ export default function EsqueciSenha() {
             </>
           )}
         </div>
-      </div>
+      </ConteudoPrincipal>
     </div>
   );
 }

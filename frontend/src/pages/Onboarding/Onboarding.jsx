@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { FieldError } from "../../components/FieldError";
 import { Logo } from "../../components/Logo";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
@@ -34,7 +35,7 @@ export default function Onboarding() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg-tint p-6">
       <ThemeToggle className="fixed right-4 top-4 z-20" />
-      <div className="w-full max-w-[400px] rounded-2xl bg-white p-8 shadow-sm">
+      <ConteudoPrincipal className="w-full max-w-[400px] rounded-2xl bg-white p-8 shadow-sm">
         <Logo className="mb-6" />
         <h2 className="mb-1 text-2xl font-semibold text-primary">Complete seu perfil</h2>
         <p className="mb-6 text-sm text-text-muted">
@@ -94,7 +95,7 @@ export default function Onboarding() {
             {isSubmitting ? "Salvando..." : "Continuar"}
           </button>
         </form>
-      </div>
+      </ConteudoPrincipal>
     </div>
   );
 }

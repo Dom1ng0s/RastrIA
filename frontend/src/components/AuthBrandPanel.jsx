@@ -4,7 +4,9 @@ import { Logo } from "./Logo";
 
 export function AuthBrandPanel({ heading, subtitle }) {
   return (
-    <div className="relative hidden flex-col justify-between overflow-hidden bg-primary p-10 md:flex">
+    // <aside>: o painel de marca é conteúdo complementar ao formulário (que fica
+    // no <main> da tela) — sem landmark, o leitor de tela o deixa "solto" (issue #134).
+    <aside aria-label="Sobre a Rastria" className="relative hidden flex-col justify-between overflow-hidden bg-primary p-10 md:flex">
       <svg
         data-decorativo
         aria-hidden="true"
@@ -30,6 +32,6 @@ export function AuthBrandPanel({ heading, subtitle }) {
         <h1 className="mb-3 text-3xl font-semibold leading-tight text-white">{heading}</h1>
         <p className="max-w-[280px] text-sm text-[#CFEAE3]">{subtitle}</p>
       </div>
-    </div>
+    </aside>
   );
 }
