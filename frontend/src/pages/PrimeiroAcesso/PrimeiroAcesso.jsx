@@ -15,6 +15,7 @@ import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { mascararCpf } from "../../lib/cpf";
 import { fieldErrorProps } from "../../lib/fieldA11y";
 import { senhaForteSchema } from "../../lib/senha";
+import { useTituloPagina } from "../../lib/tituloPagina";
 
 const schema = z
   .object({
@@ -43,6 +44,7 @@ const PASSO_CONSENTIMENTO = "consentimento";
 const PASSO_CONCLUIDO = "concluido";
 
 export default function PrimeiroAcesso() {
+  useTituloPagina("Primeiro acesso");
   const { token } = useParams();
   const navigate = useNavigate();
   const [passo, setPasso] = useState(PASSO_SENHA);

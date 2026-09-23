@@ -14,6 +14,7 @@ import { MODO_DEMO } from "../../features/demo/flag";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { formatarCpf, validarCpf } from "../../lib/cpf";
 import { fieldErrorProps } from "../../lib/fieldA11y";
+import { useTituloPagina } from "../../lib/tituloPagina";
 
 // Telas do fluxo de acesso alcançáveis só por URL enquanto não há backend.
 // Os tokens são os mocks aceitos por PrimeiroAcesso/RedefinirSenha.
@@ -32,6 +33,7 @@ const schema = z.object({
 });
 
 export default function Login() {
+  useTituloPagina("Entrar");
   const navigate = useNavigate();
   const setUsuario = useAuthStore((state) => state.setUsuario);
   const [mostrarAtalhoDev, setMostrarAtalhoDev] = useState(false);

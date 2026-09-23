@@ -21,7 +21,7 @@ export function AtendimentosRealizados({ navItems, tituloPagina, escopo, detalhe
   const atendimentos = consulta.data ?? [];
 
   return (
-    <DashboardLayout title={tituloPagina} navItems={navItems}>
+    <DashboardLayout title={tituloPagina} paginaAtual="Atendimentos realizados" navItems={navItems}>
       <p className="mb-6 text-sm text-text-muted">
         Log dos atendimentos que você já concluiu. Diferente de "Meus pacientes"/"Meus alunos"
         no painel, que mostra quem está sob seu acompanhamento agora.

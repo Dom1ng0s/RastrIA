@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 
 import { PularParaConteudo } from "../components/PularParaConteudo";
+import { AnuncioDeRota } from "../features/acessibilidade/AnuncioDeRota";
 import { AtalhosTeclado } from "../features/acessibilidade/AtalhosTeclado";
 import { RotaProtegida } from "../features/auth/RotaProtegida";
 import { SessaoInativa } from "../features/auth/SessaoInativa";
@@ -112,6 +113,8 @@ export function AppRoutes() {
 
       <Route path="*" element={<NotFound />} />
       </Routes>
+      {/* Depois das rotas: lê o título que a página nova acabou de definir (issue #135). */}
+      <AnuncioDeRota />
     </>
   );
 }

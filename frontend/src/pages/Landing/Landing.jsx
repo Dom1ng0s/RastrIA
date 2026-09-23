@@ -14,6 +14,7 @@ import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { Logo } from "../../components/Logo";
 import { PERGUNTAS_FREQUENTES } from "../../features/faq/perguntas";
 import { fieldErrorProps } from "../../lib/fieldA11y";
+import { useTituloPagina } from "../../lib/tituloPagina";
 
 const EMAIL_CONTATO = "domingoslabs@gmail.com";
 
@@ -509,6 +510,7 @@ function Footer() {
 }
 
 export default function Landing() {
+  useTituloPagina();
   return (
     <div className="relative">
       <Header />

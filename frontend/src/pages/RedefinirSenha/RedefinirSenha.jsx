@@ -12,6 +12,7 @@ import { PasswordInput } from "../../components/PasswordInput";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { fieldErrorProps } from "../../lib/fieldA11y";
 import { senhaForteSchema } from "../../lib/senha";
+import { useTituloPagina } from "../../lib/tituloPagina";
 
 const schema = z
   .object({
@@ -31,6 +32,7 @@ const TOKENS_MOCK = {
 };
 
 export default function RedefinirSenha() {
+  useTituloPagina("Redefinir senha");
   const { token } = useParams();
   const navigate = useNavigate();
   const [concluido, setConcluido] = useState(false);

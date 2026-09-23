@@ -53,7 +53,7 @@ export default function CadastroTAF() {
   };
 
   return (
-    <DashboardLayout title="Painel do Educador Físico" navItems={navItems}>
+    <DashboardLayout title="Painel do Educador Físico" paginaAtual="Cadastrar TAF" navItems={navItems}>
       <Link
         to={voltarPara}
         className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary"

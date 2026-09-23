@@ -5,6 +5,7 @@ import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { Logo } from "../../components/Logo";
 import { TERMO_CONSENTIMENTO } from "../../features/consentimento/termo";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
+import { useTituloPagina } from "../../lib/tituloPagina";
 
 /**
  * Página pública (sem necessidade de login) — contraparte pública do
@@ -20,6 +21,7 @@ import { ThemeToggle } from "../../features/theme/ThemeToggle";
  * Médicos" em agents/claude.md).
  */
 export default function PoliticaDePrivacidade() {
+  useTituloPagina("Política de Privacidade");
   return (
     <div className="min-h-screen bg-white">
       <header className="border-b border-line px-6 py-5">

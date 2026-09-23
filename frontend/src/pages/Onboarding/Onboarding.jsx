@@ -7,6 +7,7 @@ import { FieldError } from "../../components/FieldError";
 import { Logo } from "../../components/Logo";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { fieldErrorProps } from "../../lib/fieldA11y";
+import { useTituloPagina } from "../../lib/tituloPagina";
 import {
   ALTURA_CM_MAX,
   ALTURA_CM_MIN,
@@ -16,6 +17,7 @@ import {
 } from "../../lib/medidasCorporais";
 
 export default function Onboarding() {
+  useTituloPagina("Complete seu perfil");
   const navigate = useNavigate();
   const {
     register,

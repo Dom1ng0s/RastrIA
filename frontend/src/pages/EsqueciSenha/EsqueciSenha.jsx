@@ -9,12 +9,14 @@ import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { FieldError } from "../../components/FieldError";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { fieldErrorProps } from "../../lib/fieldA11y";
+import { useTituloPagina } from "../../lib/tituloPagina";
 
 const schema = z.object({
   email: z.string().min(1, "Informe seu e-mail").email("E-mail inválido"),
 });
 
 export default function EsqueciSenha() {
+  useTituloPagina("Esqueci minha senha");
   const [enviado, setEnviado] = useState(false);
   const {
     register,

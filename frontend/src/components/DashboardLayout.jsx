@@ -6,6 +6,7 @@ import { useAcessibilidadeStore } from "../features/acessibilidade/store";
 import { useAuthStore } from "../features/auth/store";
 import { PAPEL_PADRAO } from "../features/auth/navPorPapel";
 import { useToast } from "../features/ui/ToastProvider";
+import { useTituloPagina } from "../lib/tituloPagina";
 import { ThemeToggle } from "../features/theme/ThemeToggle";
 
 import { ConteudoPrincipal } from "./ConteudoPrincipal";
@@ -173,7 +174,11 @@ function useRolarParaSecao(hash) {
   }, [hash]);
 }
 
-export function DashboardLayout({ title, navItems, children, onHelp }) {
+// `paginaAtual` diferencia o título da aba quando várias telas compartilham o
+// mesmo `title` de painel (ex.: "Painel do Médico" no painel, nos atendimentos
+// e no detalhe do paciente) — issue #135.
+export function DashboardLayout({ title, paginaAtual, navItems, children, onHelp }) {
+  useTituloPagina(paginaAtual, title);
   const location = useLocation();
   useRolarParaSecao(location.hash);
   const [menuAberto, setMenuAberto] = useState(false);
