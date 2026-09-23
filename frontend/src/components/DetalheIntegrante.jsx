@@ -29,7 +29,7 @@ export function DetalheIntegrante({ nome, voltarPara, navItems, tituloPagina, es
   const taf = consultaTaf.data;
 
   return (
-    <DashboardLayout title={tituloPagina} navItems={navItems}>
+    <DashboardLayout title={tituloPagina} paginaAtual={nome} navItems={navItems}>
       <Link to={voltarPara} className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
         <ArrowLeft size={16} /> Voltar
       </Link>

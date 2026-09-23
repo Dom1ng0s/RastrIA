@@ -7,12 +7,14 @@ import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { TermoConsentimentoLGPD } from "../../components/TermoConsentimentoLGPD";
 import { useConsentimentoStore } from "../../features/consentimento/store";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
+import { useTituloPagina } from "../../lib/tituloPagina";
 
 // Consulta somente-leitura do termo aceito no primeiro acesso — não é
 // revogável pelo usuário, mas precisa ficar sempre disponível (ver issue
 // "Tela de consentimento LGPD no primeiro acesso"). Acessada pelo link em
 // "Perfil".
 export default function TermoConsentimento() {
+  useTituloPagina("Termo de consentimento");
   const consentimento = useConsentimentoStore((state) => state.consentimento);
 
   return (

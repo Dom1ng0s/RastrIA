@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { Logo } from "../../components/Logo";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
+import { useTituloPagina } from "../../lib/tituloPagina";
 
 /**
  * Página pública (sem necessidade de login) — ver issue "páginas de Termos de
@@ -14,6 +15,7 @@ import { ThemeToggle } from "../../features/theme/ThemeToggle";
  * produção com usuário real, conforme já registrado na issue original.
  */
 export default function TermosDeUso() {
+  useTituloPagina("Termos de Uso");
   return (
     <div className="min-h-screen bg-white">
       <header className="border-b border-line px-6 py-5">

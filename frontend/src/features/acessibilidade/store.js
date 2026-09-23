@@ -34,6 +34,8 @@ export const PREFERENCIAS = {
   // Atalhos Alt+1/Alt+2 do eMAG (issue #134), lidos por `AtalhosTeclado.jsx`.
   atalhosTeclado: { padrao: true },
   focoReforcado: { padrao: false, classe: "foco-reforcado" },
+  // Lido por `AnuncioDeRota.jsx` (issue #135).
+  focarTituloAoNavegar: { padrao: true },
 };
 
 // Só as escolhas explícitas do usuário são gravadas: chave ausente = "segue o

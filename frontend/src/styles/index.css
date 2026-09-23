@@ -77,6 +77,11 @@
   .dark input[type="file"]:focus-visible + label {
     outline-color: theme("colors.dark-primary");
   }
+  /* Título que recebe foco na troca de página (issue #135): é um marcador de
+     posição para o leitor de tela, não um controle — sem anel em volta. */
+  h1[tabindex="-1"]:focus {
+    outline: none;
+  }
 }
 
 /*

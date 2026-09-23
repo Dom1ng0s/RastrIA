@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 
 import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { Logo } from "../../components/Logo";
+import { useTituloPagina } from "../../lib/tituloPagina";
 
 export default function NotFound() {
+  useTituloPagina("Página não encontrada");
   return (
     <ConteudoPrincipal className="flex min-h-screen flex-col items-center justify-center bg-bg-tint px-6 text-center">
       <Logo className="mb-10" />

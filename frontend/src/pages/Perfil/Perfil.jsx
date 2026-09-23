@@ -427,6 +427,14 @@ function SecaoAcessibilidade() {
         />
       </GrupoAcessibilidade>
 
+      <GrupoAcessibilidade id="acessibilidade-leitor-tela" titulo="Leitor de tela">
+        <PreferenciaAcessibilidade
+          chave="focarTituloAoNavegar"
+          rotulo="Levar o foco ao título ao trocar de página"
+          descricao="Ao abrir outra tela, o foco vai para o título dela. Desligado, o foco fica onde está e a troca só é anunciada."
+        />
+      </GrupoAcessibilidade>
+
       <button
         type="button"
         onClick={() => {
@@ -469,7 +477,11 @@ export default function Perfil() {
   };
 
   return (
-    <DashboardLayout title="Configurações" navItems={navItems}>
+    <DashboardLayout
+      title="Configurações"
+      paginaAtual={secoes.find((s) => s.id === secaoAtiva).rotulo}
+      navItems={navItems}
+    >
       <nav
         aria-label="Seções de configurações"
         className="mb-6 flex flex-wrap gap-1 border-b border-line"
