@@ -199,7 +199,7 @@ export default function SolicitarAcompanhamento() {
                   onClick={() => solicitar(profissional)}
                   className="btn-outline shrink-0 rounded-lg px-4 py-2 text-sm font-semibold"
                 >
-                  Solicitar
+                  Solicitar<span className="sr-only"> acompanhamento com {profissional.nome}</span>
                 </button>
               </div>
             ))}

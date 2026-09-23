@@ -132,7 +132,7 @@ export default function RankingFisico() {
       )}
 
       <div className="mb-6">
-        <CampoBusca valor={busca} aoMudar={setBusca} placeholder="Buscar colega por nome..." />
+        <CampoBusca rotulo="Buscar colega no ranking" valor={busca} aoMudar={setBusca} placeholder="Buscar colega por nome..." />
       </div>
 
       {optedOut ? (

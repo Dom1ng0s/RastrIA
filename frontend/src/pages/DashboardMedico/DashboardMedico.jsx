@@ -107,7 +107,7 @@ export default function DashboardMedico() {
                   disabled={responder.isPending}
                   className="btn-primary rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-60"
                 >
-                  Confirmar
+                  Confirmar<span className="sr-only"> solicitação de {solicitacao.pessoa}</span>
                 </button>
                 <button
                   type="button"
@@ -115,7 +115,7 @@ export default function DashboardMedico() {
                   disabled={responder.isPending}
                   className="btn-outline rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-60"
                 >
-                  Recusar
+                  Recusar<span className="sr-only"> solicitação de {solicitacao.pessoa}</span>
                 </button>
               </div>
             </div>
@@ -129,7 +129,7 @@ export default function DashboardMedico() {
 
       <section data-tour="meus-pacientes">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meus pacientes</h2>
-        <CampoBusca valor={buscaPaciente} aoMudar={setBuscaPaciente} placeholder="Buscar paciente por nome..." />
+        <CampoBusca rotulo="Buscar paciente" valor={buscaPaciente} aoMudar={setBuscaPaciente} placeholder="Buscar paciente por nome..." />
         <div className="mt-3 space-y-2">
           {pacientes.isLoading && <SkeletonLista itens={2} />}
 

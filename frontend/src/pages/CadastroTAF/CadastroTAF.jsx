@@ -81,75 +81,78 @@ export default function CadastroTAF() {
             {errors.data?.message}
           </FieldError>
 
-          <div className="mb-1 grid grid-cols-2 gap-3">
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="corridaTempo">
-                Corrida — tempo
-              </label>
-              <input
-                id="corridaTempo"
-                type="text"
-                placeholder="Ex: 11min 30s"
-                className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-                {...register("corridaTempo")}
-                {...fieldErrorProps(errors.corridaTempo, "corridaTempo")}
-              />
-              <FieldError id="corridaTempo-erro" className="mt-1">
-                {errors.corridaTempo?.message}
-              </FieldError>
+          <fieldset>
+            <legend className="sr-only">Desempenho nas provas</legend>
+            <div className="mb-1 grid grid-cols-2 gap-3">
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="corridaTempo">
+                  Corrida — tempo
+                </label>
+                <input
+                  id="corridaTempo"
+                  type="text"
+                  placeholder="Ex: 11min 30s"
+                  className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+                  {...register("corridaTempo")}
+                  {...fieldErrorProps(errors.corridaTempo, "corridaTempo")}
+                />
+                <FieldError id="corridaTempo-erro" className="mt-1">
+                  {errors.corridaTempo?.message}
+                </FieldError>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="flexoes">
+                  Flexão — repetições
+                </label>
+                <input
+                  id="flexoes"
+                  type="number"
+                  min="0"
+                  className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+                  {...register("flexoes")}
+                  {...fieldErrorProps(errors.flexoes, "flexoes")}
+                />
+                <FieldError id="flexoes-erro" className="mt-1">
+                  {errors.flexoes?.message}
+                </FieldError>
+              </div>
             </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="flexoes">
-                Flexão — repetições
-              </label>
-              <input
-                id="flexoes"
-                type="number"
-                min="0"
-                className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-                {...register("flexoes")}
-                {...fieldErrorProps(errors.flexoes, "flexoes")}
-              />
-              <FieldError id="flexoes-erro" className="mt-1">
-                {errors.flexoes?.message}
-              </FieldError>
-            </div>
-          </div>
 
-          <div className="mb-1 mt-3 grid grid-cols-2 gap-3">
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="abdominais">
-                Abdominal — repetições
-              </label>
-              <input
-                id="abdominais"
-                type="number"
-                min="0"
-                className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-                {...register("abdominais")}
-                {...fieldErrorProps(errors.abdominais, "abdominais")}
-              />
-              <FieldError id="abdominais-erro" className="mt-1">
-                {errors.abdominais?.message}
-              </FieldError>
+            <div className="mb-1 mt-3 grid grid-cols-2 gap-3">
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="abdominais">
+                  Abdominal — repetições
+                </label>
+                <input
+                  id="abdominais"
+                  type="number"
+                  min="0"
+                  className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+                  {...register("abdominais")}
+                  {...fieldErrorProps(errors.abdominais, "abdominais")}
+                />
+                <FieldError id="abdominais-erro" className="mt-1">
+                  {errors.abdominais?.message}
+                </FieldError>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="barra">
+                  Barra — repetições
+                </label>
+                <input
+                  id="barra"
+                  type="number"
+                  min="0"
+                  className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
+                  {...register("barra")}
+                  {...fieldErrorProps(errors.barra, "barra")}
+                />
+                <FieldError id="barra-erro" className="mt-1">
+                  {errors.barra?.message}
+                </FieldError>
+              </div>
             </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="barra">
-                Barra — repetições
-              </label>
-              <input
-                id="barra"
-                type="number"
-                min="0"
-                className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
-                {...register("barra")}
-                {...fieldErrorProps(errors.barra, "barra")}
-              />
-              <FieldError id="barra-erro" className="mt-1">
-                {errors.barra?.message}
-              </FieldError>
-            </div>
-          </div>
+          </fieldset>
 
           <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="resultado">
             Resultado

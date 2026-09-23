@@ -106,7 +106,7 @@ export default function DashboardEducadorFisico() {
                   disabled={responder.isPending}
                   className="btn-primary rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-60"
                 >
-                  Confirmar
+                  Confirmar<span className="sr-only"> solicitação de {solicitacao.pessoa}</span>
                 </button>
                 <button
                   type="button"
@@ -114,7 +114,7 @@ export default function DashboardEducadorFisico() {
                   disabled={responder.isPending}
                   className="btn-outline rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-60"
                 >
-                  Recusar
+                  Recusar<span className="sr-only"> solicitação de {solicitacao.pessoa}</span>
                 </button>
               </div>
             </div>
@@ -128,7 +128,7 @@ export default function DashboardEducadorFisico() {
 
       <section data-tour="meus-alunos">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meus alunos</h2>
-        <CampoBusca valor={buscaAluno} aoMudar={setBuscaAluno} placeholder="Buscar aluno por nome..." />
+        <CampoBusca rotulo="Buscar aluno" valor={buscaAluno} aoMudar={setBuscaAluno} placeholder="Buscar aluno por nome..." />
         <div className="mt-3 space-y-2">
           {alunos.isLoading && <SkeletonLista itens={2} />}
 
