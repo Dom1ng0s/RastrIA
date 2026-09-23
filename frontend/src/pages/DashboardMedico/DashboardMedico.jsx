@@ -64,7 +64,7 @@ export default function DashboardMedico() {
       {
         onSuccess: () =>
           showToast(acao === "confirmar" ? "Solicitação confirmada" : "Solicitação recusada"),
-        onError: () => showToast("Não foi possível responder à solicitação"),
+        onError: () => showToast("Não foi possível responder à solicitação", "erro"),
       },
     );
   }
@@ -129,7 +129,7 @@ export default function DashboardMedico() {
 
       <section data-tour="meus-pacientes">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">Meus pacientes</h2>
-        <CampoBusca rotulo="Buscar paciente" valor={buscaPaciente} aoMudar={setBuscaPaciente} placeholder="Buscar paciente por nome..." />
+        <CampoBusca rotulo="Buscar paciente" valor={buscaPaciente} aoMudar={setBuscaPaciente} totalResultados={pacientesFiltrados.length} placeholder="Buscar paciente por nome..." />
         <div className="mt-3 space-y-2">
           {pacientes.isLoading && <SkeletonLista itens={2} />}
 

@@ -154,7 +154,7 @@ export default function DashboardUsuario() {
           });
           showToast("Registro atualizado");
         },
-        onError: () => showToast("Não foi possível salvar as alterações"),
+        onError: () => showToast("Não foi possível salvar as alterações", "erro"),
       },
     );
   }
@@ -165,7 +165,7 @@ export default function DashboardUsuario() {
       { id: registro.id },
       {
         onSuccess: () => showToast("Registro excluído"),
-        onError: () => showToast("Não foi possível excluir o registro"),
+        onError: () => showToast("Não foi possível excluir o registro", "erro"),
       },
     );
   }

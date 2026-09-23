@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import { useId } from "react";
+import { useEffect, useId, useState } from "react";
 
 /**
  * Campo de busca simples, client-side — usado em listas que crescem com o
@@ -11,9 +11,30 @@ import { useId } from "react";
  * `rotulo` é obrigatório (issue #141): o placeholder some ao digitar e não
  * serve de rótulo (WCAG 3.3.2). O rótulo fica visualmente oculto porque o
  * ícone de lupa e o placeholder já dizem o que o campo é para quem enxerga.
+ *
+ * `totalResultados` (issue #142): quem enxerga vê a lista encolher enquanto
+ * digita; o leitor de tela não. Com a prop, uma região `aria-live` anuncia
+ * "N resultados" meio segundo depois da última tecla — sem o atraso, cada
+ * letra interromperia a leitura.
  */
-export function CampoBusca({ rotulo, valor, aoMudar, placeholder = "Buscar por nome..." }) {
+export function CampoBusca({ rotulo, valor, aoMudar, totalResultados, placeholder = "Buscar por nome..." }) {
   const id = useId();
+  const [anuncio, setAnuncio] = useState("");
+
+  useEffect(() => {
+    if (totalResultados === undefined || !valor.trim()) {
+      setAnuncio("");
+      return undefined;
+    }
+    const espera = setTimeout(() => {
+      setAnuncio(
+        totalResultados === 0
+          ? "Nenhum resultado"
+          : `${totalResultados} ${totalResultados === 1 ? "resultado" : "resultados"}`,
+      );
+    }, 500);
+    return () => clearTimeout(espera);
+  }, [valor, totalResultados]);
 
   return (
     <div role="search" className="relative">
@@ -33,6 +54,9 @@ export function CampoBusca({ rotulo, valor, aoMudar, placeholder = "Buscar por n
         placeholder={placeholder}
         className="w-full rounded-lg border border-line bg-white py-2.5 pl-9 pr-3.5 text-sm text-text-dark"
       />
+      <p role="status" aria-live="polite" className="sr-only">
+        {anuncio}
+      </p>
     </div>
   );
 }
