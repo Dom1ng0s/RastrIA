@@ -403,6 +403,11 @@ function SecaoAcessibilidade() {
           rotulo="Atalhos de teclado"
           descricao="Desligue se os atalhos conflitarem com o seu leitor de tela ou navegador."
         />
+        <PreferenciaAcessibilidade
+          chave="focoReforcado"
+          rotulo="Destaque de foco reforçado"
+          descricao="Contorno mais grosso, em amarelo e preto, no item selecionado pelo teclado."
+        />
         <dl className="divide-y divide-line rounded-lg border border-line text-sm">
           {ATALHOS_TECLADO.map((atalho) => (
             <div key={atalho.teclas} className="flex items-center justify-between gap-4 px-4 py-2.5">

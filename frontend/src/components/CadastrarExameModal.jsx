@@ -162,13 +162,8 @@ export function CadastrarExameModal({ onClose, onSalvar, registro }) {
         <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="anexo">
           Anexo (opcional)
         </label>
-        <label
-          htmlFor="anexo"
-          className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-line px-3.5 py-2.5 text-sm text-text-muted hover:bg-bg-tint"
-        >
-          <Paperclip size={16} className="shrink-0" />
-          {anexo ? anexo.nome : "Anexar PDF, JPG ou PNG do exame"}
-        </label>
+        {/* O input vem antes do label visível: o anel de foco do label depende
+            disso (`input[type="file"]:focus-visible + label`, styles/index.css). */}
         <input
           id="anexo"
           type="file"
@@ -177,6 +172,13 @@ export function CadastrarExameModal({ onClose, onSalvar, registro }) {
           className="sr-only"
           aria-describedby={erroAnexo ? "anexo-erro" : undefined}
         />
+        <label
+          htmlFor="anexo"
+          className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-line px-3.5 py-2.5 text-sm text-text-muted hover:bg-bg-tint"
+        >
+          <Paperclip size={16} className="shrink-0" />
+          {anexo ? anexo.nome : "Anexar PDF, JPG ou PNG do exame"}
+        </label>
         {anexo && (
           <button
             type="button"

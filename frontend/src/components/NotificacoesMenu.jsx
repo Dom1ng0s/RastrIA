@@ -111,7 +111,7 @@ export function NotificacoesMenu({ papel }) {
                       onClick={() => excluir(papel, notificacao.id)}
                       aria-label="Excluir notificação"
                       title="Excluir"
-                      className="shrink-0 text-text-muted opacity-0 hover:text-coral group-hover:opacity-100"
+                      className="shrink-0 text-text-muted opacity-0 hover:text-coral focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
                     >
                       <X size={14} />
                     </button>
