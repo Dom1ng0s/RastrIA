@@ -159,7 +159,12 @@ function useRolarParaSecao(hash) {
 // `paginaAtual` diferencia o título da aba quando várias telas compartilham o
 // mesmo `title` de painel (ex.: "Painel do Médico" no painel, nos atendimentos
 // e no detalhe do paciente) — issue #135.
-export function DashboardLayout({ title, paginaAtual, navItems, children, onHelp }) {
+//
+// `tituloNoConteudo`: a tela traz o próprio <h1> visível no conteúdo (ex.: nome
+// do paciente) e o `title` do cabeçalho vira texto comum — cada tela tem um só
+// <h1>, e ele descreve a tela, não o painel (issue #146).
+export function DashboardLayout({ title, paginaAtual, navItems, children, onHelp, tituloNoConteudo = false }) {
+  const TituloCabecalho = tituloNoConteudo ? "p" : "h1";
   useTituloPagina(paginaAtual, title);
   const location = useLocation();
   useRolarParaSecao(location.hash);
@@ -224,7 +229,7 @@ export function DashboardLayout({ title, paginaAtual, navItems, children, onHelp
           {/* flex-wrap no header + break-words no título: com "Fonte grande" ou
             "Espaçamento de texto" o título e os ícones não cabem numa linha a
             320px — os ícones descem em vez de empurrar a página (#161). */}
-          <h1 className="min-w-0 break-words text-xl font-semibold text-primary">{title}</h1>
+          <TituloCabecalho className="min-w-0 break-words text-xl font-semibold text-primary">{title}</TituloCabecalho>
           <div className="ml-auto flex items-center gap-1">
             <ThemeToggle />
             <NotificacoesMenu papel={papel} />

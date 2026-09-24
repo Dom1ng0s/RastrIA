@@ -53,7 +53,7 @@ export default function CadastroTAF() {
   };
 
   return (
-    <DashboardLayout title="Painel do Educador Físico" paginaAtual="Cadastrar TAF" navItems={navItems}>
+    <DashboardLayout title="Painel do Educador Físico" paginaAtual="Cadastrar TAF" navItems={navItems} tituloNoConteudo>
       <Link
         to={voltarPara}
         className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary"
@@ -61,10 +61,12 @@ export default function CadastroTAF() {
         <ArrowLeft size={16} /> Voltar
       </Link>
 
-      <h2 className="mb-1 text-xl font-semibold text-primary">Cadastrar TAF</h2>
+      <h1 className="mb-1 text-xl font-semibold text-primary">Cadastrar TAF</h1>
       <p className="mb-6 text-sm text-text-muted">{nomeAluno}</p>
 
       <div className="max-w-[480px] rounded-2xl bg-white p-6 shadow-sm">
+        {/* Só para leitor de tela: navegação por títulos (issue #146). */}
+        <h2 className="sr-only">Resultados do teste</h2>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="data">
             Data do teste

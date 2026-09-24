@@ -28,6 +28,7 @@ export default function TermoConsentimento() {
       </div>
 
       <ConteudoPrincipal className="rounded-2xl border border-line bg-white p-7">
+        <h1 className="mb-4 text-xl font-semibold text-primary">Termo de consentimento</h1>
         {consentimento ? (
           <p className="mb-6 rounded-lg bg-bg-tint px-4 py-3 text-xs text-text-muted">
             Aceito em{" "}

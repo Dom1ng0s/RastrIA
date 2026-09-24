@@ -29,12 +29,12 @@ export function DetalheIntegrante({ nome, voltarPara, navItems, tituloPagina, es
   const taf = consultaTaf.data;
 
   return (
-    <DashboardLayout title={tituloPagina} paginaAtual={nome} navItems={navItems}>
+    <DashboardLayout title={tituloPagina} paginaAtual={nome} navItems={navItems} tituloNoConteudo>
       <Link to={voltarPara} className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
         <ArrowLeft size={16} /> Voltar
       </Link>
 
-      <h2 className="mb-6 text-xl font-semibold text-primary">{nome}</h2>
+      <h1 className="mb-6 text-xl font-semibold text-primary">{nome}</h1>
 
       {escopo === "fisico" && (
         <div className="mb-6 rounded-lg border border-line bg-white p-3 text-xs text-text-muted">
@@ -44,7 +44,7 @@ export function DetalheIntegrante({ nome, voltarPara, navItems, tituloPagina, es
 
       <section className="mb-8">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-text-muted">TAF</h3>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-text-muted">TAF</h2>
           {escopo === "fisico" && (
             <Link
               to={`/educador-fisico/aluno/${id}/taf`}
@@ -89,6 +89,9 @@ export function DetalheIntegrante({ nome, voltarPara, navItems, tituloPagina, es
         )}
       </section>
 
+      {/* Só para leitor de tela: sem ele, os registros ficavam "dentro" do
+          título TAF na navegação por títulos (issue #146). */}
+      <h2 className="sr-only">Registros</h2>
       <div className="space-y-3">
         {consultaRegistros.isLoading && <SkeletonLista itens={2} variante="card" />}
 

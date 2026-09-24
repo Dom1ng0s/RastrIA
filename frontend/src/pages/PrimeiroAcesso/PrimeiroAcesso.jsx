@@ -88,7 +88,7 @@ export default function PrimeiroAcesso() {
         />
         <ConteudoPrincipal className="flex flex-col justify-center p-10 md:p-14">
           <div className="mx-auto w-full max-w-[360px]">
-            <h2 className="mb-1 text-2xl font-semibold text-primary">Link não encontrado</h2>
+            <h1 className="mb-1 text-2xl font-semibold text-primary">Link não encontrado</h1>
             <p className="text-sm text-text-muted">
               Este link de primeiro acesso não é válido. Verifique se copiou o link completo, ou
               solicite um novo.
@@ -120,7 +120,7 @@ export default function PrimeiroAcesso() {
         <div className={`mx-auto w-full ${passo === PASSO_CONSENTIMENTO ? "max-w-[480px]" : "max-w-[360px]"}`}>
           {passo === PASSO_CONCLUIDO && (
             <>
-              <h2 className="mb-1 text-2xl font-semibold text-primary">Tudo pronto!</h2>
+              <h1 className="mb-1 text-2xl font-semibold text-primary">Tudo pronto!</h1>
               <p className="mb-8 text-sm text-text-muted">
                 Sua senha foi definida e o consentimento registrado. Entre com seu CPF e a senha
                 que você acabou de criar.
@@ -137,7 +137,7 @@ export default function PrimeiroAcesso() {
 
           {passo === PASSO_SENHA && (
             <>
-              <h2 className="mb-1 text-2xl font-semibold text-primary">Primeiro acesso</h2>
+              <h1 className="mb-1 text-2xl font-semibold text-primary">Primeiro acesso</h1>
               <p className="mb-1 text-sm font-medium text-text-dark">{conta.nome}</p>
               <p className="mb-8 text-sm text-text-muted">CPF {mascararCpf(conta.cpf)}</p>
 
@@ -185,7 +185,7 @@ export default function PrimeiroAcesso() {
 
           {passo === PASSO_CONSENTIMENTO && (
             <>
-              <h2 className="mb-4 text-2xl font-semibold text-primary">Consentimento LGPD</h2>
+              <h1 className="mb-4 text-2xl font-semibold text-primary">Consentimento LGPD</h1>
 
               <div className="mb-4 max-h-[360px] overflow-y-auto rounded-lg border border-line p-4">
                 <TermoConsentimentoLGPD />

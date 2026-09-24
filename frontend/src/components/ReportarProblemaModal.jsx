@@ -45,9 +45,9 @@ export function ReportarProblemaModal({ telaAtual, onClose, onEnviado }) {
       className="w-full max-w-[420px] rounded-2xl bg-white p-7 shadow-xl"
     >
       <div className="mb-5 flex items-center justify-between">
-        <h3 id="reportar-problema-titulo" className="text-xl font-semibold text-primary">
+        <h2 id="reportar-problema-titulo" className="text-xl font-semibold text-primary">
           Reportar problema
-        </h3>
+        </h2>
         <button type="button" onClick={onClose} aria-label="Fechar" className="text-text-muted hover:text-text-dark">
           <X size={20} />
         </button>

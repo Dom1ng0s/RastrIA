@@ -146,7 +146,7 @@ export default function RankingFisico() {
       ) : (
         minhaPosicao && (
           <div className="mb-8 rounded-2xl bg-primary p-6">
-            <span className="text-xs font-medium text-white/70">Sua posição</span>
+            <h2 className="text-xs font-medium text-white/70">Sua posição</h2>
             <div className="mt-1 text-4xl font-semibold text-white">
               {minhaPosicao.posicao}º{" "}
               <span className="font-body text-base font-normal text-white/70">
@@ -157,6 +157,8 @@ export default function RankingFisico() {
         )
       )}
 
+      {/* Só para leitor de tela: navegação por títulos (issue #146). */}
+      <h2 className="sr-only">Classificação</h2>
       <div className="space-y-2">
         {ranking.isLoading && <SkeletonLista itens={5} />}
 

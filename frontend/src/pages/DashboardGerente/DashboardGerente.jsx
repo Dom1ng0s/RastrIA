@@ -62,7 +62,7 @@ export default function DashboardGerente() {
       <GuidedTour run={run} steps={tourSteps} callback={handleCallback} />
 
       <div className="mb-8 rounded-2xl bg-primary p-6" data-tour="efetivo-geral">
-        <span className="text-xs font-medium text-white/70">Efetivo geral</span>
+        <h2 className="text-xs font-medium text-white/70">Efetivo geral</h2>
         <div className="mt-1 text-4xl font-semibold text-white">
           {agregado.isLoading ? (
             <span className="inline-block h-9 w-28 animate-pulse rounded-md bg-white/20" aria-label="Carregando" />

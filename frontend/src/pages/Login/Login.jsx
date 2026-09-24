@@ -98,7 +98,7 @@ export default function Login() {
 
       <ConteudoPrincipal className="flex flex-col justify-center p-10 md:p-14">
         <div className="mx-auto w-full max-w-[360px]">
-          <h2 className="mb-1 text-2xl font-semibold text-primary">Entrar</h2>
+          <h1 className="mb-1 text-2xl font-semibold text-primary">Entrar</h1>
           <p className="mb-8 text-sm text-text-muted">Acesse sua conta com seu CPF.</p>
 
           {/* role="alert": é lido quando aparece, sem depender de onde está o

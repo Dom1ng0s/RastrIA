@@ -32,7 +32,8 @@ export default function HistoricoAtendimentos() {
         {atendimentosRealizados.map((atendimento) => (
           <div key={atendimento.id} className="rounded-xl bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="min-w-0 flex-1 truncate text-sm font-medium">{atendimento.profissional}</span>
+              {/* <h2>: a tecla H do leitor de tela pula de um atendimento para o outro (issue #146). */}
+              <h2 className="min-w-0 flex-1 truncate text-sm font-medium">{atendimento.profissional}</h2>
               <span className="shrink-0 text-xs text-text-muted">{atendimento.data}</span>
             </div>
             <p className="mt-0.5 text-xs text-text-muted">{atendimento.especialidade}</p>

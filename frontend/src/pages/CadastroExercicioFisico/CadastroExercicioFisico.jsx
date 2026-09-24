@@ -45,6 +45,8 @@ export default function CadastroExercicioFisico() {
       </Link>
 
       <div className="max-w-[420px] rounded-2xl bg-white p-6 shadow-sm">
+        {/* Só para leitor de tela: navegação por títulos (issue #146). */}
+        <h2 className="sr-only">Dados do exercício</h2>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="tipo">
             Tipo de exercício

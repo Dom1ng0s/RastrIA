@@ -71,6 +71,8 @@ export default function AlterarSenha() {
       </Link>
 
       <div className="max-w-[400px] rounded-2xl border border-line bg-white p-7">
+        {/* Só para leitor de tela: navegação por títulos (issue #146). */}
+        <h2 className="sr-only">Nova senha</h2>
         <p className="mb-4 text-xs text-text-muted">
           Escolha uma senha forte para proteger sua conta. Você continuará conectado neste dispositivo.
         </p>
