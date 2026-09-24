@@ -48,11 +48,11 @@ export function NotificacoesMenu({ papel }) {
         aria-label={`Notificações${naoLidas > 0 ? ` (${naoLidas} não lidas)` : ""}`}
         title="Notificações"
         {...propsBotao}
-        className="relative inline-flex h-5 w-5 items-center justify-center text-text-muted hover:text-primary"
+        className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-bg-tint hover:text-primary"
       >
         <Bell size={20} aria-hidden="true" />
         {naoLidas > 0 && (
-          <span aria-hidden="true" className="absolute -right-1.5 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-coral-escuro px-1 text-xs font-semibold leading-none text-white">
+          <span aria-hidden="true" className="absolute right-0 top-0 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-coral-escuro px-1 text-xs font-semibold leading-none text-white">
             {naoLidas > 9 ? "9+" : naoLidas}
           </span>
         )}
@@ -81,7 +81,7 @@ export function NotificacoesMenu({ papel }) {
                   marcarTodasLidas(papel);
                   focarTitulo();
                 }}
-                className="text-xs font-medium text-primary hover:underline"
+                className="-my-1 rounded px-1 py-1.5 text-xs font-medium text-primary hover:underline"
               >
                 Marcar todas como lidas
               </button>
@@ -117,7 +117,7 @@ export function NotificacoesMenu({ papel }) {
                       }}
                       aria-label={`Excluir notificação: ${notificacao.titulo}`}
                       title="Excluir"
-                      className="shrink-0 text-text-muted opacity-0 hover:text-coral-escuro focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+                      className="-m-1 shrink-0 rounded p-1.5 text-text-muted opacity-0 hover:bg-white hover:text-coral-escuro focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
                     >
                       <X size={14} aria-hidden="true" />
                     </button>

@@ -172,6 +172,21 @@ html.alto-contraste footer a {
   text-decoration: underline;
 }
 
+/* Botões e áreas de toque maiores (issue #144) — 44×44, o tamanho do WCAG
+   2.5.5 (AAA) e das diretrizes da Apple. O mínimo de 24×24 (AA 2.5.8) vale
+   sempre, sem esta classe. `min-*` não afeta link inline no meio do texto
+   (elemento inline ignora altura mínima), nem o que é `sr-only` (continua
+   recortado pelo `clip`). Caixa de seleção fica de fora: aumentar a caixa
+   em si distorce o controle nativo. */
+html.alvos-grandes button,
+html.alvos-grandes a[href],
+html.alvos-grandes select,
+html.alvos-grandes textarea,
+html.alvos-grandes input:not([type="checkbox"]):not([type="radio"]) {
+  min-height: 44px;
+  min-width: 44px;
+}
+
 /* Destaque de foco reforçado (issue #136) — para baixa visão, nos moldes do
    WCAG 2.4.13 (AAA): anel duplo amarelo + preto, que contrasta com qualquer
    fundo do app, claro ou escuro. */

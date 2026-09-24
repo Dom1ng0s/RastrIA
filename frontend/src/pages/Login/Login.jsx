@@ -143,7 +143,7 @@ export default function Login() {
             <FieldError id="senha-erro" className="mb-1">
               {errors.senha?.message}
             </FieldError>
-            <Link to="/esqueci-senha" className="mb-6 mt-1 block text-right text-xs font-medium text-primary">
+            <Link to="/esqueci-senha" className="mb-5 ml-auto block w-fit py-1.5 text-right text-xs font-medium text-primary">
               Esqueci minha senha
             </Link>
 
@@ -175,7 +175,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => setMostrarAtalhoDev((atual) => !atual)}
-              className="text-xs font-medium text-text-muted underline"
+              className="py-1.5 text-xs font-medium text-text-muted underline"
             >
               {mostrarAtalhoDev ? "Ocultar" : "Ambiente de testes: entrar direto como..."}
             </button>

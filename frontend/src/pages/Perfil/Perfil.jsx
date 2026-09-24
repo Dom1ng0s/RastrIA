@@ -434,6 +434,11 @@ function SecaoAcessibilidade() {
           rotulo="Espaçamento de texto ampliado"
           descricao="Mais espaço entre linhas, letras, palavras e parágrafos, para facilitar a leitura."
         />
+        <PreferenciaAcessibilidade
+          chave="alvosGrandes"
+          rotulo="Botões e áreas de toque maiores"
+          descricao="Todo botão, link e campo passa a ter pelo menos 44 × 44 pixels — mais fácil de acertar com o dedo ou com tremor."
+        />
       </GrupoAcessibilidade>
 
       <GrupoAcessibilidade id="acessibilidade-movimento" titulo="Movimento">
