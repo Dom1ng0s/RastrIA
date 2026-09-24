@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Joyride from "react-joyride";
 
+import { useAcessibilidadeStore } from "../acessibilidade/store";
+
 const joyrideStyles = {
   options: {
     primaryColor: "#0C4A44",
@@ -37,6 +39,7 @@ function alvoVisivel(target) {
 
 export function GuidedTour({ run, steps, callback }) {
   const [passosVisiveis, setPassosVisiveis] = useState([]);
+  const menosMovimento = useAcessibilidadeStore((state) => state.reduzirMovimento);
 
   useEffect(() => {
     if (!run) {
@@ -48,10 +51,15 @@ export function GuidedTour({ run, steps, callback }) {
     const visiveis = (steps ?? []).filter((passo) => alvoVisivel(passo.target));
     // O 1º passo abre direto (sem beacon), mesmo que o passo original com
     // disableBeacon tenha sido filtrado (ex.: nav-historico no mobile).
+    //
+    // Com "Reduzir movimento" (issue #145) nenhum passo usa o beacon: é um
+    // círculo pulsando sem parar (WCAG 2.2.2), e o passo abre direto.
     setPassosVisiveis(
-      visiveis.map((passo, indice) => (indice === 0 ? { ...passo, disableBeacon: true } : passo)),
+      visiveis.map((passo, indice) =>
+        indice === 0 || menosMovimento ? { ...passo, disableBeacon: true } : passo,
+      ),
     );
-  }, [run, steps]);
+  }, [run, steps, menosMovimento]);
 
   if (!run || !passosVisiveis.length) return null;
 
@@ -65,6 +73,10 @@ export function GuidedTour({ run, steps, callback }) {
       showSkipButton
       locale={joyrideLocale}
       styles={joyrideStyles}
+      // Reduzir movimento: rolagem até o alvo instantânea (o Joyride anima em
+      // JS, a regra CSS global não alcança) e tooltip sem fade.
+      scrollDuration={menosMovimento ? 0 : 300}
+      floaterProps={menosMovimento ? { disableAnimation: true } : undefined}
     />
   );
 }
