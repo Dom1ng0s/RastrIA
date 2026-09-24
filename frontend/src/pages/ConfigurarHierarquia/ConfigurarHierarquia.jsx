@@ -48,7 +48,7 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
           aria-label={`Novo nome para ${nomeAcessivel}`}
           className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-1.5 text-sm text-text-dark"
         />
-        <button type="button" onClick={salvar} aria-label={`Salvar novo nome de ${nomeAcessivel}`} className="text-seafoam-escuro hover:opacity-80">
+        <button type="button" onClick={salvar} aria-label={`Salvar novo nome de ${nomeAcessivel}`} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-seafoam-escuro hover:bg-bg-tint">
           <Check size={18} />
         </button>
         <button
@@ -58,7 +58,7 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
             setEditando(false);
           }}
           aria-label={`Cancelar edição de ${nomeAcessivel}`}
-          className="text-text-muted hover:text-text-dark"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-bg-tint hover:text-text-dark"
         >
           <X size={18} />
         </button>
@@ -69,12 +69,12 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
   return (
     <div className="flex items-center justify-between gap-3">
       <span className="min-w-0 flex-1 truncate text-sm font-medium text-text-dark">{nome}</span>
-      <div className="flex shrink-0 items-center gap-3">
+      <div className="flex shrink-0 items-center gap-1">
         <button
           type="button"
           onClick={() => setEditando(true)}
           aria-label={`Renomear ${nomeAcessivel}`}
-          className="text-text-muted hover:text-primary"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-bg-tint hover:text-primary"
         >
           <Pencil size={15} />
         </button>
@@ -84,7 +84,7 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
             if (!confirmarExclusao || window.confirm(confirmarExclusao)) onExcluir();
           }}
           aria-label={`Excluir ${nomeAcessivel}`}
-          className="text-text-muted hover:text-coral-escuro"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-bg-tint hover:text-coral-escuro"
         >
           <Trash2 size={15} />
         </button>

@@ -29,7 +29,7 @@ function HelpMenu({ onRever }) {
         aria-label="Ajuda"
         title="Ajuda"
         {...propsBotao}
-        className="inline-flex h-5 w-5 items-center justify-center text-text-muted hover:text-primary"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-bg-tint hover:text-primary"
       >
         <HelpCircle size={20} aria-hidden="true" />
       </button>
@@ -192,7 +192,7 @@ export function DashboardLayout({ title, paginaAtual, navItems, children, onHelp
             type="button"
             aria-label="Fechar menu"
             onClick={() => setMenuAberto(false)}
-            className="absolute right-4 top-4 text-white/80 hover:text-white"
+            className="absolute right-2 top-2 inline-flex h-10 w-10 items-center justify-center rounded-lg text-white/80 hover:bg-white/10 hover:text-white"
           >
             <X size={20} aria-hidden="true" />
           </button>
@@ -214,12 +214,12 @@ export function DashboardLayout({ title, paginaAtual, navItems, children, onHelp
             aria-controls={idGaveta}
             data-abrir-menu
             onClick={() => setMenuAberto(true)}
-            className="text-primary md:hidden"
+            className="-ml-2 inline-flex h-10 w-10 items-center justify-center rounded-lg text-primary hover:bg-bg-tint md:hidden"
           >
             <Menu size={22} aria-hidden="true" />
           </button>
           <h1 className="text-xl font-semibold text-primary">{title}</h1>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-1">
             <ThemeToggle />
             <NotificacoesMenu papel={papel} />
             {onHelp && <HelpMenu onRever={onHelp} />}

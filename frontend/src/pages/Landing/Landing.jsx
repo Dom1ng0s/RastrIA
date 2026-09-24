@@ -33,7 +33,12 @@ function MenuMobile({ id, onFechar }) {
     <Gaveta id={id} rotulo="Menu" lado="direita" onFechar={onFechar} className="w-72 gap-1 bg-white p-6 shadow-xl">
       <div className="mb-6 flex items-center justify-between">
         <Logo />
-        <button type="button" aria-label="Fechar menu" onClick={onFechar}>
+        <button
+          type="button"
+          aria-label="Fechar menu"
+          onClick={onFechar}
+          className="-mr-2 inline-flex h-10 w-10 items-center justify-center rounded-lg hover:bg-bg-tint"
+        >
           <X size={22} aria-hidden="true" className="text-text-dark" />
         </button>
       </div>
@@ -106,7 +111,7 @@ function Header() {
             aria-controls={idMenu}
             data-abrir-menu
             onClick={() => setMenuAberto(true)}
-            className="text-primary"
+            className="-mr-2 inline-flex h-10 w-10 items-center justify-center rounded-lg text-primary hover:bg-bg-tint"
           >
             <Menu size={24} aria-hidden="true" />
           </button>

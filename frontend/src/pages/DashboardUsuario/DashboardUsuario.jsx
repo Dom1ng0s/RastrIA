@@ -293,12 +293,12 @@ export default function DashboardUsuario() {
               )}
 
               {temAcoes && (
-                <div className="mt-2 flex flex-wrap items-center gap-3 border-t border-line pt-2">
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 border-t border-line pt-0.5">
                   {ehAlterado && (
                     <button
                       type="button"
                       onClick={() => setRegistroAberto(registro)}
-                      className="text-xs font-semibold text-primary hover:underline"
+                      className="py-1.5 text-xs font-semibold text-primary hover:underline"
                     >
                       Ver detalhes<span className="sr-only"> — {registro.indice} de {registro.data}</span>
                     </button>
@@ -309,7 +309,7 @@ export default function DashboardUsuario() {
                         href={registro.anexo.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center gap-1 text-xs font-medium text-text-muted hover:text-primary"
+                        className="flex items-center gap-1 py-1.5 text-xs font-medium text-text-muted hover:text-primary"
                       >
                         <Paperclip size={13} aria-hidden="true" /> Visualizar anexo
                         <span className="sr-only"> — {registro.indice} de {registro.data}</span>
@@ -317,7 +317,7 @@ export default function DashboardUsuario() {
                       <a
                         href={registro.anexo.url}
                         download={registro.anexo.nome}
-                        className="text-xs font-medium text-text-muted hover:text-primary"
+                        className="py-1.5 text-xs font-medium text-text-muted hover:text-primary"
                       >
                         Baixar<span className="sr-only"> anexo — {registro.indice} de {registro.data}</span>
                       </a>
@@ -328,7 +328,7 @@ export default function DashboardUsuario() {
                       <button
                         type="button"
                         onClick={() => setRegistroEditando(registro)}
-                        className="ml-auto flex items-center gap-1 text-xs font-medium text-text-muted hover:text-primary"
+                        className="ml-auto flex items-center gap-1 py-1.5 text-xs font-medium text-text-muted hover:text-primary"
                       >
                         <Pencil size={13} aria-hidden="true" /> Editar
                         <span className="sr-only"> — {registro.indice} de {registro.data}</span>
@@ -337,7 +337,7 @@ export default function DashboardUsuario() {
                         type="button"
                         onClick={() => excluirRegistro(registro)}
                         disabled={excluir.isPending}
-                        className="flex items-center gap-1 text-xs font-medium text-text-muted hover:text-coral-escuro disabled:opacity-60"
+                        className="flex items-center gap-1 py-1.5 text-xs font-medium text-text-muted hover:text-coral-escuro disabled:opacity-60"
                       >
                         <Trash2 size={13} aria-hidden="true" /> Excluir
                         <span className="sr-only"> — {registro.indice} de {registro.data}</span>
