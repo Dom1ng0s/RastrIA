@@ -28,8 +28,11 @@ export function AuthBrandPanel({ heading, subtitle }) {
         <Logo reverse />
       </Link>
 
+      {/* O slogan é <p>, não <h1> (issue #146): o <h1> de cada tela de acesso
+          é o objetivo dela ("Entrar", "Redefinir senha"…) e fica no <main> —
+          este painel some abaixo do `md`, e com ele sumia o único <h1>. */}
       <div className="relative z-10">
-        <h1 className="mb-3 text-3xl font-semibold leading-tight text-white">{heading}</h1>
+        <p className="mb-3 text-3xl font-semibold leading-tight text-white">{heading}</p>
         <p className="max-w-[280px] text-sm text-[#CFEAE3]">{subtitle}</p>
       </div>
     </aside>

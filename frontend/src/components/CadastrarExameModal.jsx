@@ -92,9 +92,9 @@ export function CadastrarExameModal({ onClose, onSalvar, registro }) {
       className="w-full max-w-[420px] rounded-2xl bg-white p-7 shadow-xl"
     >
       <div className="mb-5 flex items-center justify-between">
-        <h3 id="cadastrar-exame-titulo" className="text-xl font-semibold text-primary">
+        <h2 id="cadastrar-exame-titulo" className="text-xl font-semibold text-primary">
           {editando ? "Editar registro" : "Novo registro"}
-        </h3>
+        </h2>
         <button type="button" onClick={onClose} aria-label="Fechar" className="text-text-muted hover:text-text-dark">
           <X size={20} />
         </button>

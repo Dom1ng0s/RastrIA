@@ -96,7 +96,7 @@ export default function SolicitarAcompanhamento() {
         <div className="mb-6 rounded-xl border border-line bg-white p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <span className="text-xs font-medium text-text-muted">Seu acompanhamento contínuo</span>
+              <h2 className="text-xs font-medium text-text-muted">Seu acompanhamento contínuo</h2>
               <p className="truncate text-sm font-semibold text-primary">{vinculoAtivo.nome}</p>
               <span className="truncate text-xs text-text-muted">{vinculoAtivo.especialidade}</span>
             </div>
@@ -121,6 +121,7 @@ export default function SolicitarAcompanhamento() {
       {/* Confirmação de solicitação enviada */}
       {solicitacaoPendente && (
         <div className="mb-6 rounded-xl border border-line bg-white p-4">
+          <h2 className="sr-only">Solicitação em andamento</h2>
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full badge-atencao">
               <Clock size={16} />
@@ -144,6 +145,9 @@ export default function SolicitarAcompanhamento() {
 
       {!solicitacaoPendente && (
         <>
+          {/* Títulos só para leitor de tela onde o design não tem título visível
+              (issue #146): a navegação por títulos (tecla H) acha cada bloco. */}
+          <h2 className="sr-only">Nova solicitação</h2>
           <p className="mb-1 text-sm text-text-muted">
             Escolha o tipo de acompanhamento. Se você já tiver um profissional vinculado para esse
             cuidado, a solicitação vai direto para ele.

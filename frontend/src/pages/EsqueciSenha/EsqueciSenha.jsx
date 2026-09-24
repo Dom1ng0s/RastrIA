@@ -52,7 +52,7 @@ export default function EsqueciSenha() {
         <div className="mx-auto w-full max-w-[360px]">
           {enviado ? (
             <>
-              <h2 className="mb-1 text-2xl font-semibold text-primary">Verifique seu e-mail</h2>
+              <h1 className="mb-1 text-2xl font-semibold text-primary">Verifique seu e-mail</h1>
               <p className="mb-8 text-sm text-text-muted">
                 Se o e-mail informado estiver cadastrado, você vai receber um link para redefinir
                 sua senha em alguns minutos.
@@ -63,7 +63,7 @@ export default function EsqueciSenha() {
             </>
           ) : (
             <>
-              <h2 className="mb-1 text-2xl font-semibold text-primary">Esqueci minha senha</h2>
+              <h1 className="mb-1 text-2xl font-semibold text-primary">Esqueci minha senha</h1>
               <p className="mb-8 text-sm text-text-muted">
                 Informe o e-mail cadastrado na sua conta para receber o link de redefinição.
               </p>

@@ -17,6 +17,9 @@ export default function CadastroInformacoes() {
         correspondente.
       </p>
 
+      {/* Só para leitor de tela: os cartões são botões/links, e título dentro
+          de botão perde a semântica — o <h2> fica antes da grade (issue #146). */}
+      <h2 className="sr-only">Tipo de registro</h2>
       <div className="grid gap-4 sm:grid-cols-2">
         <button
           type="button"

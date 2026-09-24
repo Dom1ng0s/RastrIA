@@ -123,6 +123,9 @@ function SecaoEditarPerfil({ ehUsuarioIndividual }) {
 
   return (
     <div className="max-w-[400px] rounded-2xl border border-line bg-white p-7">
+      {/* Título só para leitor de tela: o design não tem título visível no
+          cartão, mas a navegação por títulos precisa achá-lo (issue #146). */}
+      <h2 className="sr-only">Dados da conta</h2>
       {/* Dados só de leitura: par termo/valor, não <label> — <label> sem campo
           não rotula nada para o leitor de tela (issue #141). */}
       <dl>

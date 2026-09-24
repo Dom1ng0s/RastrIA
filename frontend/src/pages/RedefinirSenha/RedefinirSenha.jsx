@@ -64,7 +64,7 @@ export default function RedefinirSenha() {
         />
         <ConteudoPrincipal className="flex flex-col justify-center p-10 md:p-14">
           <div className="mx-auto w-full max-w-[360px]">
-            <h2 className="mb-1 text-2xl font-semibold text-primary">Link não encontrado</h2>
+            <h1 className="mb-1 text-2xl font-semibold text-primary">Link não encontrado</h1>
             <p className="text-sm text-text-muted">
               Este link de redefinição não é válido ou já foi usado. Verifique se copiou o link
               completo, ou solicite um novo.
@@ -93,7 +93,7 @@ export default function RedefinirSenha() {
         <div className="mx-auto w-full max-w-[360px]">
           {concluido ? (
             <>
-              <h2 className="mb-1 text-2xl font-semibold text-primary">Senha redefinida!</h2>
+              <h1 className="mb-1 text-2xl font-semibold text-primary">Senha redefinida!</h1>
               <p className="mb-8 text-sm text-text-muted">
                 Sua senha foi atualizada. Entre com seu CPF e a nova senha.
               </p>
@@ -107,7 +107,7 @@ export default function RedefinirSenha() {
             </>
           ) : (
             <>
-              <h2 className="mb-1 text-2xl font-semibold text-primary">Redefinir senha</h2>
+              <h1 className="mb-1 text-2xl font-semibold text-primary">Redefinir senha</h1>
               <p className="mb-8 text-sm text-text-muted">Olá, {conta.nome.split(" ")[0]}.</p>
 
               <form onSubmit={handleSubmit(onSubmit)} noValidate>

@@ -39,7 +39,7 @@ export default function Onboarding() {
       <ThemeToggle className="fixed right-4 top-4 z-20" />
       <ConteudoPrincipal className="w-full max-w-[400px] rounded-2xl bg-white p-8 shadow-sm">
         <Logo className="mb-6" />
-        <h2 className="mb-1 text-2xl font-semibold text-primary">Complete seu perfil</h2>
+        <h1 className="mb-1 text-2xl font-semibold text-primary">Complete seu perfil</h1>
         <p className="mb-6 text-sm text-text-muted">
           Esses dados ajudam a verificação automática dos seus índices.
         </p>

@@ -99,6 +99,8 @@ export default function ImportarIntegrantes() {
         confirmar.
       </p>
 
+      {/* Títulos só para leitor de tela: navegação por títulos (issue #146). */}
+      <h2 className="sr-only">Enviar planilha</h2>
       <div className="mb-6 max-w-[640px] rounded-2xl border border-dashed border-line bg-white p-6 text-center">
         <input
           ref={inputRef}
@@ -137,6 +139,7 @@ export default function ImportarIntegrantes() {
 
       {registros && (
         <>
+          <h2 className="sr-only">Pré-visualização da importação</h2>
           <div className="mb-4 flex flex-wrap gap-3">
             <span className="badge-normal rounded-full px-3 py-1 text-xs font-semibold">
               {validos.length} pronto(s) para importar
@@ -150,15 +153,20 @@ export default function ImportarIntegrantes() {
 
           <div className="mb-6 overflow-x-auto rounded-xl border border-line bg-white">
             <table className="w-full min-w-[640px] text-left text-sm">
+              {/* <caption> e scope="col" (eMAG 3.9/3.10, issue #146). */}
+              <caption className="sr-only">
+                Pré-visualização das linhas da planilha: {validos.length} pronta(s) para importar,{" "}
+                {comErro.length} com erro
+              </caption>
               <thead className="border-b border-line bg-bg-tint text-xs uppercase tracking-wide text-text-muted">
                 <tr>
-                  <th className="px-4 py-2.5">Linha</th>
-                  <th className="px-4 py-2.5">Nome</th>
-                  <th className="px-4 py-2.5">CPF</th>
-                  <th className="px-4 py-2.5">Nascimento</th>
-                  <th className="px-4 py-2.5">Sexo</th>
-                  <th className="px-4 py-2.5">Contato</th>
-                  <th className="px-4 py-2.5">Status</th>
+                  <th scope="col" className="px-4 py-2.5">Linha</th>
+                  <th scope="col" className="px-4 py-2.5">Nome</th>
+                  <th scope="col" className="px-4 py-2.5">CPF</th>
+                  <th scope="col" className="px-4 py-2.5">Nascimento</th>
+                  <th scope="col" className="px-4 py-2.5">Sexo</th>
+                  <th scope="col" className="px-4 py-2.5">Contato</th>
+                  <th scope="col" className="px-4 py-2.5">Status</th>
                 </tr>
               </thead>
               <tbody>
