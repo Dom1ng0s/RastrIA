@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { useAcessibilidadeStore } from "../acessibilidade/store";
+
 // Chave ÚNICA e global (não mais uma por papel) — o tour automático aparece no
 // máximo uma vez por navegador, mesmo que o apresentador troque de papel na
 // demo (issue #74). Antes era `rastria:tour:<papel>`, o que disparava um popup
@@ -18,8 +20,13 @@ const ATRASO_INICIO_MS = 400;
 
 export function useGuidedTour() {
   const [run, setRun] = useState(false);
+  // Configurações › Acessibilidade (issue #145): um tour que abre sozinho e
+  // cobre a tela é mudança de contexto não pedida — para leitor de tela, o
+  // foco some da página. Desligado, só o menu Ajuda abre o tour.
+  const abrirAutomaticamente = useAcessibilidadeStore((state) => state.abrirTourAutomaticamente);
 
   useEffect(() => {
+    if (!abrirAutomaticamente) return undefined;
     let jaVisto = null;
     try {
       jaVisto = localStorage.getItem(STORAGE_KEY);
@@ -30,7 +37,7 @@ export function useGuidedTour() {
 
     const timer = setTimeout(() => setRun(true), ATRASO_INICIO_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [abrirAutomaticamente]);
 
   const handleCallback = useCallback(({ status }) => {
     if (status === "finished" || status === "skipped") {

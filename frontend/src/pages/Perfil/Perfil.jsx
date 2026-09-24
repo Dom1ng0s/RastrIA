@@ -447,6 +447,11 @@ function SecaoAcessibilidade() {
           rotulo="Reduzir movimento"
           descricao="Desliga animações, transições e rolagens suaves."
         />
+        <PreferenciaAcessibilidade
+          chave="abrirTourAutomaticamente"
+          rotulo="Abrir tour guiado automaticamente"
+          descricao="Na primeira visita a um painel. Desligado, o tour só abre em Ajuda (ícone ? no topo) › Rever tour guiado."
+        />
       </GrupoAcessibilidade>
 
       <GrupoAcessibilidade

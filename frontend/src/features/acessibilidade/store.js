@@ -33,6 +33,9 @@ export const PREFERENCIAS = {
     classe: "reduzir-movimento",
     mediaQuery: "(prefers-reduced-motion: reduce)",
   },
+  // Desligado, o tour guiado só abre pelo menu Ajuda (issue #145). Lido por
+  // `features/tour/useGuidedTour.js`.
+  abrirTourAutomaticamente: { padrao: true },
   // Atalhos Alt+1/Alt+2 do eMAG (issue #134), lidos por `AtalhosTeclado.jsx`.
   atalhosTeclado: { padrao: true },
   focoReforcado: { padrao: false, classe: "foco-reforcado" },
