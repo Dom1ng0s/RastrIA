@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
+import { AvisoObrigatorios, MarcaObrigatorio } from "../../components/CampoObrigatorio";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { FieldError } from "../../components/FieldError";
 import { ForcaSenha } from "../../components/ForcaSenha";
@@ -78,11 +79,13 @@ export default function AlterarSenha() {
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <AvisoObrigatorios />
           <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="senhaAtual">
-            Senha atual
+            Senha atual <MarcaObrigatorio />
           </label>
           <PasswordInput
             id="senhaAtual"
+            aria-required="true"
             autoComplete="current-password"
             className="mb-1"
             {...register("senhaAtual")}
@@ -93,10 +96,11 @@ export default function AlterarSenha() {
           </FieldError>
 
           <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="novaSenha">
-            Nova senha
+            Nova senha <MarcaObrigatorio />
           </label>
           <PasswordInput
             id="novaSenha"
+            aria-required="true"
             autoComplete="new-password"
             className="mb-1"
             {...register("novaSenha")}
@@ -112,10 +116,11 @@ export default function AlterarSenha() {
             className="mb-1.5 block text-xs font-medium text-text-dark"
             htmlFor="confirmarNovaSenha"
           >
-            Confirmar nova senha
+            Confirmar nova senha <MarcaObrigatorio />
           </label>
           <PasswordInput
             id="confirmarNovaSenha"
+            aria-required="true"
             autoComplete="new-password"
             className="mb-1"
             {...register("confirmarNovaSenha")}

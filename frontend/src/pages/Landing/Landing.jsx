@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { useToast } from "../../features/ui/ToastProvider";
+import { AvisoObrigatorios, MarcaObrigatorio } from "../../components/CampoObrigatorio";
 import { FaqAccordion } from "../../components/FaqAccordion";
 import { FieldError } from "../../components/FieldError";
 import { Gaveta } from "../../components/Gaveta";
@@ -378,11 +379,14 @@ function FaleComTime() {
           noValidate
           className="rounded-2xl border border-line bg-white p-6 shadow-sm"
         >
+          <AvisoObrigatorios />
           <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="nome">
-            Nome
+            Nome <MarcaObrigatorio />
           </label>
           <input
             id="nome"
+            aria-required="true"
+            autoComplete="name"
             type="text"
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("nome")}
@@ -393,10 +397,12 @@ function FaleComTime() {
           </FieldError>
 
           <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="instituicao">
-            Instituição
+            Instituição <MarcaObrigatorio />
           </label>
           <input
             id="instituicao"
+            aria-required="true"
+            autoComplete="organization"
             type="text"
             placeholder="Ex: Polícia Militar de Alagoas"
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
@@ -408,10 +414,12 @@ function FaleComTime() {
           </FieldError>
 
           <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="email">
-            E-mail
+            E-mail <MarcaObrigatorio />
           </label>
           <input
             id="email"
+            aria-required="true"
+            autoComplete="email"
             type="email"
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("email")}
@@ -422,10 +430,11 @@ function FaleComTime() {
           </FieldError>
 
           <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="mensagem">
-            Mensagem
+            Mensagem <MarcaObrigatorio />
           </label>
           <textarea
             id="mensagem"
+            aria-required="true"
             rows={3}
             className="mb-1 w-full resize-none rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("mensagem")}

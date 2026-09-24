@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { AvisoObrigatorios, MarcaObrigatorio } from "../../components/CampoObrigatorio";
 import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { FieldError } from "../../components/FieldError";
 import { ForcaSenha } from "../../components/ForcaSenha";
@@ -142,11 +143,13 @@ export default function PrimeiroAcesso() {
               <p className="mb-8 text-sm text-text-muted">CPF {mascararCpf(conta.cpf)}</p>
 
               <form onSubmit={handleSubmit(onSubmitSenha)} noValidate>
+                <AvisoObrigatorios />
                 <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="senha">
-                  Nova senha
+                  Nova senha <MarcaObrigatorio />
                 </label>
                 <PasswordInput
                   id="senha"
+                  aria-required="true"
                   autoComplete="new-password"
                   className="mb-1"
                   {...register("senha")}
@@ -159,10 +162,11 @@ export default function PrimeiroAcesso() {
                 <ForcaSenha senha={senhaDigitada} id="senha-dica" />
 
                 <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="confirmarSenha">
-                  Confirmar senha
+                  Confirmar senha <MarcaObrigatorio />
                 </label>
                 <PasswordInput
                   id="confirmarSenha"
+                  aria-required="true"
                   autoComplete="new-password"
                   className="mb-1"
                   {...register("confirmarSenha")}
@@ -194,6 +198,7 @@ export default function PrimeiroAcesso() {
               <label className="mb-4 flex items-start gap-2 text-xs text-text-dark">
                 <input
                   type="checkbox"
+                  aria-required="true"
                   checked={aceiteMarcado}
                   onChange={(evento) => setAceiteMarcado(evento.target.checked)}
                   className="mt-0.5"

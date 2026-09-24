@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { AvisoObrigatorios, MarcaObrigatorio } from "../../components/CampoObrigatorio";
 import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { FieldError } from "../../components/FieldError";
 import { ForcaSenha } from "../../components/ForcaSenha";
@@ -111,11 +112,13 @@ export default function RedefinirSenha() {
               <p className="mb-8 text-sm text-text-muted">Olá, {conta.nome.split(" ")[0]}.</p>
 
               <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                <AvisoObrigatorios />
                 <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="senha">
-                  Nova senha
+                  Nova senha <MarcaObrigatorio />
                 </label>
                 <PasswordInput
                   id="senha"
+                  aria-required="true"
                   autoComplete="new-password"
                   className="mb-1"
                   {...register("senha")}
@@ -128,10 +131,11 @@ export default function RedefinirSenha() {
                 <ForcaSenha senha={senhaDigitada} id="senha-dica" />
 
                 <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="confirmarSenha">
-                  Confirmar senha
+                  Confirmar senha <MarcaObrigatorio />
                 </label>
                 <PasswordInput
                   id="confirmarSenha"
+                  aria-required="true"
                   autoComplete="new-password"
                   className="mb-1"
                   {...register("confirmarSenha")}

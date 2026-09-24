@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
+import { AvisoObrigatorios, MarcaObrigatorio } from "../../components/CampoObrigatorio";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { FieldError } from "../../components/FieldError";
 import { useIntegrante } from "../../features/integrantes/queries";
@@ -16,12 +17,20 @@ const navItems = [{ to: "/educador-fisico", label: "Painel do Educador Físico",
 // TAF é modelado como tipo estruturado de RegistroSaude com múltiplos componentes
 // fixos (corrida, flexão, abdominal, barra) — não como registro de valor único.
 // Ver "Reunião com o Coronel Raumário" (issue #7) em agents/claude.md.
+// Campo vazio vira `undefined` antes do coerce: `z.coerce.number("")` dá 0, e
+// um campo marcado como obrigatório (issue #147) passava vazio e salvava zero
+// repetições sem avisar. Mesmo padrão de lib/medidasCorporais.js.
+const repeticoesSchema = z.preprocess(
+  (valor) => (typeof valor === "string" && valor.trim() === "" ? undefined : valor),
+  z.coerce.number({ invalid_type_error: "Informe um número" }).int().min(0, "Informe um número válido"),
+);
+
 const cadastroTafSchema = z.object({
   data: dataRegistroSchema,
   corridaTempo: z.string().min(1, "Informe o tempo da corrida"),
-  flexoes: z.coerce.number({ invalid_type_error: "Informe um número" }).int().min(0, "Informe um número válido"),
-  abdominais: z.coerce.number({ invalid_type_error: "Informe um número" }).int().min(0, "Informe um número válido"),
-  barra: z.coerce.number({ invalid_type_error: "Informe um número" }).int().min(0, "Informe um número válido"),
+  flexoes: repeticoesSchema,
+  abdominais: repeticoesSchema,
+  barra: repeticoesSchema,
   resultado: z.enum(["apto", "inapto"], { errorMap: () => ({ message: "Selecione o resultado" }) }),
 });
 
@@ -68,17 +77,23 @@ export default function CadastroTAF() {
         {/* Só para leitor de tela: navegação por títulos (issue #146). */}
         <h2 className="sr-only">Resultados do teste</h2>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <AvisoObrigatorios />
           <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="data">
-            Data do teste
+            Data do teste <MarcaObrigatorio />
           </label>
           <input
             id="data"
+            aria-required="true"
             type="text"
             placeholder="dd/mm/aaaa"
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("data")}
-            {...fieldErrorProps(errors.data, "data")}
+            {...fieldErrorProps(errors.data, "data", { dica: true })}
           />
+          {/* Formato fora do placeholder, que some ao digitar (issue #147). */}
+          <p id="data-dica" className="mb-1 text-xs text-text-muted">
+            Formato dd/mm/aaaa, ex: 05/03/2026.
+          </p>
           <FieldError id="data-erro" className="mb-3">
             {errors.data?.message}
           </FieldError>
@@ -88,10 +103,11 @@ export default function CadastroTAF() {
             <div className="mb-1 grid grid-cols-2 gap-3">
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="corridaTempo">
-                  Corrida — tempo
+                  Corrida — tempo <MarcaObrigatorio />
                 </label>
                 <input
                   id="corridaTempo"
+                  aria-required="true"
                   type="text"
                   placeholder="Ex: 11min 30s"
                   className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
@@ -104,10 +120,11 @@ export default function CadastroTAF() {
               </div>
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="flexoes">
-                  Flexão — repetições
+                  Flexão — repetições <MarcaObrigatorio />
                 </label>
                 <input
                   id="flexoes"
+                  aria-required="true"
                   type="number"
                   min="0"
                   className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
@@ -123,10 +140,11 @@ export default function CadastroTAF() {
             <div className="mb-1 mt-3 grid grid-cols-2 gap-3">
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="abdominais">
-                  Abdominal — repetições
+                  Abdominal — repetições <MarcaObrigatorio />
                 </label>
                 <input
                   id="abdominais"
+                  aria-required="true"
                   type="number"
                   min="0"
                   className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
@@ -139,10 +157,11 @@ export default function CadastroTAF() {
               </div>
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="barra">
-                  Barra — repetições
+                  Barra — repetições <MarcaObrigatorio />
                 </label>
                 <input
                   id="barra"
+                  aria-required="true"
                   type="number"
                   min="0"
                   className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
@@ -157,10 +176,11 @@ export default function CadastroTAF() {
           </fieldset>
 
           <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="resultado">
-            Resultado
+            Resultado <MarcaObrigatorio />
           </label>
           <select
             id="resultado"
+            aria-required="true"
             defaultValue=""
             className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
             {...register("resultado")}
