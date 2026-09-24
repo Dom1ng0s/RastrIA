@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { Link, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 
+import { AvisoObrigatorios, MarcaObrigatorio } from "../../components/CampoObrigatorio";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { BaixarHistoricoMenu } from "../../components/BaixarHistoricoMenu";
 import { FieldError } from "../../components/FieldError";
@@ -145,11 +146,13 @@ function SecaoEditarPerfil({ ehUsuarioIndividual }) {
         <>
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <AvisoObrigatorios />
             <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="pesoKg">
-              Peso (kg)
+              Peso (kg) <MarcaObrigatorio />
             </label>
             <input
               id="pesoKg"
+              aria-required="true"
               type="number"
               step="0.1"
               min={PESO_KG_MIN}
@@ -163,10 +166,11 @@ function SecaoEditarPerfil({ ehUsuarioIndividual }) {
             </FieldError>
 
             <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="alturaCm">
-              Altura (cm)
+              Altura (cm) <MarcaObrigatorio />
             </label>
             <input
               id="alturaCm"
+              aria-required="true"
               type="number"
               min={ALTURA_CM_MIN}
               max={ALTURA_CM_MAX}
@@ -234,8 +238,12 @@ function SecaoEditarPerfil({ ehUsuarioIndividual }) {
                 placeholder="(82) 99999-9999"
                 className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
                 {...register("contatoEmergenciaTelefone")}
-                {...fieldErrorProps(errors.contatoEmergenciaTelefone, "contatoEmergenciaTelefone")}
+                {...fieldErrorProps(errors.contatoEmergenciaTelefone, "contatoEmergenciaTelefone", { dica: true })}
               />
+              {/* Formato fora do placeholder, que some ao digitar (issue #147). */}
+              <p id="contatoEmergenciaTelefone-dica" className="mb-1 text-xs text-text-muted">
+                Com DDD, ex: (82) 99999-9999.
+              </p>
               <FieldError id="contatoEmergenciaTelefone-erro" className="mb-4">
                 {errors.contatoEmergenciaTelefone?.message}
               </FieldError>

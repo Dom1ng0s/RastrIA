@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { AvisoObrigatorios, MarcaObrigatorio } from "../../components/CampoObrigatorio";
 import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { FieldError } from "../../components/FieldError";
 import { PasswordInput } from "../../components/PasswordInput";
@@ -111,11 +112,13 @@ export default function Login() {
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <AvisoObrigatorios />
             <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="cpf">
-              CPF
+              CPF <MarcaObrigatorio />
             </label>
             <input
               id="cpf"
+              aria-required="true"
               type="text"
               inputMode="numeric"
               placeholder="000.000.000-00"
@@ -124,17 +127,22 @@ export default function Login() {
               {...register("cpf", {
                 onChange: (event) => setValue("cpf", formatarCpf(event.target.value)),
               })}
-              {...fieldErrorProps(errors.cpf, "cpf")}
+              {...fieldErrorProps(errors.cpf, "cpf", { dica: true })}
             />
+            {/* Formato fora do placeholder, que some ao digitar (issue #147). */}
+            <p id="cpf-dica" className="mb-1 text-xs text-text-muted">
+              Os 11 números — os pontos e o traço entram sozinhos.
+            </p>
             <FieldError id="cpf-erro" className="mb-3">
               {errors.cpf?.message}
             </FieldError>
 
             <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="senha">
-              Senha
+              Senha <MarcaObrigatorio />
             </label>
             <PasswordInput
               id="senha"
+              aria-required="true"
               autoComplete="current-password"
               className="mb-1"
               {...register("senha")}

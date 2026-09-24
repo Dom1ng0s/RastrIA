@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { fieldErrorProps } from "../lib/fieldA11y";
+import { AvisoObrigatorios, MarcaObrigatorio } from "./CampoObrigatorio";
 import { FieldError } from "./FieldError";
 import { Modal } from "./Modal";
 
@@ -59,11 +60,13 @@ export function ReportarProblemaModal({ telaAtual, onClose, onEnviado }) {
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <AvisoObrigatorios />
         <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="tela">
-          Em qual tela aconteceu?
+          Em qual tela aconteceu? <MarcaObrigatorio />
         </label>
         <input
           id="tela"
+          aria-required="true"
           type="text"
           placeholder="Ex: Meu Histórico, Solicitar Acompanhamento..."
           className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
@@ -75,10 +78,11 @@ export function ReportarProblemaModal({ telaAtual, onClose, onEnviado }) {
         </FieldError>
 
         <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="descricao">
-          O que aconteceu?
+          O que aconteceu? <MarcaObrigatorio />
         </label>
         <textarea
           id="descricao"
+          aria-required="true"
           rows={4}
           placeholder="Descreva o que você esperava que acontecesse e o que aconteceu de fato."
           className="mb-1 w-full resize-none rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"

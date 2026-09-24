@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import { AuthBrandPanel } from "../../components/AuthBrandPanel";
+import { AvisoObrigatorios, MarcaObrigatorio } from "../../components/CampoObrigatorio";
 import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { FieldError } from "../../components/FieldError";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
@@ -69,11 +70,13 @@ export default function EsqueciSenha() {
               </p>
 
               <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                <AvisoObrigatorios />
                 <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="email">
-                  E-mail
+                  E-mail <MarcaObrigatorio />
                 </label>
                 <input
                   id="email"
+                  aria-required="true"
                   type="email"
                   placeholder="voce@email.com"
                   autoComplete="email"

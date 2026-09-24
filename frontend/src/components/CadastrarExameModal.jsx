@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { dataExibicaoParaFormulario, dataRegistroSchema } from "../lib/dataRegistro";
 import { fieldErrorProps } from "../lib/fieldA11y";
+import { AvisoObrigatorios, MarcaObrigatorio } from "./CampoObrigatorio";
 import { FieldError } from "./FieldError";
 import { Modal } from "./Modal";
 
@@ -101,11 +102,13 @@ export function CadastrarExameModal({ onClose, onSalvar, registro }) {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <AvisoObrigatorios />
         <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="tipo">
-          Tipo de exame ou índice
+          Tipo de exame ou índice <MarcaObrigatorio />
         </label>
         <select
           id="tipo"
+          aria-required="true"
           defaultValue={registro?.indice ?? ""}
           className="mb-1 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
           {...register("tipo")}
@@ -127,10 +130,11 @@ export function CadastrarExameModal({ onClose, onSalvar, registro }) {
         <div className="mb-1 grid grid-cols-2 gap-3">
           <div>
             <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="valor">
-              Valor
+              Valor <MarcaObrigatorio />
             </label>
             <input
               id="valor"
+              aria-required="true"
               type="text"
               placeholder="Ex: 98 mg/dL"
               className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
@@ -143,16 +147,21 @@ export function CadastrarExameModal({ onClose, onSalvar, registro }) {
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="data">
-              Data
+              Data <MarcaObrigatorio />
             </label>
             <input
               id="data"
+              aria-required="true"
               type="text"
               placeholder="dd/mm/aaaa"
               className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark"
               {...register("data")}
-              {...fieldErrorProps(errors.data, "data")}
+              {...fieldErrorProps(errors.data, "data", { dica: true })}
             />
+            {/* Formato fora do placeholder, que some ao digitar (issue #147). */}
+            <p id="data-dica" className="mb-1 text-xs text-text-muted">
+              Formato dd/mm/aaaa, ex: 05/03/2026.
+            </p>
             <FieldError id="data-erro" className="mt-1">
               {errors.data?.message}
             </FieldError>

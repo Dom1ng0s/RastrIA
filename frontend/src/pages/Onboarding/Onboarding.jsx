@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+import { AvisoObrigatorios, MarcaObrigatorio } from "../../components/CampoObrigatorio";
 import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { FieldError } from "../../components/FieldError";
 import { Logo } from "../../components/Logo";
@@ -45,11 +46,13 @@ export default function Onboarding() {
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <AvisoObrigatorios />
           <label className="mb-1.5 block text-xs font-medium text-text-dark" htmlFor="pesoKg">
-            Peso (kg)
+            Peso (kg) <MarcaObrigatorio />
           </label>
           <input
             id="pesoKg"
+            aria-required="true"
             type="number"
             step="0.1"
             min={PESO_KG_MIN}
@@ -64,10 +67,11 @@ export default function Onboarding() {
           </FieldError>
 
           <label className="mb-1.5 mt-3 block text-xs font-medium text-text-dark" htmlFor="alturaCm">
-            Altura (cm)
+            Altura (cm) <MarcaObrigatorio />
           </label>
           <input
             id="alturaCm"
+            aria-required="true"
             type="number"
             min={ALTURA_CM_MIN}
             max={ALTURA_CM_MAX}
