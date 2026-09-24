@@ -90,7 +90,7 @@ function ToggleLinha({ rotulo, descricao, ativo, onToggle }) {
       onClick={onToggle}
       className="flex w-full items-center justify-between gap-4 rounded-lg border border-line px-4 py-3 text-left text-sm font-medium hover:bg-bg-tint"
     >
-      <span>
+      <span className="min-w-0 break-words">
         {rotulo}
         {descricao && <span className="mt-0.5 block text-xs font-normal text-text-muted">{descricao}</span>}
       </span>

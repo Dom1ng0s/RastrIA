@@ -205,8 +205,11 @@ export function DashboardLayout({ title, paginaAtual, navItems, children, onHelp
         </Gaveta>
       )}
 
-      <div className="flex-1 bg-bg-tint">
-        <header className="flex items-center gap-3 border-b border-line bg-white px-5 py-5 md:px-8">
+      {/* min-w-0: item flex não encolhe abaixo da largura mínima do próprio
+          conteúdo por padrão — a coluna inteira crescia além da tela a 320px
+          (zoom de 400%) e forçava rolagem horizontal (WCAG 1.4.10, #161). */}
+      <div className="min-w-0 flex-1 bg-bg-tint">
+        <header className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line bg-white px-5 py-5 md:px-8">
           <button
             type="button"
             aria-label="Abrir menu"
@@ -218,7 +221,10 @@ export function DashboardLayout({ title, paginaAtual, navItems, children, onHelp
           >
             <Menu size={22} aria-hidden="true" />
           </button>
-          <h1 className="text-xl font-semibold text-primary">{title}</h1>
+          {/* flex-wrap no header + break-words no título: com "Fonte grande" ou
+            "Espaçamento de texto" o título e os ícones não cabem numa linha a
+            320px — os ícones descem em vez de empurrar a página (#161). */}
+          <h1 className="min-w-0 break-words text-xl font-semibold text-primary">{title}</h1>
           <div className="ml-auto flex items-center gap-1">
             <ThemeToggle />
             <NotificacoesMenu papel={papel} />
