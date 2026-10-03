@@ -36,7 +36,10 @@ const PREFERENCIAS_DESCRITAS = {
   modoSimplificado: "Modo simplificado — esconde elementos decorativos.",
   espacamentoTexto: "Espaçamento de texto ampliado — mais espaço entre linhas, letras, palavras e parágrafos.",
   daltonismo: "Filtro para daltonismo — troca verde/vermelho por azul/laranja nos indicadores de estado.",
-  altoContraste: "Alto contraste — textos secundários mais escuros, bordas mais fortes, links sublinhados.",
+  // "mais contraste", não "mais escuros" (issue #173): no tema escuro o efeito
+  // é o oposto — o texto secundário clareia. A descrição vale para os dois.
+  altoContraste:
+    "Alto contraste — textos secundários com mais contraste contra o fundo, bordas mais fortes, links sublinhados.",
   reduzirMovimento: "Reduzir movimento — desliga animações, transições e rolagem suave.",
   alvosGrandes: "Botões e áreas de toque maiores — mínimo de 44 × 44 pixels.",
   focoReforcado: "Destaque de foco reforçado — contorno mais grosso, em amarelo e preto.",
