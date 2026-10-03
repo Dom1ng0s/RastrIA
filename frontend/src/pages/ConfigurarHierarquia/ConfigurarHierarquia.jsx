@@ -33,6 +33,10 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
     return (
       <div className="flex items-center gap-2">
         <input
+          // O foco automático só acontece depois que a pessoa clicou em
+          // "Renomear": é continuação da ação dela, não foco roubado ao abrir a
+          // tela, que é o que a regra protege.
+          // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
           type="text"
           value={valor}

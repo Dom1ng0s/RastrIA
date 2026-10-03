@@ -18,8 +18,8 @@ export default function HistoricoAtendimentos() {
     <DashboardLayout title="Meus Atendimentos" navItems={navItems}>
       <p className="mb-6 text-sm text-text-muted">
         Atendimentos já realizados com profissionais da sua instituição — complementa o seu
-        histórico de exames em "Meu Histórico". Para solicitar um novo, acesse "Solicitar
-        Acompanhamento" no menu lateral.
+        histórico de exames em &ldquo;Meu Histórico&rdquo;. Para solicitar um novo, acesse
+        &ldquo;Solicitar Acompanhamento&rdquo; no menu lateral.
       </p>
 
       <div className="space-y-3">
