@@ -41,6 +41,35 @@ confirmação com leitor de tela real é a seção 2 do roteiro manual.
 A segregação de acesso por papel (`RotaProtegida`) também ficou coberta: todos
 os pares papel × rota de outro papel.
 
+## Segunda passada — revisão visual (03/10/2026, mesmo dia)
+
+Logo depois do fechamento acima, uma varredura visual e de layout (34 rotas ×
+7 combinações de tema e preferências, medindo overflow, truncamento, contraste
+recalculado e tamanho de alvo) encontrou **seis** pontos que a verificação
+automática de acessibilidade não acusava. Todos corrigidos e fechados:
+
+| Issue | Achado | Por que o axe não pegava |
+|---|---|---|
+| #168 | "Não lida" da notificação só por cor, fundo e peso | estado visual sem equivalente programático não é violação de regra isolada |
+| #170 | Badges sem variante de tema escuro — aviso de pendências virava faixa quase branca | o contraste do texto passava em AA; o problema era de tema |
+| #169 | Quatro alvos de toque em 18–20px | a 2.5.8 não está no conjunto de regras que o axe roda por padrão |
+| #172 | Nome clicável sem aparência de link | descoberta, não conformidade |
+| #171 | "Espaçamento de texto" abrindo faixas vazias nos cards | nenhum conteúdo era perdido |
+| #173 | Descrição do alto contraste errada no tema escuro | é texto, não marcação |
+
+A varredura também confirmou o que está sadio: **zero** overflow horizontal em
+qualquer rota (inclusive 320px e com espaçamento ampliado), **zero** falha de
+contraste com o contraste recalculado nó a nó nas sete combinações, erros de
+formulário com `role="alert"` + `aria-invalid` + foco no primeiro campo
+inválido, foco visível sobre a sidebar escura, e nenhum `label-in-name`
+quebrado.
+
+A lição que fica registrada: **a cobertura automática não substitui olhar a
+tela.** Quatro dos seis achados são invisíveis para qualquer ferramenta.
+
+O teste de página ganhou asserção de tamanho de alvo (WCAG 2.5.8) em 9 rotas,
+para esse grupo específico não voltar.
+
 ## Limitações conhecidas
 
 1. **Segundo `<h1>` no tour guiado.** O `react-joyride` renderiza o título do
