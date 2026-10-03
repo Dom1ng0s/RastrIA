@@ -526,6 +526,13 @@ function SecaoAcessibilidade() {
         />
       </GrupoAcessibilidade>
 
+      <p className="text-xs text-text-muted">
+        <Link to="/acessibilidade" className="font-medium text-primary underline">
+          Saiba mais sobre a acessibilidade da Rastria
+        </Link>{" "}
+        — recursos, atalhos, nível de conformidade e como relatar uma barreira.
+      </p>
+
       <button
         type="button"
         onClick={() => {

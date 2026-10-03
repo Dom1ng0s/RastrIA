@@ -490,6 +490,9 @@ function Footer() {
             <Link to="/politica-de-privacidade" className="block hover:text-white">
               Política de Privacidade
             </Link>
+            <Link to="/acessibilidade" className="block hover:text-white">
+              Acessibilidade
+            </Link>
           </div>
         </div>
         <div>

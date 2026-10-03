@@ -1,4 +1,4 @@
-import { Flag, HelpCircle, ListChecks, LogOut, Menu, Settings, Compass, X } from "lucide-react";
+import { Accessibility, Flag, HelpCircle, ListChecks, LogOut, Menu, Settings, Compass, X } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -55,6 +55,13 @@ function HelpMenu({ onRever }) {
           >
             <ListChecks size={15} aria-hidden="true" /> Ver perguntas frequentes
           </a>
+          <Link
+            to="/acessibilidade"
+            onClick={() => fechar()}
+            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-text-dark hover:bg-bg-tint"
+          >
+            <Accessibility size={15} aria-hidden="true" /> Acessibilidade
+          </Link>
         </div>
       )}
     </div>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { Logo } from "../../components/Logo";
+import { RodapePublico } from "../../components/RodapePublico";
 import { TERMO_CONSENTIMENTO } from "../../features/consentimento/termo";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { useTituloPagina } from "../../lib/tituloPagina";
@@ -140,6 +141,8 @@ export default function PoliticaDePrivacidade() {
           </section>
         </div>
       </ConteudoPrincipal>
+
+      <RodapePublico atual="/politica-de-privacidade" />
     </div>
   );
 }
