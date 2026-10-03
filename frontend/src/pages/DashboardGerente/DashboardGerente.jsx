@@ -102,7 +102,7 @@ export default function DashboardGerente() {
             >
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full badge-atencao">
-                  <AlertTriangle size={16} />
+                  <AlertTriangle aria-hidden="true" size={16} />
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{entrada.nome}</p>

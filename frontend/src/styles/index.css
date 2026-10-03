@@ -120,6 +120,57 @@ html.espacamento-texto p {
   margin-bottom: 2em !important;
 }
 
+/* Filtro para daltonismo (issue #138) — troca a paleta de estados
+   verde/vermelho (indistinguível na deuteranopia e na protanopia, as formas
+   mais comuns) pelo par azul/laranja, que se mantém separado em qualquer tipo
+   de daltonismo e também em escala de cinza, por diferença de luminosidade.
+   As medalhas do pódio (ouro/prata/bronze) ganham a mesma separação.
+
+   Isto COMPLEMENTA os textos e rótulos: a posição, o "Você" do ranking e o
+   "cumprido/pendente" dos critérios de senha continuam em texto para todos,
+   com ou sem este filtro ligado. */
+html.daltonismo .text-seafoam-escuro,
+html.daltonismo .badge-normal {
+  color: #0b5394;
+}
+html.daltonismo .badge-normal {
+  background: #e3edf8;
+}
+html.daltonismo .text-coral-escuro,
+html.daltonismo .badge-atencao,
+html.daltonismo .badge-alterado {
+  color: #8a4b00;
+}
+html.daltonismo .badge-atencao {
+  background: #fdf0dd;
+}
+html.daltonismo .badge-alterado {
+  background: #f9e2c2;
+}
+html.daltonismo .bg-seafoam-escuro {
+  background-color: #0b5394;
+}
+html.daltonismo .border-seafoam-escuro {
+  border-color: #0b5394;
+}
+html.daltonismo .text-medalha-ouro {
+  color: #8a4b00;
+}
+html.daltonismo .text-medalha-prata {
+  color: #5a5a5a;
+}
+html.daltonismo .text-medalha-bronze {
+  color: #0b5394;
+}
+html.daltonismo.dark .text-seafoam-escuro,
+html.daltonismo.dark .text-medalha-bronze {
+  color: #8ab6e8;
+}
+html.daltonismo.dark .text-coral-escuro,
+html.daltonismo.dark .text-medalha-ouro {
+  color: #e8b06a;
+}
+
 /* Alto contraste (issue #137) — acima do mínimo AA, nos moldes do WCAG 1.4.6
    (AAA, 7:1). Segue `prefers-contrast: more` do sistema (no iOS/macOS,
    "Aumentar contraste") até o usuário escolher na aba Acessibilidade. */

@@ -15,3 +15,8 @@ backend/.env
 frontend/node_modules/
 frontend/dist/
 frontend/.env
+
+# Playwright (issue #151)
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/

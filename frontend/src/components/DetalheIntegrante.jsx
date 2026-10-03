@@ -31,7 +31,7 @@ export function DetalheIntegrante({ nome, voltarPara, navItems, tituloPagina, es
   return (
     <DashboardLayout title={tituloPagina} paginaAtual={nome} navItems={navItems} tituloNoConteudo>
       <Link to={voltarPara} className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
-        <ArrowLeft size={16} /> Voltar
+        <ArrowLeft aria-hidden="true" size={16} /> Voltar
       </Link>
 
       <h1 className="mb-6 text-xl font-semibold text-primary">{nome}</h1>
@@ -50,7 +50,7 @@ export function DetalheIntegrante({ nome, voltarPara, navItems, tituloPagina, es
               to={`/educador-fisico/aluno/${id}/taf`}
               className="btn-primary flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold"
             >
-              <ClipboardPlus size={14} /> Cadastrar TAF
+              <ClipboardPlus aria-hidden="true" size={14} /> Cadastrar TAF
             </Link>
           )}
         </div>

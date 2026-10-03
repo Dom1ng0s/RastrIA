@@ -29,6 +29,24 @@ const cspMetaTag = () => ({
 
 export default defineConfig({
   plugins: [react(), cspMetaTag()],
+  // Vitest + Testing Library (issue #123). `globals` para `describe`/`it`/`expect`
+  // sem import em cada arquivo; `setupTests.js` traz os matchers do jest-dom e
+  // limpa o DOM entre testes.
+  // O Vitest transforma os arquivos de teste pelo caminho SSR, onde o
+  // @vitejs/plugin-react não aplica o runtime automático de JSX — sem isto,
+  // todo teste de componente falha com "React is not defined".
+  esbuild: { jsx: "automatic" },
+  test: {
+    // `node` por default: teste de regra pura (lib/) não precisa de DOM, e
+    // levantar o jsdom custa ~100s na máquina de desenvolvimento. Teste de
+    // componente pede o ambiente no topo do arquivo:
+    //   // @vitest-environment jsdom
+    environment: "node",
+    globals: true,
+    setupFiles: "./src/setupTests.js",
+    css: false,
+    include: ["src/**/*.test.{js,jsx}"],
+  },
   // Defesa em profundidade para as CVEs de dev server do Vite/esbuild (issue #106):
   // manter o servidor de desenvolvimento preso ao loopback, sem expor na rede local.
   server: {

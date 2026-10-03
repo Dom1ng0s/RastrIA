@@ -36,7 +36,10 @@ const PESSOAS = {
   1: { nome: "Sgt. Almeida", batalhao: "1º Batalhão", companhia: "1ª Companhia" },
   2: { nome: "Cb. Ferreira", batalhao: "2º Batalhão", companhia: "1ª Companhia" },
   3: { nome: "Sd. Rocha", batalhao: "1º Batalhão", companhia: "2ª Companhia" },
-  4: { nome: "Você", batalhao: "1º Batalhão", companhia: "2ª Companhia" },
+  // O próprio usuário logado. O nome é o nome mesmo: quem é "você" na lista é
+  // marcado pela etiqueta "Você" + `aria-current` na tela (issue #138), não por
+  // trocar o nome da pessoa — que era o que o mock fazia antes.
+  4: { nome: "Sd. Pereira", batalhao: "1º Batalhão", companhia: "2ª Companhia" },
   5: { nome: "Cb. Nunes", batalhao: "3º Batalhão", companhia: "1ª Companhia" },
   6: { nome: "Sd. Barros", batalhao: "2º Batalhão", companhia: "2ª Companhia" },
   7: { nome: "Sgt. Lima", batalhao: "3º Batalhão", companhia: "2ª Companhia" },

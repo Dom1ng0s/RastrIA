@@ -1,4 +1,4 @@
-import { Flag, HelpCircle, ListChecks, LogOut, Menu, Settings, Compass, X } from "lucide-react";
+import { Accessibility, Flag, HelpCircle, ListChecks, LogOut, Menu, Settings, Compass, X } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -55,6 +55,13 @@ function HelpMenu({ onRever }) {
           >
             <ListChecks size={15} aria-hidden="true" /> Ver perguntas frequentes
           </a>
+          <Link
+            to="/acessibilidade"
+            onClick={() => fechar()}
+            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-text-dark hover:bg-bg-tint"
+          >
+            <Accessibility size={15} aria-hidden="true" /> Acessibilidade
+          </Link>
         </div>
       )}
     </div>
@@ -88,7 +95,7 @@ function SidebarContent({ navItems, location, onNavigate, onReportarProblema }) 
                 location.pathname === item.to ? "active" : ""
               }`}
             >
-              <item.icon size={18} />
+              <item.icon size={18} aria-hidden="true" />
               {item.label}
             </Link>
           ))}
@@ -104,7 +111,7 @@ function SidebarContent({ navItems, location, onNavigate, onReportarProblema }) 
             location.pathname.startsWith("/perfil") ? "active" : ""
           }`}
         >
-          <Settings size={18} />
+          <Settings aria-hidden="true" size={18} />
           Configurações
         </Link>
         <button
@@ -115,7 +122,7 @@ function SidebarContent({ navItems, location, onNavigate, onReportarProblema }) 
           }}
           className="nav-item flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium"
         >
-          <Flag size={18} />
+          <Flag aria-hidden="true" size={18} />
           Reportar problema
         </button>
         <button
@@ -123,7 +130,7 @@ function SidebarContent({ navItems, location, onNavigate, onReportarProblema }) 
           onClick={sair}
           className="nav-item flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium"
         >
-          <LogOut size={18} />
+          <LogOut aria-hidden="true" size={18} />
           Sair
         </button>
       </div>

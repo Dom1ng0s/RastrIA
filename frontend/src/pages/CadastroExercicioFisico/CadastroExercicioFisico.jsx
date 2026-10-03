@@ -42,7 +42,7 @@ export default function CadastroExercicioFisico() {
         to="/usuario/cadastrar-informacoes"
         className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary"
       >
-        <ArrowLeft size={16} /> Voltar
+        <ArrowLeft aria-hidden="true" size={16} /> Voltar
       </Link>
 
       <div className="max-w-[420px] rounded-2xl bg-white p-6 shadow-sm">

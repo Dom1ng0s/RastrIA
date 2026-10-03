@@ -33,6 +33,10 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
     return (
       <div className="flex items-center gap-2">
         <input
+          // O foco automático só acontece depois que a pessoa clicou em
+          // "Renomear": é continuação da ação dela, não foco roubado ao abrir a
+          // tela, que é o que a regra protege.
+          // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
           type="text"
           value={valor}
@@ -49,7 +53,7 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
           className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-1.5 text-sm text-text-dark"
         />
         <button type="button" onClick={salvar} aria-label={`Salvar novo nome de ${nomeAcessivel}`} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-seafoam-escuro hover:bg-bg-tint">
-          <Check size={18} />
+          <Check aria-hidden="true" size={18} />
         </button>
         <button
           type="button"
@@ -60,7 +64,7 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
           aria-label={`Cancelar edição de ${nomeAcessivel}`}
           className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-bg-tint hover:text-text-dark"
         >
-          <X size={18} />
+          <X aria-hidden="true" size={18} />
         </button>
       </div>
     );
@@ -76,7 +80,7 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
           aria-label={`Renomear ${nomeAcessivel}`}
           className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-bg-tint hover:text-primary"
         >
-          <Pencil size={15} />
+          <Pencil aria-hidden="true" size={15} />
         </button>
         <button
           type="button"
@@ -86,7 +90,7 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
           aria-label={`Excluir ${nomeAcessivel}`}
           className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-bg-tint hover:text-coral-escuro"
         >
-          <Trash2 size={15} />
+          <Trash2 aria-hidden="true" size={15} />
         </button>
       </div>
     </div>

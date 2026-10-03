@@ -5,6 +5,7 @@ import { AnuncioDeRota } from "../features/acessibilidade/AnuncioDeRota";
 import { AtalhosTeclado } from "../features/acessibilidade/AtalhosTeclado";
 import { RotaProtegida } from "../features/auth/RotaProtegida";
 import { SessaoInativa } from "../features/auth/SessaoInativa";
+import Acessibilidade from "../pages/Acessibilidade/Acessibilidade";
 import AlterarSenha from "../pages/AlterarSenha/AlterarSenha";
 import CadastroExercicioFisico from "../pages/CadastroExercicioFisico/CadastroExercicioFisico";
 import CadastroInformacoes from "../pages/CadastroInformacoes/CadastroInformacoes";
@@ -69,6 +70,8 @@ export function AppRoutes() {
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/termos-de-uso" element={<TermosDeUso />} />
       <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
+      {/* Página de acessibilidade do eMAG (issue #150) — pública, como as legais. */}
+      <Route path="/acessibilidade" element={<Acessibilidade />} />
 
       {/* Configurações — qualquer papel autenticado (ver issues #72 e #88).
           A rota continua sendo /perfil; o menu lateral a chama de "Configurações". */}

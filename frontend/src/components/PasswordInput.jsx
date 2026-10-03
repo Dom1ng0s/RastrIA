@@ -28,7 +28,7 @@ export const PasswordInput = forwardRef(function PasswordInput({ id, className =
         aria-pressed={visivel}
         className="absolute right-1.5 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-text-muted hover:text-text-dark"
       >
-        {visivel ? <EyeOff size={18} /> : <Eye size={18} />}
+        {visivel ? <EyeOff aria-hidden="true" size={18} /> : <Eye aria-hidden="true" size={18} />}
       </button>
     </div>
   );

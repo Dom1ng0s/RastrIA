@@ -196,13 +196,13 @@ function TrustStrip() {
     <section className="border-y border-line bg-bg-tint">
       <div className="mx-auto flex max-w-[1180px] flex-wrap justify-center px-6 py-6 text-sm font-medium text-text-dark">
         <span className="mx-6 my-1 flex items-center gap-2">
-          <Lock size={16} className="text-primary" /> Dado sensível protegido (LGPD)
+          <Lock aria-hidden="true" size={16} className="text-primary" /> Dado sensível protegido (LGPD)
         </span>
         <span className="mx-6 my-1 flex items-center gap-2">
-          <ShieldCheck size={16} className="text-primary" /> Profissionais com CRM/CREF verificado
+          <ShieldCheck aria-hidden="true" size={16} className="text-primary" /> Profissionais com CRM/CREF verificado
         </span>
         <span className="mx-6 my-1 flex items-center gap-2">
-          <Landmark size={16} className="text-primary" /> Modelo alinhado à NR-7/PCMSO
+          <Landmark aria-hidden="true" size={16} className="text-primary" /> Modelo alinhado à NR-7/PCMSO
         </span>
       </div>
     </section>
@@ -370,7 +370,7 @@ function FaleComTime() {
             href={`mailto:${EMAIL_CONTATO}`}
             className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
           >
-            <Mail size={16} /> {EMAIL_CONTATO}
+            <Mail aria-hidden="true" size={16} /> {EMAIL_CONTATO}
           </a>
         </div>
 
@@ -489,6 +489,9 @@ function Footer() {
             </Link>
             <Link to="/politica-de-privacidade" className="block hover:text-white">
               Política de Privacidade
+            </Link>
+            <Link to="/acessibilidade" className="block hover:text-white">
+              Acessibilidade
             </Link>
           </div>
         </div>

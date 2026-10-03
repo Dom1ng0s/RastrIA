@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { ConteudoPrincipal } from "../../components/ConteudoPrincipal";
 import { Logo } from "../../components/Logo";
+import { RodapePublico } from "../../components/RodapePublico";
 import { TERMO_CONSENTIMENTO } from "../../features/consentimento/termo";
 import { ThemeToggle } from "../../features/theme/ThemeToggle";
 import { useTituloPagina } from "../../lib/tituloPagina";
@@ -32,7 +33,7 @@ export default function PoliticaDePrivacidade() {
           <div className="flex items-center gap-4">
             <ThemeToggle />
             <Link to="/" className="flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
-              <ArrowLeft size={16} /> Voltar
+              <ArrowLeft aria-hidden="true" size={16} /> Voltar
             </Link>
           </div>
         </div>
@@ -140,6 +141,8 @@ export default function PoliticaDePrivacidade() {
           </section>
         </div>
       </ConteudoPrincipal>
+
+      <RodapePublico atual="/politica-de-privacidade" />
     </div>
   );
 }

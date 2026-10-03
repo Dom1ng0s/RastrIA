@@ -98,9 +98,9 @@ function ToggleLinha({ rotulo, descricao, ativo, onToggle }) {
       <span className="flex shrink-0 items-center gap-2" aria-hidden="true">
         <span className="text-xs font-medium text-text-muted">{ativo ? "Ativado" : "Desativado"}</span>
         {ativo ? (
-          <ToggleRight size={28} className="text-seafoam-escuro" />
+          <ToggleRight aria-hidden="true" size={28} className="text-seafoam-escuro" />
         ) : (
-          <ToggleLeft size={28} className="text-text-muted" />
+          <ToggleLeft aria-hidden="true" size={28} className="text-text-muted" />
         )}
       </span>
     </button>
@@ -264,7 +264,7 @@ function SecaoEditarPerfil({ ehUsuarioIndividual }) {
         to="/perfil/alterar-senha"
         className="btn-outline mt-6 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold"
       >
-        <KeyRound size={16} /> Alterar senha
+        <KeyRound aria-hidden="true" size={16} /> Alterar senha
       </Link>
     </div>
   );
@@ -326,7 +326,7 @@ function SecaoNotificacoes() {
   return (
     <div className="max-w-[520px] rounded-2xl border border-line bg-white p-7">
       <div className="mb-3 flex items-center gap-2 text-text-muted">
-        <Bell size={18} />
+        <Bell aria-hidden="true" size={18} />
         <h2 className="text-sm font-semibold text-text-dark">Notificações</h2>
       </div>
       <p className="text-xs text-text-muted">
@@ -426,6 +426,11 @@ function SecaoAcessibilidade() {
 
       <GrupoAcessibilidade id="acessibilidade-exibicao" titulo="Exibição">
         <PreferenciaAcessibilidade
+          chave="daltonismo"
+          rotulo="Filtro para daltonismo"
+          descricao="Troca verde/vermelho por azul/laranja nos indicadores de estado, badges e medalhas do ranking."
+        />
+        <PreferenciaAcessibilidade
           chave="fonteGrande"
           rotulo="Fonte grande"
           descricao="Aumenta o tamanho do texto em todo o sistema."
@@ -514,7 +519,19 @@ function SecaoAcessibilidade() {
           rotulo="Levar o foco ao título ao trocar de página"
           descricao="Ao abrir outra tela, o foco vai para o título dela. Desligado, o foco fica onde está e a troca só é anunciada."
         />
+        <PreferenciaAcessibilidade
+          chave="abrirLinksMesmaAba"
+          rotulo="Abrir anexos e links externos na mesma aba"
+          descricao="Nova aba tira o botão Voltar do caminho. Desligado, abre em nova aba e o link avisa isso."
+        />
       </GrupoAcessibilidade>
+
+      <p className="text-xs text-text-muted">
+        <Link to="/acessibilidade" className="font-medium text-primary underline">
+          Saiba mais sobre a acessibilidade da Rastria
+        </Link>{" "}
+        — recursos, atalhos, nível de conformidade e como relatar uma barreira.
+      </p>
 
       <button
         type="button"

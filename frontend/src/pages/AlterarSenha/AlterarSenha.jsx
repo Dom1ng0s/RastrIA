@@ -68,7 +68,7 @@ export default function AlterarSenha() {
         to="/perfil"
         className="mb-5 inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary"
       >
-        <ArrowLeft size={16} /> Voltar para Configurações
+        <ArrowLeft aria-hidden="true" size={16} /> Voltar para Configurações
       </Link>
 
       <div className="max-w-[400px] rounded-2xl border border-line bg-white p-7">

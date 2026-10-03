@@ -124,7 +124,7 @@ export default function SolicitarAcompanhamento() {
           <h2 className="sr-only">Solicitação em andamento</h2>
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full badge-atencao">
-              <Clock size={16} />
+              <Clock aria-hidden="true" size={16} />
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium">
@@ -169,7 +169,7 @@ export default function SolicitarAcompanhamento() {
                     : "border-line text-text-dark hover:bg-bg-tint"
                 }`}
               >
-                <tipo.icon size={16} />
+                <tipo.icon size={16} aria-hidden="true" />
                 {tipo.label}
               </button>
             ))}
@@ -194,7 +194,7 @@ export default function SolicitarAcompanhamento() {
                   <p className="truncate text-sm font-medium">{profissional.nome}</p>
                   <span className="block truncate text-xs text-text-muted">{profissional.especialidade}</span>
                   <div className="mt-1 flex items-center gap-1.5 text-xs text-seafoam-escuro">
-                    <Check size={12} className="shrink-0" />
+                    <Check aria-hidden="true" size={12} className="shrink-0" />
                     <span className="truncate">Disponível — {profissional.disponibilidade}</span>
                   </div>
                 </div>

@@ -24,7 +24,7 @@ export function AtendimentosRealizados({ navItems, tituloPagina, escopo, detalhe
     <DashboardLayout title={tituloPagina} paginaAtual="Atendimentos realizados" navItems={navItems} tituloNoConteudo>
       <h1 className="mb-1 text-xl font-semibold text-primary">Atendimentos realizados</h1>
       <p className="mb-6 text-sm text-text-muted">
-        Log dos atendimentos que você já concluiu. Diferente de "Meus pacientes"/"Meus alunos"
+        Log dos atendimentos que você já concluiu. Diferente de &ldquo;Meus pacientes&rdquo;/&ldquo;Meus alunos&rdquo;
         no painel, que mostra quem está sob seu acompanhamento agora.
       </p>
 

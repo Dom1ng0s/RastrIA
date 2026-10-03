@@ -20,6 +20,11 @@ export function Modal({ tituloId, descricaoId, papel = "dialog", seletorFocoInic
   useFocoPreso(dialogoRef, onClose, { seletorFocoInicial });
 
   return createPortal(
+    /* Fechar clicando fora é atalho de mouse. O equivalente de teclado não é um
+       papel ARIA neste fundo — seria um botão fantasma na ordem de tabulação —
+       e sim o Esc, que `useFocoPreso` trata, junto com o foco preso dentro do
+       diálogo. Por isso a exceção pontual à regra aqui. */
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       className="fixed inset-0 z-30 flex items-center justify-center bg-primary/35 p-4"
       onMouseDown={(evento) => {

@@ -29,8 +29,20 @@ export function ForcaSenha({ senha = "", id }) {
             style={{ width: `${largura}%` }}
           />
         </div>
-        <span className="w-16 shrink-0 text-right text-xs font-medium text-text-muted">
-          {senha ? nivel.label : ""}
+        {/* A barra é decorativa (aria-hidden); o nível só existia como cor até
+            a issue #138. Agora é mensagem de status (WCAG 4.1.3): anunciado
+            quando muda, sem roubar o foco de quem está digitando. */}
+        <span
+          role="status"
+          aria-live="polite"
+          className="w-16 shrink-0 text-right text-xs font-medium text-text-muted"
+        >
+          {senha && (
+            <>
+              <span className="sr-only">Força da senha: </span>
+              {nivel.label}
+            </>
+          )}
         </span>
       </div>
 
@@ -43,10 +55,13 @@ export function ForcaSenha({ senha = "", id }) {
             }`}
           >
             {criterio.ok ? (
-              <Check size={13} className="shrink-0" />
+              <Check aria-hidden="true" size={13} className="shrink-0" />
             ) : (
-              <X size={13} className="shrink-0 opacity-40" />
+              <X aria-hidden="true" size={13} className="shrink-0 opacity-40" />
             )}
+            {/* Cumprido vs. pendente era só cor + ícone sem rótulo (issue
+                #138): o leitor de tela lia "Mínimo 8 caracteres" nos dois casos. */}
+            <span className="sr-only">{criterio.ok ? "cumprido" : "pendente"}: </span>
             {criterio.label}
           </li>
         ))}
