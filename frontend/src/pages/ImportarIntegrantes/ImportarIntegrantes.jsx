@@ -1,11 +1,11 @@
 import { AlertTriangle, CheckCircle2, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 
+import { Cpf } from "../../components/Cpf";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { navItems } from "../DashboardGerente/DashboardGerente";
 import { processarPlanilhaIntegrantes } from "../../features/importarIntegrantes/planilha";
 import { useToast } from "../../features/ui/ToastProvider";
-import { mascararCpf } from "../../lib/cpf";
 
 const NOMES_COLUNA = {
   nomeCompleto: "Nome completo",
@@ -174,7 +174,7 @@ export default function ImportarIntegrantes() {
                   <tr key={registro.linha} className={`border-b border-line last:border-b-0 ${registro.erros.length > 0 ? "bg-coral/5" : ""}`}>
                     <td className="px-4 py-2.5 text-text-muted">{registro.linha}</td>
                     <td className="px-4 py-2.5">{registro.nomeCompleto || "—"}</td>
-                    <td className="px-4 py-2.5">{registro.cpf ? mascararCpf(registro.cpf) : "—"}</td>
+                    <td className="px-4 py-2.5"><Cpf valor={registro.cpf} /></td>
                     <td className="px-4 py-2.5">{registro.dataNascimento || "—"}</td>
                     <td className="px-4 py-2.5">{registro.sexo || "—"}</td>
                     <td className="px-4 py-2.5">{registro.contato || "—"}</td>

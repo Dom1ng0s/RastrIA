@@ -42,3 +42,18 @@ export function mascararCpf(valor) {
   if (cpf.length !== 11) return valor;
   return `${cpf.slice(0, 3)}.***.***-**`;
 }
+
+/**
+ * Como exibir um CPF em tela (issue #118). O default é mascarado: quem for
+ * mostrar o número completo precisa afirmar `proprioDono` explicitamente, o que
+ * torna a exceção visível na revisão de código em vez de silenciosa.
+ *
+ * `proprioDono` quer dizer "a tela é do dono do dado" (ex: Configurações ›
+ * Meus dados, confirmação de primeiro acesso) — nunca "o papel logado tem
+ * autoridade sobre essa pessoa". Gerente, médico e educador físico veem
+ * mascarado, mesmo sobre o próprio efetivo/paciente/aluno.
+ */
+export function exibirCpf(valor, { proprioDono = false } = {}) {
+  if (!valor) return "—";
+  return proprioDono ? formatarCpf(valor) : mascararCpf(valor);
+}
