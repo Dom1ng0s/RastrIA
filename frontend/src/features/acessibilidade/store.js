@@ -23,6 +23,9 @@ export const PREFERENCIAS = {
   // Escopo ainda será refinado com a equipe (issue #95).
   modoSimplificado: { padrao: false, classe: "modo-simplificado" },
   espacamentoTexto: { padrao: false, classe: "espacamento-texto" },
+  // Paleta de estados em azul/laranja no lugar de verde/vermelho (issue #138).
+  // Complementa — não substitui — os rótulos em texto, que valem para todos.
+  daltonismo: { padrao: false, classe: "daltonismo" },
   altoContraste: {
     padrao: false,
     classe: "alto-contraste",

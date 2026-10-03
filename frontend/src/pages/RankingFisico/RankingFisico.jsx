@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Trophy } from "lucide-react";
+import { Check, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { CampoBusca } from "../../components/CampoBusca";
@@ -114,12 +114,16 @@ export default function RankingFisico() {
             key={escopo.id}
             type="button"
             onClick={() => setEscopoId(escopo.id)}
-            className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+            // Selecionado era só borda/cor (issue #138): `aria-pressed` para o
+            // leitor de tela, check + negrito para quem não distingue a cor.
+            aria-pressed={escopoId === escopo.id}
+            className={`flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm transition-colors ${
               escopoId === escopo.id
-                ? "border-primary bg-bg-tint text-primary"
-                : "border-line text-text-dark hover:bg-bg-tint"
+                ? "border-primary bg-bg-tint font-semibold text-primary"
+                : "border-line font-medium text-text-dark hover:bg-bg-tint"
             }`}
           >
+            {escopoId === escopo.id && <Check size={14} aria-hidden="true" className="shrink-0" />}
             {escopo.label}
           </button>
         ))}
@@ -159,39 +163,62 @@ export default function RankingFisico() {
 
       {/* Só para leitor de tela: navegação por títulos (issue #146). */}
       <h2 className="sr-only">Classificação</h2>
-      <div className="space-y-2">
-        {ranking.isLoading && <SkeletonLista itens={5} />}
+      {ranking.isLoading && <SkeletonLista itens={5} />}
 
-        {ranking.isError && (
-          <EstadoErro title="Não foi possível carregar o ranking" onRetry={ranking.refetch} />
-        )}
+      {ranking.isError && (
+        <EstadoErro title="Não foi possível carregar o ranking" onRetry={ranking.refetch} />
+      )}
 
-        {classificacaoFiltrada.map((entrada) => (
-          <div
-            key={entrada.id}
-            className={`flex items-center justify-between rounded-xl bg-white p-4 shadow-sm ${
-              entrada.id === usuarioAtualId ? "border-l-4 border-seafoam-escuro" : ""
-            }`}
-          >
-            <div className="flex min-w-0 flex-1 items-center gap-3">
-              <span className="flex w-7 shrink-0 items-center justify-center text-sm font-semibold text-text-muted">
-                {entrada.posicao <= 3 ? (
-                  <Trophy aria-hidden="true" size={18} className={medalhaClasse[entrada.posicao]} />
-                ) : (
-                  entrada.posicao
-                )}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{entrada.nome}</p>
-                <p className="truncate text-xs text-text-muted">
-                  {entrada.batalhao} · {entrada.companhia}
-                </p>
+      {/* <ol>: a ordem É a informação — o leitor de tela anuncia "lista de N
+          itens" e a posição de cada um (issue #138). */}
+      <ol className="space-y-2">
+        {classificacaoFiltrada.map((entrada) => {
+          const ehVoce = entrada.id === usuarioAtualId;
+          return (
+            <li
+              key={entrada.id}
+              // aria-current: além da etiqueta "Você", marca a linha do próprio
+              // usuário para quem navega pela lista com leitor de tela.
+              aria-current={ehVoce ? "true" : undefined}
+              className={`flex items-center justify-between rounded-xl bg-white p-4 shadow-sm ${
+                ehVoce ? "border-l-4 border-seafoam-escuro" : ""
+              }`}
+            >
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                {/* O número do pódio não é mais substituído pelo troféu (issue
+                    #138): ouro e bronze são indistinguíveis para daltônicos, e o
+                    leitor de tela perdia a posição. Troféu vira enfeite ao lado. */}
+                <span className="flex shrink-0 items-center gap-1 text-sm font-semibold text-text-muted">
+                  <span className="w-5 text-right">
+                    {entrada.posicao}
+                    <span aria-hidden="true">º</span>
+                    <span className="sr-only">º lugar</span>
+                  </span>
+                  {entrada.posicao <= 3 && (
+                    <Trophy aria-hidden="true" size={16} className={medalhaClasse[entrada.posicao]} />
+                  )}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">
+                    {entrada.nome}
+                    {ehVoce && (
+                      <span className="ml-2 rounded bg-bg-tint px-1.5 py-0.5 align-middle text-xs font-semibold text-primary">
+                        Você
+                      </span>
+                    )}
+                  </p>
+                  <p className="truncate text-xs text-text-muted">
+                    {entrada.batalhao} · {entrada.companhia}
+                  </p>
+                </div>
               </div>
-            </div>
-            <span className="shrink-0 text-sm font-semibold text-primary">{entrada.tempo}</span>
-          </div>
-        ))}
+              <span className="shrink-0 text-sm font-semibold text-primary">{entrada.tempo}</span>
+            </li>
+          );
+        })}
+      </ol>
 
+      <div className="space-y-2">
         {ranking.isSuccess && classificacao.length === 0 && (
           <EmptyState
             icon={Trophy}

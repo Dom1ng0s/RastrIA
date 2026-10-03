@@ -426,6 +426,11 @@ function SecaoAcessibilidade() {
 
       <GrupoAcessibilidade id="acessibilidade-exibicao" titulo="Exibição">
         <PreferenciaAcessibilidade
+          chave="daltonismo"
+          rotulo="Filtro para daltonismo"
+          descricao="Troca verde/vermelho por azul/laranja nos indicadores de estado, badges e medalhas do ranking."
+        />
+        <PreferenciaAcessibilidade
           chave="fonteGrande"
           rotulo="Fonte grande"
           descricao="Aumenta o tamanho do texto em todo o sistema."
