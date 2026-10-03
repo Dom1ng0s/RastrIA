@@ -36,7 +36,10 @@ const PREFERENCIAS_DESCRITAS = {
   modoSimplificado: "Modo simplificado — esconde elementos decorativos.",
   espacamentoTexto: "Espaçamento de texto ampliado — mais espaço entre linhas, letras, palavras e parágrafos.",
   daltonismo: "Filtro para daltonismo — troca verde/vermelho por azul/laranja nos indicadores de estado.",
-  altoContraste: "Alto contraste — textos secundários mais escuros, bordas mais fortes, links sublinhados.",
+  // "mais contraste", não "mais escuros" (issue #173): no tema escuro o efeito
+  // é o oposto — o texto secundário clareia. A descrição vale para os dois.
+  altoContraste:
+    "Alto contraste — textos secundários com mais contraste contra o fundo, bordas mais fortes, links sublinhados.",
   reduzirMovimento: "Reduzir movimento — desliga animações, transições e rolagem suave.",
   alvosGrandes: "Botões e áreas de toque maiores — mínimo de 44 × 44 pixels.",
   focoReforcado: "Destaque de foco reforçado — contorno mais grosso, em amarelo e preto.",
@@ -88,7 +91,7 @@ export default function Acessibilidade() {
           </Link>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <Link to="/" className="flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
+            <Link to="/" className="flex min-h-[24px] items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
               <ArrowLeft aria-hidden="true" size={16} /> Voltar
             </Link>
           </div>
@@ -99,7 +102,7 @@ export default function Acessibilidade() {
         <h1 className="mb-2 text-3xl font-semibold text-primary">Acessibilidade</h1>
         <p className="mb-8 text-sm text-text-muted">Última avaliação: 03/10/2026</p>
 
-        <div className="space-y-8 text-sm leading-relaxed text-text-dark">
+        <div className="texto-corrido space-y-8 text-sm leading-relaxed text-text-dark">
           <Secao id="compromisso" titulo="Nosso compromisso">
             <p>
               A Rastria é usada por instituições públicas, e acompanhar a própria saúde não pode

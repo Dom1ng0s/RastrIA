@@ -137,6 +137,56 @@ test("tour guiado aberto continua acessível", async ({ page }) => {
   expect(await violacoes(page)).toEqual([]);
 });
 
+// WCAG 2.5.8 (AA): 24×24 CSS px de alvo, exceto link dentro de frase — que a
+// medição abaixo descarta comparando o texto do link com o do pai. Entrou com a
+// issue #169, onde quatro controles autônomos estavam em 18–20px de altura.
+const ROTAS_ALVO = [
+  ["/acessibilidade", null],
+  ["/termos-de-uso", null],
+  ["/politica-de-privacidade", null],
+  ["/perfil/termo-consentimento", "usuario"],
+  ["/medico/atendimentos", "medico"],
+  ["/educador-fisico/atendimentos", "educador-fisico"],
+  ["/usuario", "usuario"],
+  ["/usuario/ranking", "usuario"],
+  ["/gerente", "comando"],
+];
+
+for (const [caminho, papel] of ROTAS_ALVO) {
+  test(`alvos de toque de ${caminho} têm ao menos 24×24 (WCAG 2.5.8)`, async ({ page }) => {
+    await prepararSessao(page, { papel, preferencias: SEM_TOUR });
+    await page.goto(caminho);
+    await page.waitForLoadState("networkidle");
+
+    const pequenos = await page.evaluate(() => {
+      const achados = [];
+      document.querySelectorAll("button, [role=button], [role=switch], select, a[href]").forEach((el) => {
+        const cs = getComputedStyle(el);
+        if (cs.display === "none" || cs.visibility === "hidden") return;
+        if (el.closest(".sr-only") || (el.className || "").toString().includes("sr-only")) return;
+        // Link estendido (`after:absolute inset-0`, issue #172): o que ativa é
+        // a caixa do ancestral posicionado, não a do próprio <a> — e é a área
+        // de ativação que a 2.5.8 mede.
+        const depois = getComputedStyle(el, "::after");
+        const estendido = depois.position === "absolute" && depois.content !== "none" && parseFloat(depois.top || "0") === 0;
+        const r = estendido && el.offsetParent ? el.offsetParent.getBoundingClientRect() : el.getBoundingClientRect();
+        if (r.width === 0 || r.height === 0) return;
+        if (el.tagName === "A") {
+          const paiTxt = (el.parentElement?.textContent || "").trim();
+          const elTxt = (el.textContent || "").trim();
+          if (paiTxt.length > elTxt.length + 5) return; // link no meio de frase: isento
+        }
+        if (r.width < 24 || r.height < 24) {
+          achados.push(`${el.tagName.toLowerCase()} "${(el.getAttribute("aria-label") || el.textContent || "").trim().slice(0, 30)}" ${Math.round(r.width)}x${Math.round(r.height)}`);
+        }
+      });
+      return achados;
+    });
+
+    expect(pequenos).toEqual([]);
+  });
+}
+
 test("reflow em 320px, sem rolagem horizontal (WCAG 1.4.10)", async ({ page }) => {
   await prepararSessao(page, { papel: "usuario", preferencias: SEM_TOUR });
   await page.setViewportSize({ width: 320, height: 800 });

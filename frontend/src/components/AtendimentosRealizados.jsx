@@ -1,4 +1,4 @@
-import { FileText } from "lucide-react";
+import { ChevronRight, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { useAtendimentosRealizados } from "../features/atendimentos/queries";
@@ -36,16 +36,28 @@ export function AtendimentosRealizados({ navItems, tituloPagina, escopo, detalhe
         )}
 
         {atendimentos.map((atendimento) => (
-          <div key={atendimento.id} className="rounded-xl bg-white p-4 shadow-sm">
+          // O card inteiro é o alvo (issues #169 e #172): o nome sozinho era um
+          // alvo de 18px de altura, abaixo dos 24 do WCAG 2.5.8, e não parecia
+          // clicável sem o mouse em cima. O <a> continua sendo só o nome — o
+          // `after:inset-0` estende a área de clique sobre o card, sem mudar o
+          // nome acessível nem a ordem de tabulação.
+          <div
+            key={atendimento.id}
+            className="relative rounded-xl bg-white p-4 shadow-sm transition-colors hover:bg-bg-tint [&:has(a:focus-visible)]:outline [&:has(a:focus-visible)]:outline-[3px] [&:has(a:focus-visible)]:outline-offset-2 [&:has(a:focus-visible)]:outline-primary"
+          >
             <div className="flex items-center justify-between gap-3">
               {/* Nome como <h2>: a tecla H do leitor de tela pula de um
                   atendimento para o outro (issue #146). */}
               <h2 className="min-w-0 flex-1 truncate text-sm font-medium">
-                <Link to={`${detalheBase}/${atendimento.pessoaId}`} className="text-primary hover:underline">
+                <Link
+                  to={`${detalheBase}/${atendimento.pessoaId}`}
+                  className="text-primary underline decoration-primary/40 underline-offset-2 after:absolute after:inset-0 after:content-[''] hover:decoration-primary focus-visible:outline-none"
+                >
                   {atendimento.pessoa}
                 </Link>
               </h2>
               <span className="shrink-0 text-xs text-text-muted">{atendimento.data}</span>
+              <ChevronRight size={16} aria-hidden="true" className="shrink-0 text-text-muted" />
             </div>
             <p className="mt-2 text-sm text-text-dark">{atendimento.resumo}</p>
           </div>

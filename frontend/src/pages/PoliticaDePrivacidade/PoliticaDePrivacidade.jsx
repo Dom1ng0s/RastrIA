@@ -32,7 +32,7 @@ export default function PoliticaDePrivacidade() {
           </Link>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <Link to="/" className="flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
+            <Link to="/" className="flex min-h-[24px] items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
               <ArrowLeft aria-hidden="true" size={16} /> Voltar
             </Link>
           </div>
@@ -48,7 +48,7 @@ export default function PoliticaDePrivacidade() {
         <h1 className="mb-2 text-3xl font-semibold text-primary">Política de Privacidade</h1>
         <p className="mb-8 text-sm text-text-muted">Última atualização: 27/08/2026 — versão 1.0</p>
 
-        <div className="space-y-8 text-sm leading-relaxed text-text-dark">
+        <div className="texto-corrido space-y-8 text-sm leading-relaxed text-text-dark">
           <section>
             <h2 className="mb-2 text-base font-semibold text-primary">1. Introdução</h2>
             <p>{TERMO_CONSENTIMENTO.introducao}</p>

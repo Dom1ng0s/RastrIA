@@ -443,7 +443,7 @@ function SecaoAcessibilidade() {
         <PreferenciaAcessibilidade
           chave="altoContraste"
           rotulo="Alto contraste"
-          descricao="Textos secundários mais escuros, bordas mais fortes e links sempre sublinhados."
+          descricao="Textos secundários com mais contraste contra o fundo, bordas mais fortes e links sempre sublinhados."
         />
         <PreferenciaAcessibilidade
           chave="espacamentoTexto"

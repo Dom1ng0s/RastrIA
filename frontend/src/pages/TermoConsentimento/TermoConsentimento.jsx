@@ -20,7 +20,7 @@ export default function TermoConsentimento() {
   return (
     <div className="mx-auto min-h-screen max-w-[640px] p-8">
       <div className="mb-6 flex items-center justify-between">
-        <Link to="/perfil" className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline">
+        <Link to="/perfil" className="inline-flex min-h-[24px] items-center gap-1.5 text-sm text-primary hover:underline">
           <ArrowLeft aria-hidden="true" size={16} />
           Voltar para o Perfil
         </Link>

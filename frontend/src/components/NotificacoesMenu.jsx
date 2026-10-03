@@ -162,7 +162,13 @@ function ConteudoNotificacao({ notificacao, onAbrir }) {
   const corpo = (
     <span className="flex items-start gap-2">
       {!notificacao.lida && (
-        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-coral-escuro" aria-hidden="true" />
+        <>
+          {/* O ponto, o fundo tingido e o peso da fonte são sinais visuais: o
+              leitor de tela ouvia o mesmo em lida e não lida, e a única função
+              do painel é justamente separar as duas (issue #168). */}
+          <span className="sr-only">Não lida: </span>
+          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-coral-escuro" aria-hidden="true" />
+        </>
       )}
       <span className="min-w-0">
         <p className={`text-xs ${notificacao.lida ? "text-text-muted" : "font-medium text-text-dark"}`}>
