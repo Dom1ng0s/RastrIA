@@ -50,7 +50,7 @@ export function ReportarProblemaModal({ telaAtual, onClose, onEnviado }) {
           Reportar problema
         </h2>
         <button type="button" onClick={onClose} aria-label="Fechar" className="text-text-muted hover:text-text-dark">
-          <X size={20} />
+          <X aria-hidden="true" size={20} />
         </button>
       </div>
 

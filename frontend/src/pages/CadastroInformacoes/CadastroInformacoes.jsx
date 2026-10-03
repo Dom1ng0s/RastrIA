@@ -30,13 +30,13 @@ export default function CadastroInformacoes() {
           className="rounded-xl border border-line bg-white p-5 text-left shadow-sm transition hover:bg-bg-tint"
         >
           <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full badge-normal">
-            <FileText size={18} />
+            <FileText aria-hidden="true" size={18} />
           </div>
           <p className="text-sm font-semibold text-primary">Cadastrar Exame</p>
           <p className="mt-1 text-xs text-text-muted">Exames laboratoriais, pressão, IMC e outros índices clínicos.</p>
           {exameSalvo && (
             <p className="mt-3 flex items-center gap-1.5 text-xs font-medium text-seafoam-escuro">
-              <Check size={14} /> Registro salvo
+              <Check aria-hidden="true" size={14} /> Registro salvo
             </p>
           )}
         </button>
@@ -46,7 +46,7 @@ export default function CadastroInformacoes() {
           className="rounded-xl border border-line bg-white p-5 text-left shadow-sm transition hover:bg-bg-tint"
         >
           <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full badge-normal">
-            <Dumbbell size={18} />
+            <Dumbbell aria-hidden="true" size={18} />
           </div>
           <p className="text-sm font-semibold text-primary">Cadastrar Exercício Físico</p>
           <p className="mt-1 text-xs text-text-muted">Corrida, musculação, natação e outros indicadores de desempenho.</p>

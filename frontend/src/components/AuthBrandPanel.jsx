@@ -24,7 +24,9 @@ export function AuthBrandPanel({ heading, subtitle }) {
         />
       </svg>
 
-      <Link to="/" className="relative z-10 w-fit">
+      {/* aria-label explícito (issue #148): o nome acessível do link era só
+          "Rastria", sem dizer para onde leva. */}
+      <Link to="/" aria-label="Rastria — página inicial" className="relative z-10 w-fit">
         <Logo reverse />
       </Link>
 

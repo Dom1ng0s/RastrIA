@@ -19,7 +19,7 @@ export default function NotFound() {
         to="/"
         className="btn-primary flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold"
       >
-        <Home size={16} />
+        <Home aria-hidden="true" size={16} />
         Voltar para o início
       </Link>
     </ConteudoPrincipal>

@@ -67,7 +67,7 @@ export default function CadastroTAF() {
         to={voltarPara}
         className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary"
       >
-        <ArrowLeft size={16} /> Voltar
+        <ArrowLeft aria-hidden="true" size={16} /> Voltar
       </Link>
 
       <h1 className="mb-1 text-xl font-semibold text-primary">Cadastrar TAF</h1>

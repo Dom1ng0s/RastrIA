@@ -114,21 +114,21 @@ export default function ImportarIntegrantes() {
           htmlFor="arquivo-planilha"
           className="btn-primary inline-flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold"
         >
-          <Upload size={16} /> Selecionar planilha (.csv ou .xlsx)
+          <Upload aria-hidden="true" size={16} /> Selecionar planilha (.csv ou .xlsx)
         </label>
         {nomeArquivo && <p className="mt-3 text-xs text-text-muted">Arquivo selecionado: {nomeArquivo}</p>}
       </div>
 
       {erroArquivo && (
         <div className="mb-6 flex max-w-[640px] items-start gap-2 rounded-xl badge-alterado p-4 text-sm">
-          <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+          <AlertTriangle aria-hidden="true" size={18} className="mt-0.5 shrink-0" />
           <span>{erroArquivo}</span>
         </div>
       )}
 
       {colunasFaltando.length > 0 && (
         <div className="mb-6 flex max-w-[640px] items-start gap-2 rounded-xl badge-alterado p-4 text-sm">
-          <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+          <AlertTriangle aria-hidden="true" size={18} className="mt-0.5 shrink-0" />
           <span>
             Coluna(s) não encontrada(s) no arquivo:{" "}
             {colunasFaltando.map((chave) => NOMES_COLUNA[chave]).join(", ")}. Confira o cabeçalho da
@@ -181,7 +181,7 @@ export default function ImportarIntegrantes() {
                     <td className="px-4 py-2.5">
                       {registro.erros.length === 0 ? (
                         <span className="flex items-center gap-1 text-xs font-medium text-seafoam-escuro">
-                          <CheckCircle2 size={14} /> OK
+                          <CheckCircle2 aria-hidden="true" size={14} /> OK
                         </span>
                       ) : (
                         <span className="text-xs font-medium text-coral-escuro">{registro.erros.join("; ")}</span>
@@ -195,7 +195,7 @@ export default function ImportarIntegrantes() {
 
           {importado !== null ? (
             <p className="flex items-center gap-2 text-sm font-medium text-seafoam-escuro">
-              <CheckCircle2 size={16} /> {importado} conta(s) provisionada(s) com sucesso.
+              <CheckCircle2 aria-hidden="true" size={16} /> {importado} conta(s) provisionada(s) com sucesso.
             </p>
           ) : (
             <button

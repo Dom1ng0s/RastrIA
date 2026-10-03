@@ -42,6 +42,10 @@ export const PREFERENCIAS = {
   alvosGrandes: { padrao: false, classe: "alvos-grandes" },
   // Lido por `AnuncioDeRota.jsx` (issue #135).
   focarTituloAoNavegar: { padrao: true },
+  // Ligado (padrão), anexos e links externos abrem na mesma aba — nova aba tira
+  // o "Voltar" de quem usa leitor de tela. Desligado, abre em nova aba e o
+  // link avisa isso no texto. Lido por `components/LinkExterno.jsx` (issue #148).
+  abrirLinksMesmaAba: { padrao: true },
   // Segundos que um aviso de sucesso fica na tela; 0 = até o usuário fechar.
   // Avisos de erro sempre ficam até fechar. Lido pelo ToastProvider (#142).
   duracaoAvisos: { padrao: 5, opcoes: [5, 10, 20, 0] },

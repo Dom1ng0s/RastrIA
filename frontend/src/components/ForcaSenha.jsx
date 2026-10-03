@@ -43,9 +43,9 @@ export function ForcaSenha({ senha = "", id }) {
             }`}
           >
             {criterio.ok ? (
-              <Check size={13} className="shrink-0" />
+              <Check aria-hidden="true" size={13} className="shrink-0" />
             ) : (
-              <X size={13} className="shrink-0 opacity-40" />
+              <X aria-hidden="true" size={13} className="shrink-0 opacity-40" />
             )}
             {criterio.label}
           </li>

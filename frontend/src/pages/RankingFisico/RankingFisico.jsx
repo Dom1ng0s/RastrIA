@@ -176,7 +176,7 @@ export default function RankingFisico() {
             <div className="flex min-w-0 flex-1 items-center gap-3">
               <span className="flex w-7 shrink-0 items-center justify-center text-sm font-semibold text-text-muted">
                 {entrada.posicao <= 3 ? (
-                  <Trophy size={18} className={medalhaClasse[entrada.posicao]} />
+                  <Trophy aria-hidden="true" size={18} className={medalhaClasse[entrada.posicao]} />
                 ) : (
                   entrada.posicao
                 )}

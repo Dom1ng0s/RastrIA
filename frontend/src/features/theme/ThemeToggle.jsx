@@ -15,7 +15,7 @@ export function ThemeToggle({ className = "" }) {
       onClick={toggleTheme}
       className={`inline-flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-bg-tint hover:text-primary dark:text-dark-text-muted dark:hover:text-dark-primary ${className}`}
     >
-      {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+      {theme === "dark" ? <Sun aria-hidden="true" size={20} /> : <Moon aria-hidden="true" size={20} />}
     </button>
   );
 }

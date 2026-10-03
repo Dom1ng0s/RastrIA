@@ -119,7 +119,7 @@ function Toast({ toast, onFechar }) {
           erro ? "badge-alterado" : "badge-normal"
         }`}
       >
-        {erro ? <X size={13} /> : <Check size={13} />}
+        {erro ? <X aria-hidden="true" size={13} /> : <Check aria-hidden="true" size={13} />}
       </span>
       <span className="min-w-0 flex-1">
         <span className="sr-only">{erro ? "Erro: " : "Sucesso: "}</span>

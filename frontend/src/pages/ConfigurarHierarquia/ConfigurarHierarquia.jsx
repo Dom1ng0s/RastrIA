@@ -49,7 +49,7 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
           className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-1.5 text-sm text-text-dark"
         />
         <button type="button" onClick={salvar} aria-label={`Salvar novo nome de ${nomeAcessivel}`} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-seafoam-escuro hover:bg-bg-tint">
-          <Check size={18} />
+          <Check aria-hidden="true" size={18} />
         </button>
         <button
           type="button"
@@ -60,7 +60,7 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
           aria-label={`Cancelar edição de ${nomeAcessivel}`}
           className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-bg-tint hover:text-text-dark"
         >
-          <X size={18} />
+          <X aria-hidden="true" size={18} />
         </button>
       </div>
     );
@@ -76,7 +76,7 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
           aria-label={`Renomear ${nomeAcessivel}`}
           className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-bg-tint hover:text-primary"
         >
-          <Pencil size={15} />
+          <Pencil aria-hidden="true" size={15} />
         </button>
         <button
           type="button"
@@ -86,7 +86,7 @@ function LinhaEditavel({ nome, contexto, onSalvar, onExcluir, placeholder, confi
           aria-label={`Excluir ${nomeAcessivel}`}
           className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-bg-tint hover:text-coral-escuro"
         >
-          <Trash2 size={15} />
+          <Trash2 aria-hidden="true" size={15} />
         </button>
       </div>
     </div>

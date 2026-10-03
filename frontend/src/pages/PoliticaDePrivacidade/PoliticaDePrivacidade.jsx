@@ -32,7 +32,7 @@ export default function PoliticaDePrivacidade() {
           <div className="flex items-center gap-4">
             <ThemeToggle />
             <Link to="/" className="flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
-              <ArrowLeft size={16} /> Voltar
+              <ArrowLeft aria-hidden="true" size={16} /> Voltar
             </Link>
           </div>
         </div>

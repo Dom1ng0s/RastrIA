@@ -25,7 +25,7 @@ export default function TelaPorUnidade() {
       <DashboardLayout title="Unidade" navItems={navItems}>
         <p className="text-sm text-text-muted">Unidade não encontrada.</p>
         <Link to="/gerente" className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
-          <ArrowLeft size={16} /> Voltar ao Painel Agregado
+          <ArrowLeft aria-hidden="true" size={16} /> Voltar ao Painel Agregado
         </Link>
       </DashboardLayout>
     );
@@ -34,7 +34,7 @@ export default function TelaPorUnidade() {
   return (
     <DashboardLayout title={unidade.nome} navItems={navItems}>
       <Link to="/gerente" className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary">
-        <ArrowLeft size={16} /> Voltar
+        <ArrowLeft aria-hidden="true" size={16} /> Voltar
       </Link>
 
       <div className="mb-8 rounded-2xl bg-primary p-6">

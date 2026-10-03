@@ -19,6 +19,7 @@ import { DashboardLayout } from "../../components/DashboardLayout";
 import { DemoToggle } from "../../components/DemoToggle";
 import { EmptyState } from "../../components/EmptyState";
 import { EstadoErro } from "../../components/EstadoErro";
+import { LinkExterno } from "../../components/LinkExterno";
 import { Skeleton, SkeletonLista } from "../../components/Skeleton";
 import {
   useEditarRegistro,
@@ -182,7 +183,7 @@ export default function DashboardUsuario() {
         <Skeleton variante="card" className="mb-6" />
       ) : totalPendencias === 0 ? (
         <div className="mb-6 flex items-center gap-3 rounded-xl badge-normal p-4">
-          <CheckCircle2 size={20} className="shrink-0" />
+          <CheckCircle2 aria-hidden="true" size={20} className="shrink-0" />
           <div>
             <p className="text-sm font-semibold">Tudo em dia</p>
             <p className="text-xs">Nenhum índice em atenção ou alterado.</p>
@@ -190,7 +191,7 @@ export default function DashboardUsuario() {
         </div>
       ) : (
         <div className="mb-6 flex items-center gap-3 rounded-xl badge-atencao p-4">
-          <AlertTriangle size={20} className="shrink-0" />
+          <AlertTriangle aria-hidden="true" size={20} className="shrink-0" />
           <div>
             <p className="text-sm font-semibold">
               {totalPendencias} {totalPendencias === 1 ? "pendência" : "pendências"}
@@ -211,7 +212,7 @@ export default function DashboardUsuario() {
             data-tour="cadastrar-informacoes"
             className="btn-primary flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold"
           >
-            <ClipboardList size={16} /> Cadastrar informações
+            <ClipboardList aria-hidden="true" size={16} /> Cadastrar informações
           </Link>
         </div>
       </div>
@@ -305,15 +306,13 @@ export default function DashboardUsuario() {
                   )}
                   {registro.anexo && (
                     <>
-                      <a
+                      <LinkExterno
                         href={registro.anexo.url}
-                        target="_blank"
-                        rel="noreferrer"
+                        descricao={`${registro.indice} de ${registro.data}`}
                         className="flex items-center gap-1 py-1.5 text-xs font-medium text-text-muted hover:text-primary"
                       >
                         <Paperclip size={13} aria-hidden="true" /> Visualizar anexo
-                        <span className="sr-only"> — {registro.indice} de {registro.data}</span>
-                      </a>
+                      </LinkExterno>
                       <a
                         href={registro.anexo.url}
                         download={registro.anexo.nome}
