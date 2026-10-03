@@ -10,7 +10,9 @@ export function TermoConsentimentoLGPD({ nivel = 2, className = "" }) {
   const Titulo = `h${nivel}`;
   const TituloSecao = `h${nivel + 1}`;
   return (
-    <div className={className}>
+    // `texto-corrido`: o termo é texto de leitura seguida, então a preferência
+    // de espaçamento aplica a margem de parágrafo aqui (issue #171).
+    <div className={`texto-corrido ${className}`}>
       <Titulo className="mb-2 text-sm font-semibold text-text-dark">{TERMO_CONSENTIMENTO.titulo}</Titulo>
       <p className="mb-4 text-xs leading-relaxed text-text-muted">{TERMO_CONSENTIMENTO.introducao}</p>
 

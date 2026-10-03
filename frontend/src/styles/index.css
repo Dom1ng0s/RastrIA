@@ -116,7 +116,14 @@ html.espacamento-texto * {
   letter-spacing: 0.12em !important;
   word-spacing: 0.16em !important;
 }
-html.espacamento-texto p {
+/* A margem de 2em vale só para texto corrido (`.texto-corrido`, issue #171).
+   O critério 1.4.12 exige que o conteúdo continue funcionando quando o usuário
+   aplica esse espaçamento de fora — não que o app o aplique a todo <p>. No
+   Rastria o <p> também é rótulo de uma linha dentro de card (data, valor,
+   legenda), e aplicar 2em ali abria faixas vazias no meio do card, justo na
+   preferência que existe para facilitar a leitura. Entrelinha, espaçamento de
+   letra e de palavra (acima) continuam globais — são o grosso do benefício. */
+html.espacamento-texto .texto-corrido p {
   margin-bottom: 2em !important;
 }
 
