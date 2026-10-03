@@ -153,6 +153,21 @@ html.daltonismo .bg-seafoam-escuro {
 html.daltonismo .border-seafoam-escuro {
   border-color: #0b5394;
 }
+/* No escuro, as mesmas matizes azul/laranja rebaixadas (issue #170): sem isto
+   as regras de daltonismo acima (especificidade maior que `.dark .badge-*`)
+   devolviam o fundo claro. */
+html.daltonismo.dark .badge-normal {
+  background: #14314c;
+  color: #9fc9f2;
+}
+html.daltonismo.dark .badge-atencao {
+  background: #4a3410;
+  color: #f5c98a;
+}
+html.daltonismo.dark .badge-alterado {
+  background: #5c3f12;
+  color: #ffd9a3;
+}
 html.daltonismo .text-medalha-ouro {
   color: #8a4b00;
 }
@@ -169,6 +184,29 @@ html.daltonismo.dark .text-medalha-bronze {
 html.daltonismo.dark .text-coral-escuro,
 html.daltonismo.dark .text-medalha-ouro {
   color: #e8b06a;
+}
+
+/* Badges de estado no tema escuro (issue #170). Sem isto, `.badge-*` mantinha
+   o fundo claro do tema claro — tolerável numa pílula pequena, mas o aviso de
+   pendências do painel do usuário usa a mesma classe numa faixa de largura
+   total e virava a superfície mais clara da tela inteira.
+
+   Os pares seguem a lógica das variantes "-escuro" logo acima: no fundo escuro
+   quem carrega a cor de marca é o texto, e o fundo é a mesma matiz rebaixada.
+   Texto sobre o badge fica em ~7:1 (acima do AA), e o fundo do badge mantém
+   ~1,4–1,7:1 contra o card, o suficiente para a pílula continuar lendo como
+   pílula sem virar um bloco luminoso. */
+.dark .badge-normal {
+  background: #124c3e;
+  color: #8febd0;
+}
+.dark .badge-atencao {
+  background: #5a2a18;
+  color: #ffc4ad;
+}
+.dark .badge-alterado {
+  background: #6e3120;
+  color: #ffcdb9;
 }
 
 /* Alto contraste (issue #137) — acima do mínimo AA, nos moldes do WCAG 1.4.6
@@ -203,6 +241,18 @@ html.alto-contraste .badge-alterado {
 html.alto-contraste .text-seafoam-escuro,
 html.alto-contraste .badge-normal {
   color: #064d3c;
+}
+/* Alto contraste no escuro (issue #170): as regras acima trocam só a cor do
+   texto, e no tema escuro trocavam para um tom escuro sobre o fundo escuro do
+   badge. Aqui o texto clareia, mantendo ~8:1 sobre o próprio badge. */
+html.alto-contraste.dark .badge-normal {
+  color: #b6f5e0;
+}
+html.alto-contraste.dark .badge-atencao {
+  color: #ffdacb;
+}
+html.alto-contraste.dark .badge-alterado {
+  color: #ffe2d6;
 }
 html.alto-contraste.dark .text-coral-escuro {
   color: #ff9a82;
