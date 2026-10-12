@@ -15,3 +15,11 @@ class PaginacaoPadrao(PageNumberPagination):
     page_size = 20
     page_size_query_param = "page_size"
     max_page_size = 100
+
+    def paginate_queryset(self, queryset, request, view=None):
+        # Queryset sem ordem pagina de forma instável (o banco pode devolver a
+        # mesma linha em duas páginas e pular outra). Views que não ordenam
+        # ganham a ordem pela chave primária.
+        if hasattr(queryset, "ordered") and not queryset.ordered:
+            queryset = queryset.order_by("pk")
+        return super().paginate_queryset(queryset, request, view)

@@ -414,6 +414,19 @@ Railway, builder Nixpacks. O serviço na raiz builda e serve o `frontend/`:
 - `VITE_API_URL` é lida em **build-time** pelo Vite — precisa estar setada como variável de ambiente do serviço no Railway (não só no `.env` local) para o build embutir a URL certa da API.
 - **Headers de segurança (issues #111 e #192):** o build gera `dist/serve.json`, que faz o `serve` injetar `Content-Security-Policy`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` e `Strict-Transport-Security` em toda resposta; a mesma CSP vai como `<meta http-equiv>` no `index.html` do build. As duas saem de `frontend/config/csp.js`, pelo plugin `rastria-cabecalhos-seguranca` do `vite.config.js` (`apply: "build"` — não roda no dev server). O `connect-src` leva só a **origem exata** de `VITE_API_URL` (sem ela, só `'self'`); curinga ou `http://` fora de localhost derrubam o build. Não existe mais `public/serve.json` — mudar headers é em `config/csp.js`.
 
+### CI (issue #68)
+`.github/workflows/ci.yml` roda em todo PR e em push na `main`/`develop`:
+- **frontend:** `npm ci` → `lint` → `test` → `build` (com `VITE_API_URL` de exemplo, o que exercita a geração da CSP);
+- **acessibilidade:** `npx playwright install --with-deps chromium` → `npm run test:a11y` (relatório anexado se falhar);
+- **backend:** `pip install -r requirements-dev.txt` → `ruff check` (config em `backend/ruff.toml`) → `manage.py check --deploy --settings=rastria.settings.prod` (falha em erro; avisos como o HSTS da #63 ficam no log) → `makemigrations --check` → `manage.py test` com `UnorderedObjectListWarning` virando erro (paginação instável);
+- **segurança:** `npm audit --omit=dev --audit-level=high` na raiz e no `frontend/`, `pip-audit -r backend/requirements.txt`.
+
+`.github/workflows/codeql.yml` faz análise estática (Python e JS, `security-extended`) em PR, push na `main` e semanalmente. `.github/dependabot.yml` abre PRs semanais (npm raiz e `frontend/`, pip; actions mensal), agrupando minor/patch.
+
+**Matriz de permissão** (`backend/tests/test_permissoes.py`): papel × endpoint. O que já vale é teste normal; cada vulnerabilidade ainda aberta tem o comportamento **correto** afirmado e marcado `@expectedFailure` com a issue que a corrige (#59, #60, #103, #189). Ao corrigir uma delas, o teste passa, o unittest acusa *unexpected success* e o CI fica vermelho **até tirar o `@expectedFailure`** — é proposital.
+
+**Fora do código (admin do repositório):** proteger a `main` em Settings › Branches exigindo os checks `Frontend (lint, testes, build)`, `Frontend (varredura axe — Playwright)`, `Backend (ruff, check --deploy, testes)` e `Dependências (npm audit, pip-audit)`.
+
 ### Sessão e cookies (issue #190)
 - **Endpoints** (`backend/apps/usuarios/autenticacao.py`): `POST /api/auth/token/` (credenciais → `{access}` + cookie), `POST /api/auth/token/refresh/` (sem corpo; lê o cookie, roda o refresh, devolve `{access}`), `POST /api/auth/logout/` (blacklist do refresh + apaga o cookie). Os três exigem header `Origin` da própria API ou de `JWT_ORIGENS_PERMITIDAS` (padrão: `CORS_ALLOWED_ORIGINS`) — defesa de CSRF/login CSRF, já que o refresh viaja sozinho no cookie.
 - **Tokens:** access de 15 min, só em memória no frontend (`lib/authTokens.js`). Refresh em cookie `rastria_refresh` `HttpOnly; Secure; SameSite=Strict; Path=/api/auth/`, rotação + blacklist a cada uso, vida de 45 min (= limite de inatividade no servidor: 30 min sem chamar a API + os 15 min do último access) e limite absoluto de 12 h (`SESSAO_DURACAO_MAXIMA`). O aviso exato de 30 min continua no cliente (`SessaoInativa.jsx`), cujo "Renovar sessão" também renova no servidor.

@@ -1,0 +1,4 @@
+# Ferramentas de desenvolvimento/CI (issue #68) — não vão para produção.
+-r requirements.txt
+ruff>=0.17,<0.18
+pip-audit>=2.9,<3.0

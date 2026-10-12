@@ -133,9 +133,8 @@ JWT_COOKIE_REFRESH = {
 
 # Origens aceitas no header Origin dos endpoints de auth (CSRF, #190), além da
 # própria API. Por padrão, as mesmas do CORS.
-JWT_ORIGENS_PERMITIDAS = [
-    o.strip() for o in os.getenv("JWT_ORIGENS_PERMITIDAS", os.getenv("CORS_ALLOWED_ORIGINS", "")).split(",") if o.strip()
-]
+_origens_jwt = os.getenv("JWT_ORIGENS_PERMITIDAS", os.getenv("CORS_ALLOWED_ORIGINS", ""))
+JWT_ORIGENS_PERMITIDAS = [o.strip() for o in _origens_jwt.split(",") if o.strip()]
 
 # O cookie de refresh só é enviado cross-origin com credenciais.
 CORS_ALLOW_CREDENTIALS = True

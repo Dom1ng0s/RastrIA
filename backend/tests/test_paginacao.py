@@ -36,6 +36,13 @@ class PaginacaoPadraoTest(TestCase):
         resposta = self.client.get("/api/regras-verificacao/", {"page_size": 10_000})
         self.assertEqual(len(resposta.data["results"]), 100)
 
+    def test_paginas_nao_repetem_nem_pulam_itens(self):
+        ids = []
+        for pagina in range(1, 8):
+            resposta = self.client.get("/api/regras-verificacao/", {"page": pagina})
+            ids += [item["id"] for item in resposta.data["results"]]
+        self.assertEqual(ids, sorted(RegraVerificacao.objects.values_list("pk", flat=True)))
+
     def test_pagina_inexistente_devolve_404(self):
         resposta = self.client.get("/api/regras-verificacao/", {"page": 99})
         self.assertEqual(resposta.status_code, 404)

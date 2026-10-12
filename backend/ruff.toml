@@ -1,0 +1,14 @@
+# Lint do backend (issue #68), rodado no CI: `ruff check backend/`.
+line-length = 120
+target-version = "py312"
+
+[lint]
+# pycodestyle, pyflakes, isort, bugbear e pyupgrade — o mínimo que pega erro
+# real sem brigar com o estilo do código.
+select = ["E", "W", "F", "I", "B", "UP"]
+
+[lint.per-file-ignores]
+# Gerado pelo makemigrations.
+"**/migrations/*.py" = ["E501"]
+# `from .base import *` é o padrão de settings por ambiente.
+"rastria/settings/*.py" = ["F403", "F405"]
