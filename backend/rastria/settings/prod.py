@@ -1,5 +1,7 @@
 import os
 
+from apps.core.monitoramento import iniciar_sentry
+
 from .base import *  # noqa: F401,F403
 
 DEBUG = False
@@ -11,3 +13,6 @@ SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Monitoramento de erros (issue #188) — só liga com SENTRY_DSN definido.
+iniciar_sentry()
