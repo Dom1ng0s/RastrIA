@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { Home, RotateCcw } from "lucide-react";
 
+import { reportarErro } from "../features/monitoramento/sentry";
 import { Logo } from "./Logo";
 
 /**
@@ -26,9 +27,10 @@ export class ErrorBoundary extends Component {
   }
 
   componentDidCatch(erro, info) {
-    // TODO(monitoramento): quando existir ferramenta de erro em produção (ex:
-    // Sentry), reportar aqui — `Sentry.captureException(erro, { extra: info })`.
-    // Até então o console é o único registro, e some quando a aba fecha.
+    // Vai para o Sentry quando o monitoramento está ligado (issue #188) — só o
+    // erro e a pilha de componentes, sem props nem estado. O console continua
+    // para quem está depurando localmente.
+    reportarErro(erro, info);
     console.error("Erro não tratado na árvore de componentes:", erro, info);
   }
 

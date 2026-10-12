@@ -198,3 +198,22 @@ test("reflow em 320px, sem rolagem horizontal (WCAG 1.4.10)", async ({ page }) =
   );
   expect(temRolagemHorizontal).toBe(false);
 });
+
+// Paginação (issue #121): troca de página por teclado leva o foco ao início da
+// lista e anuncia a posição — sem isso, quem usa leitor de tela fica no botão
+// sem saber que a lista mudou.
+test("paginação do ranking: teclado, foco no início da lista e anúncio", async ({ page }) => {
+  await prepararSessao(page, { papel: "usuario", preferencias: SEM_TOUR });
+  await page.goto("/usuario/ranking");
+  await page.waitForLoadState("networkidle");
+
+  const nav = page.getByRole("navigation", { name: "Paginação do ranking" });
+  await expect(nav.getByRole("button", { name: "Página 1" })).toHaveAttribute("aria-current", "page");
+
+  await nav.getByRole("button", { name: "Próxima página" }).focus();
+  await page.keyboard.press("Enter");
+
+  await expect(nav.getByRole("button", { name: "Página 2" })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("heading", { name: /Classificação — página 2 de/ })).toBeFocused();
+  await expect(page.getByRole("status").filter({ hasText: /Página 2 de/ })).toHaveCount(1);
+});

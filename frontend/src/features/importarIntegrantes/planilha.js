@@ -12,15 +12,35 @@ export const ARQUIVO_ACEITA_XLSX_SEM_PARSER = true;
 // pessoais complementares"): nome completo, CPF, data de nascimento, sexo,
 // telefone (ou e-mail institucional — a confirmar com a PMAL). Aceita
 // variações comuns de cabeçalho (com/sem acento, singular/abreviado).
-const ALIASES_COLUNA = {
+export const ALIASES_COLUNA = {
   nomeCompleto: ["nome completo", "nome"],
   cpf: ["cpf"],
   dataNascimento: ["data de nascimento", "data nascimento", "nascimento"],
   sexo: ["sexo"],
-  contato: ["telefone", "e-mail institucional", "email institucional", "email", "e-mail"],
+  contato: [
+    "telefone ou e-mail",
+    "telefone ou email",
+    "telefone",
+    "e-mail institucional",
+    "email institucional",
+    "email",
+    "e-mail",
+  ],
 };
 
-function normalizarCabecalho(valor) {
+// Nome de cada coluna como a tela de importação o mostra ao gestor. Mora aqui,
+// ao lado dos aliases, para que o rótulo exibido nunca deixe de ser aceito
+// pelo parser (issue #176 — a tela pedia "Telefone ou e-mail" e o parser
+// recusava). O teste em planilha.test.js garante isso para toda coluna.
+export const NOMES_COLUNA = {
+  nomeCompleto: "Nome completo",
+  cpf: "CPF",
+  dataNascimento: "Data de nascimento",
+  sexo: "Sexo",
+  contato: "Telefone ou e-mail",
+};
+
+export function normalizarCabecalho(valor) {
   return valor
     .trim()
     .toLowerCase()

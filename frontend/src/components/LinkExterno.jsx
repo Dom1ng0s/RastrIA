@@ -1,6 +1,7 @@
 import { ExternalLink } from "lucide-react";
 
 import { useAcessibilidadeStore } from "../features/acessibilidade/store";
+import { urlSegura } from "../lib/urlSegura";
 
 /**
  * Link para conteúdo fora do fluxo das telas (anexo de exame, arquivo servido
@@ -14,13 +15,20 @@ import { useAcessibilidadeStore } from "../features/acessibilidade/store";
  * `descricao` entra como complemento `sr-only` do nome acessível (ex.: o índice
  * e a data do exame), para o link não ser só "Visualizar anexo" numa lista com
  * vários.
+ *
+ * `href` passa por `urlSegura` (issue #197): o destino vem de dado (anexo da
+ * API), e um `javascript:` ali viraria XSS no clique. URL recusada não vira
+ * link — o texto aparece sem ação, em vez de um link quebrado ou perigoso.
  */
 export function LinkExterno({ href, children, descricao, className = "", ...resto }) {
   const mesmaAba = useAcessibilidadeStore((state) => state.abrirLinksMesmaAba);
+  const destino = urlSegura(href);
+
+  if (!destino) return null;
 
   return (
     <a
-      href={href}
+      href={destino}
       {...(mesmaAba ? {} : { target: "_blank", rel: "noreferrer" })}
       className={className}
       {...resto}

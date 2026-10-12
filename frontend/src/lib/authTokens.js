@@ -1,52 +1,35 @@
-// Ponto único de leitura/escrita/remoção dos tokens JWT no cliente. Nenhum outro
-// módulo deve tocar nas chaves do localStorage diretamente — assim, trocar o
-// mecanismo de armazenamento é uma mudança local a este arquivo.
+// Ponto único de leitura/escrita/remoção do token de acesso no cliente.
 //
-// Decisão (issue #65): por ora os tokens ficam em `localStorage`. A alternativa
-// mais robusta contra XSS — refresh token em cookie `httpOnly` + `Secure`, com
-// o access token curto em memória — depende de endpoints e configuração de
-// CORS/CSRF no backend, que ainda não está deployado (ver "Estado Atual do
-// Repositório" em agents/claude.md). Quando esse backend existir, só este módulo
-// e o interceptor em `lib/api.js` precisam mudar.
+// Issue #190 (revê a decisão provisória da #65): nenhum token fica mais em
+// `localStorage`, que qualquer script na origem lê — um único XSS levava o
+// refresh de 7 dias.
+//
+// - **access** (15 min): só em memória, nesta variável de módulo. Some ao
+//   recarregar a página; o próximo 401 dispara o refresh (lib/api.js).
+// - **refresh**: o frontend nunca o vê. O backend o grava em cookie
+//   `HttpOnly; Secure; SameSite=Strict; Path=/api/auth/`
+//   (backend/apps/usuarios/autenticacao.py) e o navegador o envia sozinho nas
+//   chamadas de auth feitas com `withCredentials`.
 
-const CHAVE_ACCESS = "rastria_access_token";
-const CHAVE_REFRESH = "rastria_refresh_token";
+let accessEmMemoria = null;
 
-function lerSeguro(chave) {
-  try {
-    return localStorage.getItem(chave);
-  } catch {
-    // localStorage indisponível (modo privado / cota / storage bloqueado).
-    return null;
-  }
+// Chaves da #65. Quem já tinha sessão antes desta mudança fica com tokens
+// parados no localStorage: apaga uma vez, na carga do módulo.
+const CHAVES_ANTIGAS = ["rastria_access_token", "rastria_refresh_token"];
+try {
+  CHAVES_ANTIGAS.forEach((chave) => localStorage.removeItem(chave));
+} catch {
+  // localStorage indisponível (modo privado / storage bloqueado): nada a limpar.
 }
 
 export function getAccessToken() {
-  return lerSeguro(CHAVE_ACCESS);
+  return accessEmMemoria;
 }
 
-export function getRefreshToken() {
-  return lerSeguro(CHAVE_REFRESH);
-}
-
-/**
- * Persiste o par de tokens. Cada campo é opcional: um refresh silencioso que só
- * devolve `access` não apaga o `refresh` atual.
- */
-export function setTokens({ access, refresh } = {}) {
-  try {
-    if (access) localStorage.setItem(CHAVE_ACCESS, access);
-    if (refresh) localStorage.setItem(CHAVE_REFRESH, refresh);
-  } catch {
-    // Sem localStorage a sessão sobrevive só enquanto a aba estiver aberta.
-  }
+export function setAccessToken(access) {
+  accessEmMemoria = access || null;
 }
 
 export function clearTokens() {
-  try {
-    localStorage.removeItem(CHAVE_ACCESS);
-    localStorage.removeItem(CHAVE_REFRESH);
-  } catch {
-    /* nada a limpar se o storage não está acessível */
-  }
+  accessEmMemoria = null;
 }

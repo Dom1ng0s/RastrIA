@@ -4,16 +4,8 @@ import { useRef, useState } from "react";
 import { Cpf } from "../../components/Cpf";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import { navItems } from "../DashboardGerente/DashboardGerente";
-import { processarPlanilhaIntegrantes } from "../../features/importarIntegrantes/planilha";
+import { NOMES_COLUNA, processarPlanilhaIntegrantes } from "../../features/importarIntegrantes/planilha";
 import { useToast } from "../../features/ui/ToastProvider";
-
-const NOMES_COLUNA = {
-  nomeCompleto: "Nome completo",
-  cpf: "CPF",
-  dataNascimento: "Data de nascimento",
-  sexo: "Sexo",
-  contato: "Telefone ou e-mail",
-};
 
 /**
  * Upload de planilha de integrantes com prévia (issue #17) — alternativa ao

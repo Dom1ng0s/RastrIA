@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Modal } from "../../components/Modal";
+import { API_CONFIGURADA, renovarAccessToken } from "../../lib/api";
 import { useAuthStore } from "./store";
 
 // Encerra a sessão automaticamente após um período sem interação do usuário —
@@ -24,9 +25,11 @@ import { useAuthStore } from "./store";
 // como transition, o store de auth atualiza na hora, e a RotaProtegida da tela
 // atual redirecionava para /login com o próprio `state`, apagando o nosso.
 //
-// TODO: com o login real, "Renovar sessão" deve renovar o token no backend e
-// "encerrar sessão" deve invalidar o refresh token (#105); hoje `logout()` só
-// limpa o estado local.
+// No servidor (issue #190): "Renovar sessão" também troca o cookie de refresh
+// por um access novo — o refresh expira por inatividade no backend, e sem isso
+// quem ficou lendo uma tela sem chamar a API cairia lá mesmo tendo renovado
+// aqui. Encerrar (pelo botão ou pelo tempo) usa o `logout()` do store, que põe
+// o refresh na blacklist no servidor.
 export const MINUTOS_LIMITE_SESSAO = 30;
 
 const MIN = 60 * 1000;
@@ -122,6 +125,7 @@ export function SessaoInativa() {
   const renovar = () => {
     ultimaAtividade.current = Date.now();
     setRestanteMs(null);
+    if (API_CONFIGURADA) renovarAccessToken();
   };
   const sairAgora = () => {
     setRestanteMs(null);

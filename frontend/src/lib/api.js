@@ -1,13 +1,27 @@
 import axios from "axios";
 
-import { clearTokens, getAccessToken, getRefreshToken, setTokens } from "./authTokens";
+import { clearTokens, getAccessToken, setAccessToken } from "./authTokens";
+
+// URL da API. Sem `VITE_API_URL` no build, não há backend para este deploy
+// (hoje: o MVP com dados mockados) — `API_CONFIGURADA` diz isso a quem
+// precisa saber, como o logout, que só avisa o servidor quando ele existe.
+const URL_CONFIGURADA = import.meta.env.VITE_API_URL;
+export const API_CONFIGURADA = Boolean(URL_CONFIGURADA);
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:8000/api",
+  baseURL: URL_CONFIGURADA || "http://localhost:8000/api",
 });
 
-// Rota (relativa à baseURL) que troca o refresh token por um novo access token.
+// Rotas de sessão (relativas à baseURL) — backend/apps/usuarios/autenticacao.py.
+const ROTA_LOGIN = "/auth/token/";
 const ROTA_REFRESH = "/auth/token/refresh/";
+const ROTA_LOGOUT = "/auth/logout/";
+
+// As chamadas de sessão vão com `withCredentials`: é o que faz o navegador
+// mandar (e aceitar) o cookie HttpOnly do refresh (issue #190). Usam o axios
+// "cru", sem os interceptors desta instância, para um 401 no próprio refresh
+// não entrar em recursão.
+export const sessao = axios.create({ baseURL: api.defaults.baseURL, withCredentials: true });
 
 api.interceptors.request.use((config) => {
   const token = getAccessToken();
@@ -17,16 +31,44 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+/**
+ * Login. O backend devolve `{access}` e grava o refresh no cookie.
+ * TODO(#177): a tela de Login passa a chamar isto (com CPF) no lugar do atalho
+ * mockado.
+ */
+export async function entrar(credenciais) {
+  const { data } = await sessao.post(ROTA_LOGIN, credenciais);
+  setAccessToken(data.access);
+  return data;
+}
+
+/**
+ * Logout no servidor: o refresh do cookie vai para a blacklist e o cookie é
+ * apagado. Nunca lança — sair tem que funcionar mesmo com a rede fora.
+ */
+export async function sair() {
+  clearTokens();
+  if (!API_CONFIGURADA) return;
+  try {
+    await sessao.post(ROTA_LOGOUT);
+  } catch {
+    // Sem rede ou sessão já expirada: o cookie expira sozinho (45 min).
+  }
+}
+
 // --- Refresh silencioso em resposta 401 -------------------------------------
 //
-// O access token vive 1h (SIMPLE_JWT em settings/base.py); quando expira, o
-// backend responde 401. Em vez de propagar o erro, tentamos UMA vez trocar o
-// refresh token (7 dias) por um novo access e refazer a request original. Se o
-// refresh também falhar (expirado, revogado, ausente), limpamos a sessão e
-// mandamos para /login.
+// O access token vive 15 min (SIMPLE_JWT em settings/base.py); quando expira
+// — ou depois de recarregar a página, quando ele nem existe mais em memória —
+// o backend responde 401. Em vez de propagar o erro, tentamos UMA vez obter um
+// access novo pelo cookie de refresh e refazer a request original. Se o
+// refresh também falhar (expirado por inatividade, revogado no logout ou na
+// troca de senha, ausente), limpamos a sessão e mandamos para /login.
 //
 // `refreshEmAndamento` colapsa vários 401 simultâneos em um único POST de
 // refresh: todas as requests aguardam a mesma promise e são refeitas depois.
+// Isso importa mais agora: o refresh roda o token e põe o anterior na
+// blacklist, então dois refreshes em paralelo derrubariam a sessão.
 
 let refreshEmAndamento = null;
 
@@ -39,22 +81,22 @@ function encerrarSessao() {
   }
 }
 
-async function renovarAccessToken() {
-  const refresh = getRefreshToken();
-  if (!refresh) return null;
-
-  try {
-    // axios "cru" (sem os interceptors desta instância) para o próprio refresh
-    // não entrar em recursão de 401.
-    const { data } = await axios.post(`${api.defaults.baseURL}${ROTA_REFRESH}`, { refresh });
-    if (!data?.access) return null;
-    // Com ROTATE_REFRESH_TOKENS ligado, o simplejwt devolve um novo `refresh`
-    // junto; setTokens ignora campos ausentes se não vier.
-    setTokens({ access: data.access, refresh: data.refresh });
-    return data.access;
-  } catch {
-    return null;
+/** Troca o cookie de refresh por um access novo. Devolve o access ou null. */
+export function renovarAccessToken() {
+  if (!refreshEmAndamento) {
+    refreshEmAndamento = sessao
+      .post(ROTA_REFRESH)
+      .then(({ data }) => {
+        if (!data?.access) return null;
+        setAccessToken(data.access);
+        return data.access;
+      })
+      .catch(() => null)
+      .finally(() => {
+        refreshEmAndamento = null;
+      });
   }
+  return refreshEmAndamento;
 }
 
 api.interceptors.response.use(
@@ -63,24 +105,12 @@ api.interceptors.response.use(
     const original = erro.config;
     const status = erro.response?.status;
 
-    if (
-      status !== 401 ||
-      !original ||
-      original._retentado ||
-      original.url?.includes(ROTA_REFRESH)
-    ) {
+    if (status !== 401 || !original || original._retentado) {
       return Promise.reject(erro);
     }
 
     original._retentado = true;
-
-    if (!refreshEmAndamento) {
-      refreshEmAndamento = renovarAccessToken().finally(() => {
-        refreshEmAndamento = null;
-      });
-    }
-
-    const novoAccess = await refreshEmAndamento;
+    const novoAccess = await renovarAccessToken();
 
     if (!novoAccess) {
       encerrarSessao();
