@@ -4,13 +4,16 @@
   "private": true,
   "description": "rastrIA",
   "scripts": {
-    "build": "npm install --prefix frontend && npm run build --prefix frontend",
+    "build": "npm ci --prefix frontend && npm run build --prefix frontend",
     "start": "serve -s frontend/dist -l $PORT"
   },
   "engines": {
     "node": ">=22.12.0"
   },
   "dependencies": {
-    "serve": "^14.2.3"
+    "serve": "^14.2.6"
+  },
+  "overrides": {
+    "compression": "^1.8.2"
   }
 }

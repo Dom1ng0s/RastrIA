@@ -407,7 +407,8 @@ Posto/graduação e unidade, que estavam na lista original de colunas da planilh
 
 ## Deploy
 Railway, builder Nixpacks. O serviço na raiz builda e serve o `frontend/`:
-- `buildCommand` ([railway.json](../railway.json)) roda `npm run build` da raiz ([package.json](../package.json)), que instala e builda `frontend/` (`npm install --prefix frontend && npm run build --prefix frontend`).
+- `buildCommand` ([railway.json](../railway.json)) roda `npm run build` da raiz ([package.json](../package.json)), que instala e builda `frontend/` (`npm ci --prefix frontend && npm run build --prefix frontend`).
+- **Lockfiles (issue #191):** a raiz e o `frontend/` têm `package-lock.json` versionado — o build usa `npm ci` e resolve sempre as mesmas versões. Os dois `package.json` têm `overrides.compression` (`^1.8.2`): o `serve` 14.2.6 ainda fixa `compression@1.8.1`, vulnerável a DoS, e o `serve` é o processo que atende produção. Remover o override quando o `serve` publicar versão com a dependência corrigida.
 - **Versão de Node:** fixada em **22** via `.nvmrc` na raiz + `engines.node >=22.12.0` (raiz e `frontend/`). O Nixpacks sem isso provisiona um Node antigo que o Vite 8 / `@vitejs/plugin-react` 6 / rolldown não aceitam (`^20.19.0 || >=22.12.0`) — foi o que quebrou o deploy depois dos merges de #106/#107.
 - `startCommand` serve o build estático: `serve -s frontend/dist -l $PORT`.
 - `VITE_API_URL` é lida em **build-time** pelo Vite — precisa estar setada como variável de ambiente do serviço no Railway (não só no `.env` local) para o build embutir a URL certa da API.
