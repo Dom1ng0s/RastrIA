@@ -28,6 +28,7 @@ import {
   useUltimoTaf,
 } from "../../features/saude/queries";
 import { useToast } from "../../features/ui/ToastProvider";
+import { urlSegura } from "../../lib/urlSegura";
 import { dataFormularioParaExibicao } from "../../lib/dataRegistro";
 import { GuidedTour } from "../../features/tour/GuidedTour";
 import { useGuidedTour } from "../../features/tour/useGuidedTour";
@@ -270,7 +271,10 @@ export default function DashboardUsuario() {
           // é editável nem excluível pelo usuário — o dado pertence a quem o
           // lançou. Ver `origem` em features/saude/queries.js (issue #130).
           const ehDoUsuario = registro.origem === "usuario";
-          const temAcoes = ehAlterado || registro.anexo || ehDoUsuario;
+          // A URL do anexo vem de dado (hoje mock/blob, depois a URL assinada
+          // da #185): só vira link se passar por `urlSegura` (issue #197).
+          const urlAnexo = urlSegura(registro.anexo?.url);
+          const temAcoes = ehAlterado || urlAnexo || ehDoUsuario;
 
           return (
             <div
@@ -304,17 +308,17 @@ export default function DashboardUsuario() {
                       Ver detalhes<span className="sr-only"> — {registro.indice} de {registro.data}</span>
                     </button>
                   )}
-                  {registro.anexo && (
+                  {urlAnexo && (
                     <>
                       <LinkExterno
-                        href={registro.anexo.url}
+                        href={urlAnexo}
                         descricao={`${registro.indice} de ${registro.data}`}
                         className="flex items-center gap-1 py-1.5 text-xs font-medium text-text-muted hover:text-primary"
                       >
                         <Paperclip size={13} aria-hidden="true" /> Visualizar anexo
                       </LinkExterno>
                       <a
-                        href={registro.anexo.url}
+                        href={urlAnexo}
                         download={registro.anexo.nome}
                         className="py-1.5 text-xs font-medium text-text-muted hover:text-primary"
                       >
