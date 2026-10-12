@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Check, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -7,9 +7,11 @@ import { DashboardLayout } from "../../components/DashboardLayout";
 import { DemoToggle } from "../../components/DemoToggle";
 import { EmptyState } from "../../components/EmptyState";
 import { EstadoErro } from "../../components/EstadoErro";
+import { Paginacao } from "../../components/Paginacao";
 import { SkeletonLista } from "../../components/Skeleton";
 import { useRankingFisico } from "../../features/ranking/queries";
 import { useRankingPrefsStore } from "../../features/ranking/store";
+import { paginar } from "../../lib/paginacao";
 import { navItems } from "../DashboardUsuario/DashboardUsuario";
 
 // Dados do ranking vêm de features/ranking/queries.js (issue #125) — antes
@@ -20,6 +22,12 @@ const escopos = [
   { id: "corporacao", label: "Toda a corporação" },
   { id: "batalhao", label: "Meu batalhão" },
 ];
+
+// Itens por página (issue #121). Pequeno de propósito enquanto o ranking é
+// mock (no máximo 7 pessoas por atividade): com 10, a paginação nunca
+// apareceria na demonstração nem na varredura de acessibilidade. Com a API,
+// o tamanho passa a ser o `page_size` pedido ao backend.
+export const ITENS_POR_PAGINA_RANKING = 5;
 
 const medalhaClasse = {
   1: "text-medalha-ouro",
@@ -33,6 +41,8 @@ export default function RankingFisico() {
   const [atividadeEscolhida, setAtividadeEscolhida] = useState(null);
   const [escopoId, setEscopoId] = useState(escopos[0].id);
   const [busca, setBusca] = useState("");
+  const [pagina, setPagina] = useState(1);
+  const tituloListaRef = useRef(null);
   // Modo demo (issue #80) — o ranking mockado nunca fica vazio sozinho
   // (sempre há tempos registrados), então este toggle simula "conta nova sem
   // nenhuma atividade registrada ainda" para poder demonstrar o estado vazio.
@@ -83,6 +93,15 @@ export default function RankingFisico() {
 
   const minhaPosicao = classificacao.find((entrada) => entrada.id === usuarioAtualId);
 
+  // A paginação compõe com escopo, atividade e busca (issue #121): os filtros
+  // continuam aplicados; só a página volta para a primeira quando eles mudam,
+  // porque a lista nova pode nem ter a página em que a pessoa estava.
+  const { itensDaPagina, paginaAtual, totalPaginas } = paginar(
+    classificacaoFiltrada,
+    pagina,
+    ITENS_POR_PAGINA_RANKING,
+  );
+
   return (
     <DashboardLayout title="Ranking" navItems={navItems}>
       <DemoToggle contaNova={contaNova} onToggle={() => setContaNova((atual) => !atual)} />
@@ -91,7 +110,10 @@ export default function RankingFisico() {
         <p className="text-sm text-text-muted">Compare seus tempos com outros integrantes da sua corporação.</p>
         <select
           value={atividadeId ?? ""}
-          onChange={(evento) => setAtividadeEscolhida(evento.target.value)}
+          onChange={(evento) => {
+            setAtividadeEscolhida(evento.target.value);
+            setPagina(1);
+          }}
           disabled={!ranking.isSuccess}
           aria-label="Atividade"
           className="w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-text-dark disabled:opacity-60 sm:w-64"
@@ -113,7 +135,10 @@ export default function RankingFisico() {
           <button
             key={escopo.id}
             type="button"
-            onClick={() => setEscopoId(escopo.id)}
+            onClick={() => {
+              setEscopoId(escopo.id);
+              setPagina(1);
+            }}
             // Selecionado era só borda/cor (issue #138): `aria-pressed` para o
             // leitor de tela, check + negrito para quem não distingue a cor.
             aria-pressed={escopoId === escopo.id}
@@ -136,7 +161,10 @@ export default function RankingFisico() {
       )}
 
       <div className="mb-6">
-        <CampoBusca rotulo="Buscar colega no ranking" valor={busca} aoMudar={setBusca} totalResultados={classificacaoFiltrada.length} placeholder="Buscar colega por nome..." />
+        <CampoBusca rotulo="Buscar colega no ranking" valor={busca} aoMudar={(valor) => {
+            setBusca(valor);
+            setPagina(1);
+          }} totalResultados={classificacaoFiltrada.length} placeholder="Buscar colega por nome..." />
       </div>
 
       {optedOut ? (
@@ -162,7 +190,10 @@ export default function RankingFisico() {
       )}
 
       {/* Só para leitor de tela: navegação por títulos (issue #146). */}
-      <h2 className="sr-only">Classificação</h2>
+      {/* Destino do foco ao trocar de página (Paginacao, issue #121). */}
+      <h2 ref={tituloListaRef} className="sr-only">
+        Classificação{totalPaginas > 1 ? ` — página ${paginaAtual} de ${totalPaginas}` : ""}
+      </h2>
       {ranking.isLoading && <SkeletonLista itens={5} />}
 
       {ranking.isError && (
@@ -172,7 +203,7 @@ export default function RankingFisico() {
       {/* <ol>: a ordem É a informação — o leitor de tela anuncia "lista de N
           itens" e a posição de cada um (issue #138). */}
       <ol className="space-y-2">
-        {classificacaoFiltrada.map((entrada) => {
+        {itensDaPagina.map((entrada) => {
           const ehVoce = entrada.id === usuarioAtualId;
           return (
             <li
@@ -217,6 +248,14 @@ export default function RankingFisico() {
           );
         })}
       </ol>
+
+      <Paginacao
+        rotulo="Paginação do ranking"
+        paginaAtual={paginaAtual}
+        totalPaginas={totalPaginas}
+        aoMudarPagina={setPagina}
+        alvoFoco={tituloListaRef}
+      />
 
       <div className="space-y-2">
         {ranking.isSuccess && classificacao.length === 0 && (

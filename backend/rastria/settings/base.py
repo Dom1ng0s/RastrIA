@@ -96,6 +96,8 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    # Toda listagem paginada (issue #121) — ver apps/core/paginacao.py.
+    "DEFAULT_PAGINATION_CLASS": "apps.core.paginacao.PaginacaoPadrao",
 }
 
 SIMPLE_JWT = {
