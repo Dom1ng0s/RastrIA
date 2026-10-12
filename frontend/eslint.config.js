@@ -46,12 +46,12 @@ export default [
   },
   {
     // Testes rodam no Vitest com `globals: true`.
-    files: ["src/**/*.test.{js,jsx}", "src/setupTests.js"],
+    files: ["src/**/*.test.{js,jsx}", "config/**/*.test.js", "src/setupTests.js"],
     languageOptions: { globals: { ...globals.node, ...globals.vitest } },
   },
   {
     // Playwright e as configs de build rodam em Node, fora do navegador.
-    files: ["e2e/**/*.js", "*.config.js"],
+    files: ["e2e/**/*.js", "*.config.js", "config/**/*.js"],
     // `browser` também: o corpo de `page.evaluate()` roda dentro da página.
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },

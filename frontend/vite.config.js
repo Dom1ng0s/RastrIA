@@ -1,34 +1,43 @@
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 
-// Content-Security-Policy de reforço, injetada como <meta> no index.html do build
-// (issue #111). O header HTTP de verdade é servido pelo `serve` via
-// `frontend/public/serve.json` — esta meta é só defesa em profundidade para o caso
-// de o app ser aberto sem passar pelo servidor configurado. Manter as duas em sincronia.
-// `frame-ancestors` é omitido aqui de propósito: navegadores ignoram essa diretiva
-// quando vem de <meta>, ela só vale como header (e está no serve.json).
-const CSP_META =
-  "default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; " +
-  "img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; " +
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self'; " +
-  "connect-src 'self' https://*.railway.app";
+import { montarCsp, montarServeJson, origemParaCsp } from "./config/csp.js";
 
+// Headers de segurança gerados no build (issues #111 e #192). O header HTTP de
+// verdade é servido pelo `serve` a partir do `serve.json` que este plugin emite
+// em dist/; a mesma CSP vai como <meta> no index.html, como defesa em
+// profundidade para o caso de o app ser aberto sem passar pelo servidor
+// configurado. As duas saem de `config/csp.js`, então não divergem.
+//
+// `connect-src` leva só a origem exata de `VITE_API_URL` — nunca curinga. Uma
+// origem inválida (curinga, http fora de localhost) derruba o build.
+//
 // Só roda no `vite build` — no dev server o @vitejs/plugin-react injeta um script
 // inline (React Refresh) que uma CSP com `script-src 'self'` bloquearia.
-const cspMetaTag = () => ({
-  name: "rastria-csp-meta-tag",
-  apply: "build",
-  transformIndexHtml: () => [
-    {
-      tag: "meta",
-      attrs: { "http-equiv": "Content-Security-Policy", content: CSP_META },
-      injectTo: "head-prepend",
+const cabecalhosSeguranca = (env) => {
+  const origensConexao = [origemParaCsp(env.VITE_API_URL)];
+  return {
+    name: "rastria-cabecalhos-seguranca",
+    apply: "build",
+    transformIndexHtml: () => [
+      {
+        tag: "meta",
+        attrs: { "http-equiv": "Content-Security-Policy", content: montarCsp({ origensConexao, paraMeta: true }) },
+        injectTo: "head-prepend",
+      },
+    ],
+    generateBundle() {
+      this.emitFile({
+        type: "asset",
+        fileName: "serve.json",
+        source: `${JSON.stringify(montarServeJson(montarCsp({ origensConexao })), null, 2)}\n`,
+      });
     },
-  ],
-});
+  };
+};
 
-export default defineConfig({
-  plugins: [react(), cspMetaTag()],
+export default defineConfig(({ mode }) => ({
+  plugins: [react(), cabecalhosSeguranca(loadEnv(mode, process.cwd(), ""))],
   // Vitest + Testing Library (issue #123). `globals` para `describe`/`it`/`expect`
   // sem import em cada arquivo; `setupTests.js` traz os matchers do jest-dom e
   // limpa o DOM entre testes.
@@ -45,11 +54,11 @@ export default defineConfig({
     globals: true,
     setupFiles: "./src/setupTests.js",
     css: false,
-    include: ["src/**/*.test.{js,jsx}"],
+    include: ["src/**/*.test.{js,jsx}", "config/**/*.test.js"],
   },
   // Defesa em profundidade para as CVEs de dev server do Vite/esbuild (issue #106):
   // manter o servidor de desenvolvimento preso ao loopback, sem expor na rede local.
   server: {
     host: "127.0.0.1",
   },
-});
+}));
