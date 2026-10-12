@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "apps.core",
     "apps.usuarios",
@@ -100,10 +101,44 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "apps.core.paginacao.PaginacaoPadrao",
 }
 
+# Sessão JWT (issue #190) — ver apps/usuarios/autenticacao.py.
+# - access curto, só em memória no frontend;
+# - refresh em cookie HttpOnly, rodado e posto na blacklist a cada uso. Seu
+#   tempo de vida é o limite de INATIVIDADE no servidor: 30 min sem chamar a
+#   API + os 15 min do último access (o refresh só é usado quando o access
+#   expira). O aviso exato de 30 min fica no cliente (SessaoInativa.jsx);
+# - limite absoluto de sessão, mesmo com uso contínuo;
+# - CHECK_REVOKE_TOKEN: access emitido antes de uma troca de senha deixa de
+#   valer (o refresh é revogado em Usuario.save).
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=45),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+    "CHECK_REVOKE_TOKEN": True,
 }
+SESSAO_DURACAO_MAXIMA = timedelta(hours=12)
+
+JWT_COOKIE_REFRESH = {
+    "NOME": "rastria_refresh",
+    "PATH": "/api/auth/",
+    "SECURE": os.getenv("JWT_COOKIE_SECURE", "true").lower() == "true",
+    # Strict exige frontend e API no mesmo "site" (mesmo domínio registrável).
+    # *.up.railway.app NÃO conta como um site só (está na Public Suffix List):
+    # em produção, servir os dois sob domínio próprio (ex.: app. e api.) —
+    # ver "Sessão e cookies" em agents/claude.md.
+    "SAMESITE": os.getenv("JWT_COOKIE_SAMESITE", "Strict"),
+}
+
+# Origens aceitas no header Origin dos endpoints de auth (CSRF, #190), além da
+# própria API. Por padrão, as mesmas do CORS.
+JWT_ORIGENS_PERMITIDAS = [
+    o.strip() for o in os.getenv("JWT_ORIGENS_PERMITIDAS", os.getenv("CORS_ALLOWED_ORIGINS", "")).split(",") if o.strip()
+]
+
+# O cookie de refresh só é enviado cross-origin com credenciais.
+CORS_ALLOW_CREDENTIALS = True
 
 # Logs (issue #188): tudo para stdout — o Railway coleta. Nível por ambiente
 # via `DJANGO_LOG_LEVEL` (padrão INFO; dev.py usa DEBUG). Erros 500 também vão

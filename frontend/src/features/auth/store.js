@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { clearTokens } from "../../lib/authTokens";
+import { sair } from "../../lib/api";
 import { MODO_DEMO } from "../demo/flag";
 
 // TODO: `usuario` deve vir do backend (payload do JWT ou GET /api/usuarios/me)
@@ -42,7 +42,9 @@ function lerUsuarioSalvo() {
 }
 
 function limparEstadoDoUsuario() {
-  clearTokens(); // access + refresh, centralizados em lib/authTokens.js (issue #65)
+  // Access em memória + logout no servidor (refresh do cookie na blacklist),
+  // issue #190. Não espera a resposta: sair não pode depender da rede.
+  sair();
   localStorage.removeItem(STORAGE_KEY_USUARIO);
   CHAVES_PREFERENCIA_USUARIO.forEach((chave) => localStorage.removeItem(chave));
   Object.keys(localStorage)

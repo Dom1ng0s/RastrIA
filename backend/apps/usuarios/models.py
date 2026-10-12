@@ -21,5 +21,20 @@ class Usuario(AbstractUser):
 
     papel = models.CharField(max_length=30, choices=Papel.choices, default=Papel.INDIVIDUAL)
 
+    def set_password(self, raw_password):
+        super().set_password(raw_password)
+        self._senha_alterada = True
+
+    def save(self, *args, **kwargs):
+        senha_alterada = getattr(self, "_senha_alterada", False) and self.pk is not None
+        super().save(*args, **kwargs)
+        # Troca de senha (admin, changepassword, futuros endpoints da #178)
+        # encerra todas as sessões abertas — issue #190.
+        if senha_alterada:
+            from apps.usuarios.autenticacao import revogar_tokens_do_usuario
+
+            revogar_tokens_do_usuario(self)
+        self._senha_alterada = False
+
     def __str__(self):
         return self.get_full_name() or self.username
