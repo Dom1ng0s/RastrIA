@@ -27,6 +27,7 @@ from apps.instituicoes.models import Instituicao
 from apps.profissionais.models import Profissional
 from apps.saude.models import RegistroSaude, RegraVerificacao
 from apps.usuarios.models import Papel, Usuario
+from tests.credenciais import SENHA
 
 ENDPOINTS = [
     "/api/usuarios/",
@@ -50,10 +51,10 @@ class BaseMatriz(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.usuarios = {
-            papel: Usuario.objects.create_user(username=f"u-{papel}", password="senha-forte-123", papel=papel)
+            papel: Usuario.objects.create_user(username=f"u-{papel}", password=SENHA, papel=papel)
             for papel in PAPEIS
         }
-        cls.dono = Usuario.objects.create_user(username="dono", password="senha-forte-123", papel=Papel.INTEGRANTE)
+        cls.dono = Usuario.objects.create_user(username="dono", password=SENHA, papel=Papel.INTEGRANTE)
         cls.registro_do_dono = RegistroSaude.objects.create(
             usuario=cls.dono, tipo="laboratorial", indice="glicemia", valor=180, data=date(2026, 9, 1)
         )

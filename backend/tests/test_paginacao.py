@@ -3,6 +3,7 @@ from rest_framework.test import APIClient
 
 from apps.saude.models import RegraVerificacao
 from apps.usuarios.models import Usuario
+from tests.credenciais import SENHA
 
 
 class PaginacaoPadraoTest(TestCase):
@@ -10,7 +11,7 @@ class PaginacaoPadraoTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.usuario = Usuario.objects.create_user(username="pag", password="senha-forte-123")
+        cls.usuario = Usuario.objects.create_user(username="pag", password=SENHA)
         RegraVerificacao.objects.bulk_create(
             RegraVerificacao(tipo="laboratorial", indice=f"indice-{i}", fonte="teste") for i in range(130)
         )

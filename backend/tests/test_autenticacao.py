@@ -9,6 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.usuarios.autenticacao import CLAIM_INICIO_SESSAO
 from apps.usuarios.models import Usuario
+from tests.credenciais import SENHA, nova_senha
 
 ORIGEM = "http://testserver"
 COOKIE = settings.JWT_COOKIE_REFRESH["NOME"]
@@ -20,14 +21,14 @@ class SessaoJwtTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.usuario = Usuario.objects.create_user(username="maria", password="senha-forte-123")
+        cls.usuario = Usuario.objects.create_user(username="maria", password=SENHA)
 
     def setUp(self):
         self.client = APIClient()
 
     def entrar(self, origem=ORIGEM):
         extra = {"HTTP_ORIGIN": origem} if origem else {}
-        return self.client.post("/api/auth/token/", {"username": "maria", "password": "senha-forte-123"}, **extra)
+        return self.client.post("/api/auth/token/", {"username": "maria", "password": SENHA}, **extra)
 
     @staticmethod
     def na_blacklist(token):
@@ -64,7 +65,7 @@ class SessaoJwtTest(TestCase):
 
     def test_credencial_errada_nao_grava_cookie(self):
         resposta = self.client.post(
-            "/api/auth/token/", {"username": "maria", "password": "errada"}, HTTP_ORIGIN=ORIGEM
+            "/api/auth/token/", {"username": "maria", "password": nova_senha()}, HTTP_ORIGIN=ORIGEM
         )
         self.assertEqual(resposta.status_code, 401)
         self.assertNotIn(COOKIE, resposta.cookies)
@@ -133,7 +134,7 @@ class SessaoJwtTest(TestCase):
         self.entrar_como_outro_e_apagar()
 
     def entrar_como_outro_e_apagar(self):
-        outro = Usuario.objects.create_user(username="joao", password="senha-forte-123")
+        outro = Usuario.objects.create_user(username="joao", password=SENHA)
         self.client.cookies[COOKIE] = str(RefreshToken.for_user(outro))
         outro.delete()
         self.assertEqual(self.renovar().status_code, 401)  # antes: 500 (DoesNotExist)
@@ -166,7 +167,7 @@ class SessaoJwtTest(TestCase):
         refresh = self.client.cookies[COOKIE].value
 
         usuario = Usuario.objects.get(pk=self.usuario.pk)
-        usuario.set_password("outra-senha-forte-456")
+        usuario.set_password(nova_senha())
         usuario.save()
 
         self.assertTrue(self.na_blacklist(refresh))
@@ -180,7 +181,7 @@ class SessaoJwtTest(TestCase):
         # Defesa em profundidade: senha trocada direto no banco (sem save do
         # model) não passa pela revogação, mas o hash no token não bate mais.
         self.entrar()
-        Usuario.objects.filter(pk=self.usuario.pk).update(password="pbkdf2_sha256$1$x$y")
+        Usuario.objects.filter(pk=self.usuario.pk).update(password=f"pbkdf2_sha256$1${nova_senha()}$hash-qualquer")
         self.assertEqual(self.renovar().status_code, 401)
 
     def test_salvar_sem_trocar_senha_nao_revoga(self):
