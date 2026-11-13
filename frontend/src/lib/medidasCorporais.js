@@ -15,11 +15,11 @@ export const ALTURA_CM_MAX = 250;
 function medidaSchema({ min, max, unidade, exemplo }) {
   const faixa = `um valor entre ${min} e ${max} ${unidade} (ex: ${exemplo})`;
   return z.preprocess(
-    // Campo vazio coage para NaN e cai no `invalid_type_error`, não numa
+    // Campo vazio coage para NaN e cai na mensagem de `error`, não numa
     // mensagem de faixa confusa.
     (valor) => (typeof valor === "string" && valor.trim() === "" ? undefined : valor),
     z.coerce
-      .number({ invalid_type_error: "Informe um número" })
+      .number({ error: "Informe um número" })
       .min(min, `Use ${faixa}`)
       .max(max, `Use ${faixa}`),
   );
