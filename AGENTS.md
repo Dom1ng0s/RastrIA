@@ -9,6 +9,14 @@ Vale para qualquer agente (Claude Code, Codex, Cursor, Copilot e outros) e para 
 3. **Se houver bloqueio aberto, não comece.** Diga qual é o bloqueio e proponha resolvê-lo primeiro. Só siga adiante com confirmação explícita de quem pediu.
 4. **Se a tarefa não tiver issue**, ou a issue não estiver no arquivo, diga isso antes de começar e acrescente-a ao mapa.
 
+## Onde cada código vai
+
+Leia [docs/ARQUITETURA.md](docs/ARQUITETURA.md) antes de criar arquivo ou módulo. Em resumo:
+
+- Backend: view só recebe e responde; regra de negócio em `services.py`, leitura filtrada por papel em `selectors.py`; um app só importa de apps de nível mais baixo.
+- Frontend: `lib` ← `components`/`features` ← `pages` ← `routes`; toda chamada à API passa por `features/<área>/queries.js`.
+- O CI verifica as fronteiras: `lint-imports` no backend e `npm run lint` no frontend.
+
 ## Ao terminar
 
 - No PR que fecha uma issue, atualize `docs/DEPENDENCIAS_ISSUES.md`: remova a linha, o nó e as setas dela.

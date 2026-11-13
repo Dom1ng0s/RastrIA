@@ -1,6 +1,6 @@
 # Dependências entre issues
 
-Mapa do que bloqueia o quê nas issues abertas, da primeira etapa (pode começar hoje) até a meta **piloto com dado real**. Retrato de 12/11/2026, com 58 issues abertas.
+Mapa do que bloqueia o quê nas issues abertas, da primeira etapa (pode começar hoje) até a meta **piloto com dado real**. Retrato de 12/11/2026, com 59 issues abertas.
 
 > As dependências foram inferidas do texto das issues e do código; não são um campo do GitHub. Se uma seta estiver errada, corrija este arquivo no mesmo PR.
 
@@ -123,6 +123,7 @@ Não bloqueiam nem esperam outra issue.
 | [#199](https://github.com/Dom1ng0s/RastrIA/issues/199) | launch.json versionado com caminho local | Chore |  |
 | [#200](https://github.com/Dom1ng0s/RastrIA/issues/200) | Guia descreve auth por CPF que não existe | Chore |  |
 | [#232](https://github.com/Dom1ng0s/RastrIA/issues/232) | Endpoints de contato institucional e reporte de problema | Backend |  |
+| [#241](https://github.com/Dom1ng0s/RastrIA/issues/241) | Página não importa de outra página: tirar navItems dos dashboards | Frontend |  |
 | [#240](https://github.com/Dom1ng0s/RastrIA/issues/240) | Alinhar fluxo de branches com o documentado | Chore |  |
 
 ## Diagrama

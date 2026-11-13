@@ -1,0 +1,46 @@
+# Regras de arquitetura do backend, verificadas no CI com `lint-imports`.
+# O porquê de cada uma está em docs/ARQUITETURA.md.
+[importlinter]
+root_packages =
+    apps
+    rastria
+
+# Dependência entre apps só de cima para baixo. `|` = apps do mesmo nível
+# não se importam entre si.
+[importlinter:contract:apps-em-camadas]
+name = Apps dependem só de apps de nível mais baixo
+type = layers
+layers =
+    apps.atendimentos
+    apps.saude | apps.profissionais
+    apps.instituicoes
+    apps.usuarios
+    apps.core
+
+# Dentro de cada app: HTTP em cima, regra de negócio no meio, dados embaixo.
+# Módulos entre parênteses são opcionais (nem todo app tem todos).
+[importlinter:contract:camadas-dentro-do-app]
+name = Dentro do app: urls > views > serializers > services > selectors > models
+type = layers
+layers =
+    (urls)
+    (views)
+    (serializers)
+    (services)
+    (selectors)
+    (models)
+containers =
+    apps.usuarios
+    apps.instituicoes
+    apps.saude
+    apps.profissionais
+    apps.atendimentos
+
+# Os apps não conhecem a configuração do projeto (usar django.conf.settings).
+[importlinter:contract:apps-nao-importam-projeto]
+name = Apps não importam o pacote de configuração
+type = forbidden
+source_modules =
+    apps
+forbidden_modules =
+    rastria
