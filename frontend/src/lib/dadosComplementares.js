@@ -41,7 +41,7 @@ export const contatoEmergenciaTelefoneSchema = z
 export function validarContatoEmergencia(dados, ctx) {
   if (dados.contatoEmergenciaTelefone && !dados.contatoEmergenciaNome) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       message: "Informe o nome do contato de emergência",
       path: ["contatoEmergenciaNome"],
     });

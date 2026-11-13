@@ -22,7 +22,7 @@ const navItems = [{ to: "/educador-fisico", label: "Painel do Educador Físico",
 // repetições sem avisar. Mesmo padrão de lib/medidasCorporais.js.
 const repeticoesSchema = z.preprocess(
   (valor) => (typeof valor === "string" && valor.trim() === "" ? undefined : valor),
-  z.coerce.number({ invalid_type_error: "Informe um número" }).int().min(0, "Informe um número válido"),
+  z.coerce.number({ error: "Informe um número" }).int().min(0, "Informe um número válido"),
 );
 
 const cadastroTafSchema = z.object({
@@ -31,7 +31,7 @@ const cadastroTafSchema = z.object({
   flexoes: repeticoesSchema,
   abdominais: repeticoesSchema,
   barra: repeticoesSchema,
-  resultado: z.enum(["apto", "inapto"], { errorMap: () => ({ message: "Selecione o resultado" }) }),
+  resultado: z.enum(["apto", "inapto"], { error: "Selecione o resultado" }),
 });
 
 export default function CadastroTAF() {
