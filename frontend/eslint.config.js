@@ -44,6 +44,30 @@ export default [
       "react/prop-types": "off",
     },
   },
+  // Camadas do frontend (docs/ARQUITETURA.md): lib ← components/features ←
+  // pages ← routes. Quem está embaixo não importa quem está em cima.
+  {
+    files: ["src/lib/**/*.{js,jsx}"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        patterns: [{
+          regex: "(^|/)(components|features|pages|routes)/",
+          message: "lib/ é a base: não importa de components, features, pages nem routes (docs/ARQUITETURA.md).",
+        }],
+      }],
+    },
+  },
+  {
+    files: ["src/components/**/*.{js,jsx}", "src/features/**/*.{js,jsx}"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        patterns: [{
+          regex: "(^|/)(pages|routes)/",
+          message: "components/ e features/ não importam de pages nem routes (docs/ARQUITETURA.md).",
+        }],
+      }],
+    },
+  },
   {
     // Testes rodam no Vitest com `globals: true`.
     files: ["src/**/*.test.{js,jsx}", "config/**/*.test.js", "src/setupTests.js"],

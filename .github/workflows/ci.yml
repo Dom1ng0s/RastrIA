@@ -77,6 +77,9 @@ jobs:
           cache-dependency-path: backend/requirements*.txt
       - run: pip install -r requirements-dev.txt
       - run: ruff check .
+      # Camadas e dependências entre apps (backend/.importlinter,
+      # docs/ARQUITETURA.md).
+      - run: lint-imports
       # Settings de produção: falha em erro de configuração; os avisos (ex.:
       # HSTS, #63) ficam visíveis no log.
       - name: python manage.py check --deploy

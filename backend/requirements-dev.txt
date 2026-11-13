@@ -2,3 +2,5 @@
 -r requirements.txt
 ruff>=0.17,<0.18
 pip-audit>=2.9,<3.0
+# Regras de arquitetura (backend/.importlinter, docs/ARQUITETURA.md): `lint-imports`.
+import-linter>=2.0,<3.0

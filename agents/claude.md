@@ -521,6 +521,10 @@ Issues que não são de implementação — esperam definição da corporação 
 - **#57** — aba de acompanhamento psicológico (sugestão)
 - **#100** — importar dados de exercício físico de apps externos (Strava)
 
+## Dependências entre issues — conferir antes de codar
+
+`docs/DEPENDENCIAS_ISSUES.md` mapeia o que bloqueia o quê nas issues abertas (tabelas por etapa + diagrama Mermaid, que o GitHub renderiza). **Antes de começar qualquer issue:** achar a issue no arquivo, conferir o estado real dos bloqueios (`gh issue view <número> --json state`) e, se algum estiver aberto, não começar sem confirmação explícita de quem pediu. O PR que fecha ou abre uma issue atualiza o arquivo. As mesmas regras estão em `AGENTS.md` na raiz, que é o arquivo lido por agentes que não são o Claude Code.
+
 ## Documentação adicional
 Manual de marca (`docs/brand/Rastria_Manual_de_Marca.pdf`), pitch deck (`docs/pitch/Rastria_Pitch_Deck.pdf`/`.pptx`) e diagramas UML (`docs/diagrams/casos_de_uso.svg`, `classes.svg`, `sequencia.svg`, `fluxo_institucional_corrigido.svg`) já estão versionados no repositório. A estratégia de estrutura/branches acima já foi incorporada neste arquivo, não é necessário um `docs/ESTRUTURA_REPOSITORIO.md` separado.
 
